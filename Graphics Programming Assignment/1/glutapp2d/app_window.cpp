@@ -176,15 +176,17 @@ void AppWindow::buildObjects()
 	// Define some triangles:
 	if (_tris.changed) // needs update
 	{
+		// x1 = -0.30, x2 = -0.15, x3 = 0.0, y1 = 0.65, y2 = 0.35, y3 = 0.05
+		// dx = 0.05, dy = 0.05
 		_tricoords.clear(); _tricolors.clear();
 		// Creating a sheet of paperwhite with  color
-		this->drawPaper(GsColor::white);
+		this->drawPaper(0.75, -0.75, 0.70, 0.0, 0.005, 0.005, GsColor::white);
 		// Drawing letter H
-		this->drawLetterH(GsColor::red);
+		this->drawLetterH(-0.675, -0.375, 0.65, 0.35, 0.05, 0.005, 0.005, GsColor::red);
 		// Drawing letter A
-		this->drawLetterA(GsColor::red);
+		this->drawLetterA(-0.30, -0.15, 0.0, 0.65, 0.35, 0.05, 0.005, 0.01, GsColor::red);
 		// Drawing letter N
-		this->drawLetterN(GsColor::red);
+		this->drawLetterN(0.35, 0.05, 0.65, 0.05, 0.005, 0.005, GsColor::red);
 		// Drawing letter G
 		this->drawLetterG(GsColor::red);
 
@@ -198,10 +200,10 @@ void AppWindow::buildObjects()
 	}
  }
 
-void AppWindow::drawPaper(GsColor col) {
+void AppWindow::drawPaper(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col) {
 	// Coordinates and changes in x and y
-	double x1 = 0.65, x2 = -0.65, y1 = 0.70, y2 = 0;
-	double dx = 0.005, dy = 0.005;
+	//double x1 = 0.65, x2 = -0.65, y1 = 0.70, y2 = 0;
+	//double dx = 0.005, dy = 0.005;
 	// Drawing the right vertical line
 	_tricoords.push_back(GsVec(x1 - dx, y1, 0.0)); _tricolors.push_back(col);
 	_tricoords.push_back(GsVec(x1 - dx, y2, 0.0)); _tricolors.push_back(col);
@@ -237,10 +239,7 @@ void AppWindow::drawPaper(GsColor col) {
 	_tricoords.push_back(GsVec(x2, y1 + dy, 0.0)); _tricolors.push_back(col);
 }
 
-void AppWindow::drawLetterH(GsColor col) {
-	// Coordinates and changes in x and y
-	double x1 = -0.625, x2 = -0.325, y1 = 0.65, y2 = 0.30, y3 = 0.05;
-	double dx = 0.005, dy = 0.005;
+void AppWindow::drawLetterH(double x1, double x2, double y1, double y2, double y3, double dx, double dy, GsColor col) {
 	// Drawing left vertical line 
 	_tricoords.push_back(GsVec(x1 - dx, y1, 0.0)); _tricolors.push_back(col);
 	_tricoords.push_back(GsVec(x1 - dx, y3, 0.0)); _tricolors.push_back(col);
@@ -251,28 +250,77 @@ void AppWindow::drawLetterH(GsColor col) {
 	_tricoords.push_back(GsVec(x1 + dx, y3, 0.0)); _tricolors.push_back(col);
 	// Drawing right vertical line
 	_tricoords.push_back(GsVec(x2 - dx, y1, 0.0)); _tricolors.push_back(col);
-	_tricoords.push_back(GsVec()); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y3, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y3, 0.0)); _tricolors.push_back(col);
 
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
-	/*// Drawing middle horizontal line
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y3, 0.0)); _tricolors.push_back(col);
+	// Drawing middle horizontal line
+	_tricoords.push_back(GsVec(x1 + dx, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y2 - dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y2 - dy, 0.0)); _tricolors.push_back(col);
 
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
-	_tricoords.push_back(); _tricolors.push_back(col);
-	*/
+	_tricoords.push_back(GsVec(x1 + dx, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y2 - dy, 0.0)); _tricolors.push_back(col);
 }
 
-void AppWindow::drawLetterA(GsColor col) {
+void AppWindow::drawLetterA(double x1, double x2, double x3, double y1, double y2, double y3, double dx, double dy, GsColor col) {
+	// x1 = -0.30, x2 = -0.15, x3 = 0.0, y1 = 0.65, y2 = 0.35, y3 = 0.05
+	// dx = 0.005, dy = 0.001
+	// Drawing Left Slanted Line
+	_tricoords.push_back(GsVec(x1, y3, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2, y1 - 2 * dy * sqrt(3), 0.0)); _tricolors.push_back(col);
+	
+	_tricoords.push_back(GsVec(x1, y3, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y3, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2, y1 - 2 * dy * sqrt(3), 0.0)); _tricolors.push_back(col);
+	// Drawing the Right Slanted Line
+	_tricoords.push_back(GsVec(x2, y1 - 2 * dy * sqrt(3), 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x3 - dx, y3, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x3, y3, 0.0)); _tricolors.push_back(col);
 
+	_tricoords.push_back(GsVec(x2, y1 - 2 * dy * sqrt(3), 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x3, y3, 0.0)); _tricolors.push_back(col);
+	// Drawing the Middle Line
+	_tricoords.push_back(GsVec((x1 + x2)/2, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec((x1 + x2) / 2, y2 - dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec((x3 + x2) / 2, y2 - dy, 0.0)); _tricolors.push_back(col);
+
+	_tricoords.push_back(GsVec((x1 + x2) / 2, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec((x3 + x2) / 2, y2 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec((x3 + x2) / 2, y2 - dy, 0.0)); _tricolors.push_back(col);
+	//_tricoords.push_back(GsVec()); _tricolors.push_back(col);
 }
 
-void AppWindow::drawLetterN(GsColor col) {
+void AppWindow::drawLetterN(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col) {
+	// Drawing left vertical line 
+	_tricoords.push_back(GsVec(x1 - dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 - dx, y2, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y2, 0.0)); _tricolors.push_back(col);
+
+	_tricoords.push_back(GsVec(x1 - dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y2, 0.0)); _tricolors.push_back(col);
+	// Drawing right vertical line
+	_tricoords.push_back(GsVec(x2 - dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 - dx, y2, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y2, 0.0)); _tricolors.push_back(col);
+
+	_tricoords.push_back(GsVec(x2 - dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2 + dx, y2, 0.0)); _tricolors.push_back(col);
+	// Drawing middle horizontal line
+	_tricoords.push_back(GsVec(x2, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x2, y1 - 3 * dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1, y2, 0.0)); _tricolors.push_back(col);
+
+	_tricoords.push_back(GsVec(x2, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1, y2 + 3 * dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1, y2, 0.0)); _tricolors.push_back(col);
 
 }
 
