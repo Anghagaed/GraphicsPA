@@ -8,6 +8,7 @@
 # include <gsim/gs_vec.h>
 # include "ogl_tools.h"
 # include "glut_window.h"
+# include <cmath>
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -43,11 +44,11 @@ class AppWindow : public GlutWindow
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
 	
-	// Functions for drawing rectangles
-	void drawPaper(GsColor col);
-	void drawLetterH(GsColor col);
-	void drawLetterA(GsColor col);
-	void drawLetterN(GsColor col);
+	// Functions for drawing character
+	void drawPaper(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col);
+	void drawLetterH(double x1, double x2, double y1, double y2, double y3, double dx, double dy, GsColor col);
+	void drawLetterA(double x1, double x2, double x3, double y1, double y2, double y3, double dx, double dy, GsColor col);
+	void drawLetterN(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col);
 	void drawLetterG(GsColor col);
  };
 
