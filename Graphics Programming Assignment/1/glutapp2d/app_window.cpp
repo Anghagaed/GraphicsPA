@@ -188,7 +188,7 @@ void AppWindow::buildObjects()
 		// Drawing letter N
 		this->drawLetterN(0.35, 0.05, 0.65, 0.05, 0.005, 0.005, GsColor::red);
 		// Drawing letter G
-		this->drawLetterG(GsColor::red);
+		this->drawLetterG(0.55, 0.35, 0.125, M_PI/1024, 0.005, 0.05, 0.30, GsColor::red);
 
 		// send data to OpenGL buffers:
 		glBindBuffer(GL_ARRAY_BUFFER, _tris.buf[0]);
@@ -324,7 +324,25 @@ void AppWindow::drawLetterN(double x1, double x2, double y1, double y2, double d
 
 }
 
-void AppWindow::drawLetterG(GsColor col) {
+void AppWindow::drawLetterG(double x1, double y1, double r, double dQ, double dR, double dx, double dy, GsColor col) {
+	// x1
+	// Drawing smaller black circle
+	for (double q = M_PI / 2; q <= 2 * M_PI; q += dQ) {
+		_tricoords.push_back(GsVec(x1, y1, 0.0)); _tricolors.push_back(GsColor::black);
+		_tricoords.push_back(GsVec(x1 + (r - dR) * cos(q), y1 + 2.25 * (r - dR) * sin(q), 0.0)); _tricolors.push_back(GsColor::black);
+		_tricoords.push_back(GsVec(x1 + (r - dR) * cos(q + dQ), y1 + 2 * (r - dR) * sin(q + dQ), 0.0)); _tricolors.push_back(GsColor::black);
+	}
+	// Covering bigger red circle 
+	for (double q = M_PI/2; q < 2 * M_PI; q+=dQ) {
+		_tricoords.push_back(GsVec(x1, y1, 0.0)); _tricolors.push_back(col);
+		_tricoords.push_back(GsVec(x1 + r * cos(q), y1 + 2.25 * r * sin(q), 0.0)); _tricolors.push_back(col);
+		_tricoords.push_back(GsVec(x1 + r * cos(q + dQ), y1 + 2 * r * sin(q + dQ), 0.0)); _tricolors.push_back(col);
+	}
+
+	// Creating horizontal Line
+
+
+
 
 }
 

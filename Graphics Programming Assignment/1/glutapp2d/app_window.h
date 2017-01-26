@@ -2,13 +2,14 @@
 // Ensure the header file is included only once in multi-file projects
 #ifndef APP_WINDOW_H
 #define APP_WINDOW_H
+#define _USE_MATH_DEFINES
 
 # include <vector>
 # include <gsim/gs_color.h>
 # include <gsim/gs_vec.h>
 # include "ogl_tools.h"
 # include "glut_window.h"
-# include <cmath>
+# include <math.h>
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -49,7 +50,7 @@ class AppWindow : public GlutWindow
 	void drawLetterH(double x1, double x2, double y1, double y2, double y3, double dx, double dy, GsColor col);
 	void drawLetterA(double x1, double x2, double x3, double y1, double y2, double y3, double dx, double dy, GsColor col);
 	void drawLetterN(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col);
-	void drawLetterG(GsColor col);
+	void drawLetterG(double x1, double y1, double r, double dQ, double dR, double dx, double dy, GsColor col);
  };
 
 #endif // APP_WINDOW_H
