@@ -26,6 +26,9 @@ class AppWindow : public GlutWindow
 
    private : // App Data
     enum MenuEv { evOption0, evOption1 };
+	double lx, ly, ldx, ldy;
+	double ddx;
+	boolean bx, by;
     GsColor _markc;
     GsVec2 _mark;
     int _w, _h;
@@ -44,6 +47,7 @@ class AppWindow : public GlutWindow
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
+	virtual void glutIdle();
 	
 	// Functions for drawing character
 	void drawPaper(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col);
@@ -51,6 +55,8 @@ class AppWindow : public GlutWindow
 	void drawLetterA(double x1, double x2, double x3, double y1, double y2, double y3, double dx, double dy, GsColor col);
 	void drawLetterN(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col);
 	void drawLetterG(double x1, double y1, double r, double dQ, double dR, double dx, double dy, GsColor col);
+	void drawLines(double x1, double y1, double x2, double y2, GsColor col);
+	void drawPoints(double x, double y, GsColor col);
  };
 
 #endif // APP_WINDOW_H

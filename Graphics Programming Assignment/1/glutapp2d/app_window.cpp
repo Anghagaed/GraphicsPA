@@ -10,6 +10,13 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    addMenuEntry ( "Option 1", evOption1 );
    _markc = GsColor::yellow;
    _w=w; _h=h;
+   lx = 0;
+   ly = -0.625;
+   ldx = 0.25;
+   ldy = 0.125;
+   ddx = 0.001;
+   bx = true;
+   by = true;
  }
 
 void AppWindow::initPrograms ()
@@ -75,6 +82,18 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
        redraw();
 	   break;
 
+	case GLUT_KEY_LEFT :
+		ddx -= 0.001;
+		break;
+	case GLUT_KEY_RIGHT :
+		ddx += 0.001;
+		break;
+	case GLUT_KEY_UP :
+		ddx = 0.001;
+		break;
+	case GLUT_KEY_DOWN :
+		ddx = 0.0;
+		break;
 	  case 27: // Esc was pressed
 	   exit(1);
 	}
@@ -86,10 +105,22 @@ void AppWindow::glutSpecial ( int key, int x, int y )
    const float incx=0.02f;
    const float incy=0.02f;
    switch ( key )
-    { case GLUT_KEY_LEFT:  _mark.x-=incx; break;
-      case GLUT_KEY_RIGHT: _mark.x+=incx; break;
-      case GLUT_KEY_UP:    _mark.y+=incy; break;
-      case GLUT_KEY_DOWN:  _mark.y-=incy; break;
+    { case GLUT_KEY_LEFT:  
+		_mark.x-=incx; 
+		ddx -= 0.001;
+		break;
+      case GLUT_KEY_RIGHT: 
+		  _mark.x+=incx;
+		  ddx += 0.001;
+		  break;
+      case GLUT_KEY_UP:    
+		  _mark.y+=incy; 
+		  ddx = 0.001;
+		  break;
+      case GLUT_KEY_DOWN:  
+		  _mark.y-=incy; 
+		  ddx = 0.0;
+		  break;
       default: rd=false; // no redraw
 	}
 
@@ -138,6 +169,7 @@ void AppWindow::buildObjects()
 	{
 		_linecoords.clear(); _linecolors.clear();
 		// Encode our lines in buffers according to _mark position, _markc color and size s:
+		/*
 		const float s = 0.05f;
 		_linecoords.push_back(GsVec(_mark.x - s, _mark.y, 0)); _linecolors.push_back(_markc);
 		_linecoords.push_back(GsVec(_mark.x + s, _mark.y, 0)); _linecolors.push_back(_markc);
@@ -149,6 +181,7 @@ void AppWindow::buildObjects()
 		glBindBuffer(GL_ARRAY_BUFFER, _lines.buf[1]);
 		glBufferData(GL_ARRAY_BUFFER, _linecolors.size() * 4 * sizeof(gsbyte), &_linecolors[0], GL_STATIC_DRAW);
 		// mark that data does not need more changes:
+		*/
 		_lines.changed = false;
 	}
 
@@ -174,11 +207,14 @@ void AppWindow::buildObjects()
 	}
 
 	// Define some triangles:
-	if (_tris.changed) // needs update
+	if (true) // needs update
 	{
 		// x1 = -0.30, x2 = -0.15, x3 = 0.0, y1 = 0.65, y2 = 0.35, y3 = 0.05
 		// dx = 0.05, dy = 0.05
 		_tricoords.clear(); _tricolors.clear();
+		_linecoords.clear(); _linecolors.clear();
+		_ptcoords.clear(); _ptcolors.clear();
+
 		// Creating a sheet of paperwhite with  color
 		this->drawPaper(0.75, -0.75, 0.70, 0.0, 0.005, 0.005, GsColor::white);
 		// Drawing letter H
@@ -188,8 +224,14 @@ void AppWindow::buildObjects()
 		// Drawing letter N
 		this->drawLetterN(0.35, 0.05, 0.65, 0.05, 0.005, 0.005, GsColor::red);
 		// Drawing letter G
-		this->drawLetterG(0.55, 0.35, 0.125, M_PI/1024, 0.005, 0.05, 0.30, GsColor::red);
+		this->drawLetterG(0.55, 0.35, 0.125, M_PI/1024, 0.005, 0.005, 0.005, GsColor::red);
 
+		// Creating a triangle using lines
+		drawLines(lx, ly + ldy, lx + ldx, ly - ldy, GsColor::blue);
+		drawLines(lx, ly + ldy, lx - ldx, ly - ldy, GsColor::red);
+		drawLines(lx + ldx, ly - ldy, lx - ldx, ly - ldy, GsColor::green);
+		drawPoints(lx, ly, GsColor::yellow);
+		// Create a point at the center of the triangle
 		// send data to OpenGL buffers:
 		glBindBuffer(GL_ARRAY_BUFFER, _tris.buf[0]);
 		glBufferData(GL_ARRAY_BUFFER, _tricoords.size() * 3 * sizeof(float), &_tricoords[0], GL_STATIC_DRAW);
@@ -199,7 +241,21 @@ void AppWindow::buildObjects()
 		_tris.changed = false;
 	}
  }
-
+void AppWindow::glutIdle() {
+	if (lx > 0.75 || lx < -0.75) {
+		ddx = -ddx;
+	}
+	lx += ddx;
+	glutPostRedisplay();
+	//this->buildObjects();
+}
+void AppWindow::drawPoints(double x, double y, GsColor col) {
+	_ptcoords.push_back(GsVec(x, y, 0.0)); _ptcolors.push_back(col);
+	glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[0]);
+	glBufferData(GL_ARRAY_BUFFER, _ptcoords.size() * 3 * sizeof(float), &_ptcoords[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, _pts.buf[1]);
+	glBufferData(GL_ARRAY_BUFFER, _ptcolors.size() * 4 * sizeof(gsbyte), &_ptcolors[0], GL_STATIC_DRAW);
+}
 void AppWindow::drawPaper(double x1, double x2, double y1, double y2, double dx, double dy, GsColor col) {
 	// Coordinates and changes in x and y
 	//double x1 = 0.65, x2 = -0.65, y1 = 0.70, y2 = 0;
@@ -326,26 +382,47 @@ void AppWindow::drawLetterN(double x1, double x2, double y1, double y2, double d
 
 void AppWindow::drawLetterG(double x1, double y1, double r, double dQ, double dR, double dx, double dy, GsColor col) {
 	// x1
+	// Drawing horizontal Line
+	_tricoords.push_back(GsVec(x1 - 10 * dx, y1 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 - 10 * dx, y1 - dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + 10 * dx, y1 - dy, 0.0)); _tricolors.push_back(col);
+
+	_tricoords.push_back(GsVec(x1 + 10 * dx, y1 - dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + 10 * dx, y1 + dy, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 - 10 * dx, y1 + dy, 0.0)); _tricolors.push_back(col);
+
 	// Drawing smaller black circle
-	for (double q = M_PI / 2; q <= 2 * M_PI; q += dQ) {
+	for (double q = M_PI / 2; q <= M_PI * 3 / 2; q += dQ) {
 		_tricoords.push_back(GsVec(x1, y1, 0.0)); _tricolors.push_back(GsColor::black);
 		_tricoords.push_back(GsVec(x1 + (r - dR) * cos(q), y1 + 2.25 * (r - dR) * sin(q), 0.0)); _tricolors.push_back(GsColor::black);
 		_tricoords.push_back(GsVec(x1 + (r - dR) * cos(q + dQ), y1 + 2 * (r - dR) * sin(q + dQ), 0.0)); _tricolors.push_back(GsColor::black);
 	}
 	// Covering bigger red circle 
-	for (double q = M_PI/2; q < 2 * M_PI; q+=dQ) {
+	for (double q = M_PI/2; q < M_PI * 3 / 2; q+=dQ) {
 		_tricoords.push_back(GsVec(x1, y1, 0.0)); _tricolors.push_back(col);
 		_tricoords.push_back(GsVec(x1 + r * cos(q), y1 + 2.25 * r * sin(q), 0.0)); _tricolors.push_back(col);
 		_tricoords.push_back(GsVec(x1 + r * cos(q + dQ), y1 + 2 * r * sin(q + dQ), 0.0)); _tricolors.push_back(col);
 	}
 
-	// Creating horizontal Line
+	// Drawing vertical Line
+	_tricoords.push_back(GsVec(x1 - dx, y1 - 2 * r, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y1 - 2 * r, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 + dx, y1, 0.0)); _tricolors.push_back(col);
 
-
-
+	_tricoords.push_back(GsVec(x1 + dx, y1, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 - dx, y1 - 2 * r, 0.0)); _tricolors.push_back(col);
+	_tricoords.push_back(GsVec(x1 - dx, y1, 0.0)); _tricolors.push_back(col);
 
 }
 
+void AppWindow::drawLines(double x1, double y1, double x2, double y2, GsColor col) {
+	_linecoords.push_back(GsVec(x1, y1, 0.0)); _linecolors.push_back(col);
+	_linecoords.push_back(GsVec(x2, y2, 0.0)); _linecolors.push_back(col);
+	glBindBuffer(GL_ARRAY_BUFFER, _lines.buf[0]);
+	glBufferData(GL_ARRAY_BUFFER, _linecoords.size() * 3 * sizeof(float), &_linecoords[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, _lines.buf[1]);
+	glBufferData(GL_ARRAY_BUFFER, _linecolors.size() * 4 * sizeof(gsbyte), &_linecolors[0], GL_STATIC_DRAW);
+}
 void AppWindow::glutDisplay ()
  {
    // Clear the rendering window
