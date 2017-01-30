@@ -1,0 +1,14 @@
+﻿  app_main.cpp
+  so_axis.cpp
+  app_window.cpp
+  glut_window.cpp
+  gs.cpp
+  gs_color.cpp
+  gs_mat.cpp
+  gs_quat.cpp
+  gs_vec.cpp
+  gs_vec2.cpp
+  ogl_tools.cpp
+  Generating Code...
+  glutapp3d.vcxproj -> C:\Users\Vihn\Documents\GitHub\GraphicsPA\Graphics Programming Assignment\2\glutapp3d\visualc14\obj\glutapp3d_Debug\glutapp3d.exe
+          1 file(s) copied.
