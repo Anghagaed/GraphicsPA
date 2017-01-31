@@ -13,11 +13,11 @@
 # include "ogl_tools.h"
 # include <math.h>
 
-class SoCapsule {
+class SoCapsule : public GlObjects {
 private:
-	//std::vector<GsVec>   P; // coordinates
-	//std::vector<GsColor> C; // colors
-	//int _numpoints;         // saves the number of points
+	std::vector<GsVec>   P; // coordinates
+	std::vector<GsColor> C; // colors
+	int _numpoints;         // saves the number of points
 	int _numfaces;			// saves the number of faces
 	double x;				// Midpoint
 	double y;				// Midpoint
@@ -34,7 +34,7 @@ public:
 	// rb		= radius of the bottom semi-sphere
 	// nfaces	= number of faces approximating the curved faces 
 	void build(float len, float rt, float rb, int nfaces);
-	void draw();
+	void draw(GsMat& tr, GsMat& pr);
 
 	void drawTop();
 	void drawMiddle();

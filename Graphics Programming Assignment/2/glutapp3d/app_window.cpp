@@ -94,7 +94,9 @@ void AppWindow::glutDisplay ()
 
    // Build a cross with some lines (if not built yet):
    if ( _axis.changed ) // needs update
-    { _axis.build(1.0f); // axis has radius 1.0
+    {	
+		_axis.build(1.0f); // axis has radius 1.0
+		_capsule.build(0.5, 0.25, 0.25, 7);
     }
 
    // Define our scene transformation:
@@ -122,8 +124,13 @@ void AppWindow::glutDisplay ()
    //  format, what will cause the values to be transposed, and we will then have in our 
    //  shaders vectors on the left side of a multiplication to a matrix.
 
+   // Draw Lines
+	
    // Draw:
-   if ( _viewaxis ) _axis.draw ( stransf, sproj );
+   if (_viewaxis) {
+	   _axis.draw(stransf, sproj);
+	   //_capsule.draw(stransf, sproj);
+   }
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
