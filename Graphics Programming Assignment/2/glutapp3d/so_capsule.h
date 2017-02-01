@@ -28,7 +28,7 @@ private:
 
 public:
 	SoCapsule();
-	void init();
+	void init(const GlProgram& prog);
 	// len		= length of the "tube section" of the capsule along the vertical Y axis
 	// rt		= radius of the top semi-sphere
 	// rb		= radius of the bottom semi-sphere

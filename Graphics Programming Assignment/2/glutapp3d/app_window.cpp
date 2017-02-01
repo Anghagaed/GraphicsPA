@@ -25,6 +25,7 @@ void AppWindow::initPrograms ()
 
    // Init my scene objects:
    _axis.init ( _prog );
+   _capsule.init(_prog);
  }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -96,9 +97,9 @@ void AppWindow::glutDisplay ()
    if ( _axis.changed ) // needs update
     {	
 		_axis.build(1.0f); // axis has radius 1.0
-		_capsule.build(0.5, 0.25, 0.25, 7);
+		
     }
-
+	_capsule.build(0.5, 0.25, 0.25, 7);
    // Define our scene transformation:
    GsMat rx, ry, stransf;
    rx.rotx ( _rotx );
@@ -129,9 +130,9 @@ void AppWindow::glutDisplay ()
    // Draw:
    if (_viewaxis) {
 	   _axis.draw(stransf, sproj);
-	   //_capsule.draw(stransf, sproj);
+	  
    }
-
+	_capsule.draw(stransf, sproj);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
