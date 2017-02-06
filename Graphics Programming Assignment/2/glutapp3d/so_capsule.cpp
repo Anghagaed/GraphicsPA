@@ -1,10 +1,9 @@
 # include "so_capsule.h"
-
+# include <iostream>
 SoCapsule::SoCapsule() {
 }
 
 void SoCapsule::init(const GlProgram& prog) {
-
 	set_program(prog);
 	gen_vertex_arrays(1); // will use 1 vertex array
 	gen_buffers(2);       // will use 2 buffers: one for coordinates and one for colors
@@ -24,36 +23,26 @@ void SoCapsule::init(const GlProgram& prog) {
 }
 
 void SoCapsule::build(float len, float rt, float rb, int nfaces) {
-	this->len = len;
-	this->rt = rt;
-	this->rb = rb;
-	this->_numfaces = nfaces;
+	this->len = len;	 this->rt = rt;
+	this->rb = rb;		this->_numfaces = nfaces;
 
-	P.clear(); C.clear(); 
+	P.clear(); C.clear(); dy.clear(); dxz.clear();
 	
 	this->drawTop();
-	//this->drawMiddle();
-	//this->drawBottom();
-	//double Q = 0; double dQ = 2 * M_PI / _numfaces;
-	//P.push_back(GsVec(x, y, z + (len / 2)));	C.push_back(GsColor::white);
-	//P.push_back(GsVec(x + rt * cos(Q), y + rt * sin(Q), z + (len / 2)));	C.push_back(GsColor::white);
-	//P.push_back(GsVec(x + rt * cos(Q + dQ), y + rt * sin(Q + dQ), z + (len / 2)));	C.push_back(GsColor::white);
-
-	//P.push_back(GsVec(0.0, 0.5, 0.0)); C.push_back(GsColor::white);
-	//P.push_back(GsVec(0.0, 0.0, 0.0)); C.push_back(GsColor::white);
-	//P.push_back(GsVec(0.5, 0.5, 0.0)); C.push_back(GsColor::white);
+	this->drawMiddle();
+	this->drawBottom();
 
 	// send data to OpenGL buffers:
 	glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
 	glBufferData(GL_ARRAY_BUFFER, P.size() * 3 * sizeof(float), &P[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
 	glBufferData(GL_ARRAY_BUFFER, C.size() * 4 * sizeof(gsbyte), &C[0], GL_STATIC_DRAW);
-
+	
 	// save size so that we can free our buffers and later just draw the OpenGL arrays:
 	_numpoints = P.size();
 
 	// free non-needed memory:
-	P.resize(0); C.resize(0);
+	P.resize(0); C.resize(0); dxz.resize(0); dy.resize(0);
 }
 
 void SoCapsule::draw(GsMat& tr, GsMat& pr) {
@@ -77,18 +66,21 @@ void SoCapsule::draw(GsMat& tr, GsMat& pr) {
 }
 
 void SoCapsule::drawTop() {
-	int layers = ceil(4 * rt / _numfaces);
+	int layers = _numfaces / 4;
 	double dQ = 2 * M_PI / _numfaces;
-
-	for (double Q = 0; Q < 2 * M_PI; Q += dQ) {
-		P.push_back(GsVec(x, y, z + (len / 2)));
-		P.push_back(GsVec(x + rt * cos(Q), y + rt * sin(Q), z + (len / 2)));
-		P.push_back(GsVec(x + rt * cos(Q + dQ), y + rt * sin(Q + dQ), z + (len / 2)));
-		C.push_back(GsColor::white);
-		C.push_back(GsColor::white);
-		C.push_back(GsColor::white);
+	for (double i = 0; i <= 2 * M_PI; i += dQ) {
+		dxz.push_back(i);
 	}
-
+	dQ = (M_PI / 2) / layers;
+	for (double i = 0; i <= M_PI / 2; i += dQ) {
+		dy.push_back(i);
+	}
+	double q = 0;
+	for (int i = 0; i < dxz.size(); ++i) {
+		P.push_back(GsVec(x + rt * cos(dxz[i]), y + len/2, z + rt * sin(dxz[i]))); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * cos(dxz[i+1]), y + len / 2, z + rt * sin(dxz[i+1]))); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * cos(dy[1]) *cos(dxz[i + 1]), y + len / 2 + rt * sin(dy[1]), z + rt * cos(dy[1]) * sin(dxz[i + 1]))); C.push_back(GsColor::white);
+	}
 }
 
 void SoCapsule::drawMiddle() {

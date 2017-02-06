@@ -99,7 +99,7 @@ void AppWindow::glutDisplay ()
 		_axis.build(1.0f); // axis has radius 1.0
 		
     }
-	_capsule.build(0.5, 0.25, 0.25, 7);
+	_capsule.build(0.5, 0.45, 0.45, 20);
    // Define our scene transformation:
    GsMat rx, ry, stransf;
    rx.rotx ( _rotx );
