@@ -25,8 +25,9 @@ private:
 	float len;				
 	float rt;				 
 	float rb;
-	std::vector<double> dxz;	// Circle
-	std::vector<double> dy;		// Layers
+	std::vector<double> dx;		// Circle: cos
+	std::vector<double> dy;		// Layers: sin
+	std::vector<double> dz;		// Circle: sin
 
 public:
 	SoCapsule();

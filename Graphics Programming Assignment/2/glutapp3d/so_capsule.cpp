@@ -26,7 +26,7 @@ void SoCapsule::build(float len, float rt, float rb, int nfaces) {
 	this->len = len;	 this->rt = rt;
 	this->rb = rb;		this->_numfaces = nfaces;
 
-	P.clear(); C.clear(); dy.clear(); dxz.clear();
+	P.clear(); C.clear(); dy.clear(); dx.clear(); dz.clear();
 	
 	this->drawTop();
 	this->drawMiddle();
@@ -42,7 +42,7 @@ void SoCapsule::build(float len, float rt, float rb, int nfaces) {
 	_numpoints = P.size();
 
 	// free non-needed memory:
-	P.resize(0); C.resize(0); dxz.resize(0); dy.resize(0);
+	P.resize(0); C.resize(0); dx.resize(0); dy.resize(0); dz.resize(0);
 }
 
 void SoCapsule::draw(GsMat& tr, GsMat& pr) {
@@ -69,18 +69,23 @@ void SoCapsule::drawTop() {
 	int layers = _numfaces / 4;
 	double dQ = 2 * M_PI / _numfaces;
 	for (double i = 0; i <= 2 * M_PI; i += dQ) {
-		dxz.push_back(i);
+		dx.push_back(cos(i));
+		dz.push_back(sin(i));
 	}
 	dQ = (M_PI / 2) / layers;
 	for (double i = 0; i <= M_PI / 2; i += dQ) {
 		dy.push_back(i);
 	}
-	double q = 0;
-	for (int i = 0; i < dxz.size(); ++i) {
-		P.push_back(GsVec(x + rt * cos(dxz[i]), y + len/2, z + rt * sin(dxz[i]))); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * cos(dxz[i+1]), y + len / 2, z + rt * sin(dxz[i+1]))); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * cos(dy[1]) *cos(dxz[i + 1]), y + len / 2 + rt * sin(dy[1]), z + rt * cos(dy[1]) * sin(dxz[i + 1]))); C.push_back(GsColor::white);
+	for (int i = 0; i < dx.size() - 1; ++i) {
+		P.push_back(GsVec(x + rt * dx[i], y + len/2, z + rt * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * dx[i + 1], y + len/2, z + rt * dz[i + 1])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i + 1], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i + 1])); C.push_back(GsColor::white);
+
+		P.push_back(GsVec(x + rt * dx[i], y + len / 2, z + rt * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i + 1], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i + 1])); C.push_back(GsColor::white);
 	}
+
 }
 
 void SoCapsule::drawMiddle() {
