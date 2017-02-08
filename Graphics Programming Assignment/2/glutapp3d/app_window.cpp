@@ -45,8 +45,39 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
    switch ( key )
-    { case ' ': _viewaxis = !_viewaxis; redraw(); break;
-	  case 27 : exit(1); // Esc was pressed
+    { 
+		case ' ' : _viewaxis = !_viewaxis; redraw(); break;
+		case 'q': 
+			_changeCapsule = !_changeCapsule;
+			_numfaces += 1;
+			redraw();
+			break;
+		case 'a' :
+			_changeCapsule = !_changeCapsule;
+			_numfaces -= 1;
+			redraw();
+			break;
+		case 'w' :
+			_changeCapsule = !_changeCapsule;
+			rt += 0.01;
+			redraw();
+			break;
+		case 's' :
+			_changeCapsule = !_changeCapsule;
+			rt -= 0.01;
+			redraw();
+			break;
+		case 'e' :
+			_changeCapsule = !_changeCapsule;
+			rb += 0.01;
+			redraw();
+			break;
+		case 'd' :
+			_changeCapsule = !_changeCapsule;
+			rb -= 0.01;
+			redraw();
+			break;
+		case 27 : exit(1); // Esc was pressed
 	}
  }
 

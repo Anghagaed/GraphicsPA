@@ -22,7 +22,7 @@ class AppWindow : public GlutWindow
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;
-    bool  _viewaxis;
+    bool  _viewaxis, _changeCapsule;
     int _w, _h;
 
 	// capsule stuff

@@ -28,6 +28,7 @@ void SoCapsule::build(float len, float rt, float rb, int nfaces) {
 
 	P.clear(); C.clear(); dy.clear(); dx.clear(); dz.clear();
 	
+	this->calculateParameters();
 	this->drawTop();
 	this->drawMiddle();
 	this->drawBottom();
@@ -79,7 +80,6 @@ void SoCapsule::calculateParameters() {
 }
 
 void SoCapsule::drawTop() {
-	calculateParameters();
 	for (int j = 0; j < dy.size() - 1; ++j) {
 		for (int i = 0; i < dx.size() - 1; ++i) {
 			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i], y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
