@@ -25,6 +25,12 @@ class AppWindow : public GlutWindow
     bool  _viewaxis;
     int _w, _h;
 
+	// capsule stuff
+	float len;
+	float rt;
+	float rb;
+	int _numfaces;
+
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();

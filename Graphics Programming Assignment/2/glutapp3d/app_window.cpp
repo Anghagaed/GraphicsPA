@@ -14,6 +14,10 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _rotx = _roty = 0;
    _w = w;
    _h = h;
+   len = 0.30;
+   rt = 0.30;
+   rb = 0.15;
+   _numfaces = 16;
  }
 
 void AppWindow::initPrograms ()
@@ -59,6 +63,7 @@ void AppWindow::glutSpecial ( int key, int x, int y )
       case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
       case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
       case GLUT_KEY_HOME:      _fovy=GS_TORAD(60.0f); _rotx=_roty=0; break;
+	  case 'Q':					len += 0.10; break;
       default: return; // return without rendering
 	}
    if (rd) redraw(); // ask the window to be rendered when possible
@@ -99,7 +104,7 @@ void AppWindow::glutDisplay ()
 		_axis.build(1.0f); // axis has radius 1.0
 		
     }
-	_capsule.build(0.5, 0.45, 0.45, 20);
+   _capsule.build(len, rt, rb, _numfaces);
    // Define our scene transformation:
    GsMat rx, ry, stransf;
    rx.rotx ( _rotx );

@@ -65,10 +65,10 @@ void SoCapsule::draw(GsMat& tr, GsMat& pr) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void SoCapsule::drawTop() {
+void SoCapsule::calculateParameters() {
 	int layers = _numfaces / 4;
 	double dQ = 2 * M_PI / _numfaces;
-	for (double i = 0; i <= 2 * M_PI; i += dQ) {
+	for (double i = 0; i <= (2 * M_PI + dQ); i += dQ) {
 		dx.push_back(cos(i));
 		dz.push_back(sin(i));
 	}
@@ -76,22 +76,45 @@ void SoCapsule::drawTop() {
 	for (double i = 0; i <= M_PI / 2; i += dQ) {
 		dy.push_back(i);
 	}
-	for (int i = 0; i < dx.size() - 1; ++i) {
-		P.push_back(GsVec(x + rt * dx[i], y + len/2, z + rt * dz[i])); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * dx[i + 1], y + len/2, z + rt * dz[i + 1])); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i + 1], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i + 1])); C.push_back(GsColor::white);
+}
 
-		P.push_back(GsVec(x + rt * dx[i], y + len / 2, z + rt * dz[i])); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i])); C.push_back(GsColor::white);
-		P.push_back(GsVec(x + rt * cos(dy[1]) * dx[i + 1], y + len / 2 + sin(dy[1]), z + rt * cos(dy[1]) * dz[i + 1])); C.push_back(GsColor::white);
+void SoCapsule::drawTop() {
+	calculateParameters();
+	for (int j = 0; j < dy.size() - 1; ++j) {
+		for (int i = 0; i < dx.size() - 1; ++i) {
+			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i], y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i + 1], y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i + 1])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rt * cos(dy[j+1]) * dx[i + 1], y + len / 2 + rt * sin(dy[j + 1]), z + rt * cos(dy[j + 1]) * dz[i + 1])); C.push_back(GsColor::white);
+
+			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i] , y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rt * cos(dy[j+1]) * dx[i] , y + len / 2 + rt * sin(dy[j+1]), z + rt * cos(dy[j+1]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rt * cos(dy[j+1]) * dx[i + 1] , y + len / 2 + rt * sin(dy[j+1]), z + rt * cos(dy[j+1]) * dz[i + 1])); C.push_back(GsColor::white);
+		}
 	}
-
 }
 
 void SoCapsule::drawMiddle() {
+	for (int i = 0; i < dx.size() - 1; ++i) {
+		P.push_back(GsVec(x + rt * dx[i], y + len / 2, z + rt * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rt * dx[i+1], y + len / 2, z + rt * dz[i+1])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rb * dx[i + 1], -( y + len / 2 ), z + rb * dz[i + 1])); C.push_back(GsColor::white);
 
+		P.push_back(GsVec(x + rt * dx[i], y + len / 2, z + rt * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rb * dx[i], -(y + len / 2), z + rb * dz[i])); C.push_back(GsColor::white);
+		P.push_back(GsVec(x + rb * dx[i + 1], -(y + len / 2), z + rb * dz[i + 1])); C.push_back(GsColor::white);
+	}
 }
 
 void SoCapsule::drawBottom() {
+	for (int j = 0; j < dy.size() - 1; ++j) {
+		for (int i = 0; i < dx.size() - 1; ++i) {
+			P.push_back(GsVec(x + rb * cos(dy[j]) * dx[i], -( y + len / 2 + rb * sin(dy[j])), z + rb * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rb * cos(dy[j]) * dx[i + 1], -(y + len / 2 + rb * sin(dy[j])), z + rb * cos(dy[j]) * dz[i + 1])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rb * cos(dy[j + 1]) * dx[i + 1], -(y + len / 2 + rb * sin(dy[j + 1])), z + rb * cos(dy[j + 1]) * dz[i + 1])); C.push_back(GsColor::white);
 
+			P.push_back(GsVec(x + rb * cos(dy[j]) * dx[i], -(y + len / 2 + rb * sin(dy[j])), z + rb * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rb * cos(dy[j + 1]) * dx[i], -(y + len / 2 + rb * sin(dy[j + 1])), z + rb * cos(dy[j + 1]) * dz[i])); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + rb * cos(dy[j + 1]) * dx[i + 1], -(y + len / 2 + rb * sin(dy[j + 1])), z + rb * cos(dy[j + 1]) * dz[i + 1])); C.push_back(GsColor::white);
+		}
+	}
 }

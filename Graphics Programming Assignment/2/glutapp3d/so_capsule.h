@@ -42,6 +42,7 @@ public:
 	void drawTop();
 	void drawMiddle();
 	void drawBottom();
+	void calculateParameters();
 };
 
 # endif // SO_CAPSULE_H
