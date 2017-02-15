@@ -165,7 +165,8 @@ void AppWindow::glutDisplay ()
    }
   // _watch.drawLightSource(lx, ly, lz);
    _watch.draw(stransf, sproj);
-   _watch.draw(shadow * stransf, sproj);
+   //_watch.draw(shadow * stransf, sproj);
+   _watch.draw(stransf*shadow, sproj);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
