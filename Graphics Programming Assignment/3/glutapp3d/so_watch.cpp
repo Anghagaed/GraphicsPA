@@ -1,6 +1,7 @@
 #include "so_watch.h"
 
 SoWatch::SoWatch() {
+	this->createParameters();
 }
 
 void SoWatch::init(const GlProgram& prog)
@@ -17,11 +18,17 @@ void SoWatch::init(const GlProgram& prog)
 	y = 0.0;
 	z = 0.25;
 	r = 0.0;
-	mlen = 0.0;
-	slen = 0.0;
-	mq = 0.0;
-	sq = 0.0;
 	_numpoints = 0;
+}
+
+void SoWatch::createParameters() {
+	float q = PI / 2;
+	float dQ = -(2 * PI / 60);
+
+	while (q > -(3 * PI / 2) - dQ) {
+		angles.push_back(q);
+		q += dQ;
+	}
 }
 
 void SoWatch::buildCircle() {
@@ -36,45 +43,37 @@ void SoWatch::buildCircle() {
 }
 
 void SoWatch::buildTicky() {
-	int i = 0;
-	float q = PI / 2 ;
-	float dQ = 2 * PI / 60;
-
-	while (q < 5 * PI / 2) {
+	for (int i = 0; i < angles.size(); ++i) {
 		if (i % 5 == 0) {
-			P.push_back(GsVec(x + r * cos(q), y + r * sin(q), z)); C.push_back(GsColor::magenta);
-			P.push_back(GsVec(x + r * cos(q) * 0.85f, y + r * sin(q) * 0.85f, z)); C.push_back(GsColor::magenta);
+			P.push_back(GsVec(x + r * cos(angles[i]), y + r * sin(angles[i]), z)); C.push_back(GsColor::magenta);
+			P.push_back(GsVec(x + r * cos(angles[i]) * 0.85f, y + r * sin(angles[i]) * 0.85f, z)); C.push_back(GsColor::magenta);
 		}
 		else {
-			P.push_back(GsVec(x + r * cos(q), y + r * sin(q), z)); C.push_back(GsColor::white);
-			P.push_back(GsVec(x + r * cos(q) * 0.925f, y + r * sin(q) * 0.925f, z)); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + r * cos(angles[i]), y + r * sin(angles[i]), z)); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + r * cos(angles[i]) * 0.925f, y + r * sin(angles[i]) * 0.925f, z)); C.push_back(GsColor::white);
 		}
-		q += dQ;
-		++i;
 	}
 }
 
-void SoWatch::buildHand() {
-	q = PI / 2;
-	P.push_back(GsVec(x + r * cos(q) * 0.55f, y + r * sin(q) * 0.55f, z)); C.push_back(GsColor::cyan);
-	q = q + PI;
-	P.push_back(GsVec(x + r * cos(q) * 0.05f, y + r * sin(q) * 0.05f, z)); C.push_back(GsColor::cyan);
+void SoWatch::buildHand(int mqC, int sqC) {
+	
+	P.push_back(GsVec(x + r * cos(angles[sqC]) * 0.55f, y + r * sin(angles[sqC]) * 0.55f, z)); C.push_back(GsColor::cyan);
+	P.push_back(GsVec(x + r * cos(angles[sqC]) * 0.05f, y + r * sin(angles[sqC]) * 0.05f, z)); C.push_back(GsColor::cyan);
 
-	q = PI / 2;
-	P.push_back(GsVec(x + r * cos(q) * 0.75f, y + r * sin(q) * 0.75f, z)); C.push_back(GsColor::magenta);
-	q = q + PI;
-	P.push_back(GsVec(x + r * cos(q) * 0.15f, y + r * sin(q) * 0.15f, z)); C.push_back(GsColor::magenta);
+	P.push_back(GsVec(x + r * cos(angles[mqC]) * 0.75f, y + r * sin(angles[mqC]) * 0.75f, z)); C.push_back(GsColor::yellow);
+	P.push_back(GsVec(x + r * cos(angles[mqC]) * 0.15f, y + r * sin(angles[mqC]) * 0.15f, z)); C.push_back(GsColor::yellow);
+	
 }
 
-void SoWatch::build(float r, float mlen, float slen) {
-	this->r = r;	 this->mlen = mlen;		this->slen = slen;
+void SoWatch::build(float r, int mqC, int sqC) {
+	this->r = r;	
 
 	P.clear(); C.clear();
 
 	// Build the watch
 	this->buildCircle();
 	this->buildTicky();
-	this->buildHand();
+	this->buildHand(mqC, sqC);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
 	glBufferData(GL_ARRAY_BUFFER, P.size() * 3 * sizeof(float), &P[0], GL_STATIC_DRAW);
@@ -85,7 +84,7 @@ void SoWatch::build(float r, float mlen, float slen) {
 	_numpoints = P.size();
 
 	// free non-needed memory:
-	P.resize(0); C.resize(0);
+	P.resize(0); C.resize(0); 
 }
 
 void SoWatch::draw(GsMat& tr, GsMat& pr)
@@ -111,4 +110,16 @@ void SoWatch::draw(GsMat& tr, GsMat& pr)
 	glDrawArrays(GL_LINES, 0, _numpoints);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	*/
+}
+
+void SoWatch::drawLightSource(float lx, float ly, float lz) {
+	PP.clear(); CC.clear();
+
+	PP.push_back(GsVec(lx, ly, lz)); CC.push_back(GsColor::white);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
+	glBufferData(GL_ARRAY_BUFFER, PP.size() * 3 * sizeof(float), &PP[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
+	glBufferData(GL_ARRAY_BUFFER, CC.size() * 4 * sizeof(gsbyte), &CC[0], GL_STATIC_DRAW);
+	PP.resize(0); CC.resize(0);
 }

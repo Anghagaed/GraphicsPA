@@ -10,6 +10,14 @@
 # include "so_axis.h"
 # include "so_watch.h"
 
+
+#ifdef WIN32
+#include <sys/types.h>
+#include <sys/timeb.h>
+#else
+#include <sys/time.h>
+#endif
+
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
  { private :
@@ -24,7 +32,11 @@ class AppWindow : public GlutWindow
     float _rotx, _roty, _fovy;
     bool  _viewaxis;
     int _w, _h;
+	int mPos, sPos;
+	bool state;
 
+	// Light Source
+	float lx, ly, lz;
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
@@ -38,6 +50,7 @@ class AppWindow : public GlutWindow
     virtual void glutMotion ( int x, int y );
     virtual void glutDisplay ();
     virtual void glutReshape ( int w, int h );
+	virtual void glutIdle();
  };
 
 #endif // APP_WINDOW_H

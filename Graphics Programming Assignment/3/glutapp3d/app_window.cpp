@@ -14,6 +14,13 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _rotx = _roty = 0;
    _w = w;
    _h = h;
+   mPos = 0;
+   sPos = 0;
+   state = true;
+
+   lx = 0.5f;
+   ly = 0.5f;
+   lz = 0.5f;
  }
 
 void AppWindow::initPrograms ()
@@ -41,8 +48,17 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
    switch ( key )
-    { case ' ': _viewaxis = !_viewaxis; redraw(); break;
-	  case 27 : exit(1); // Esc was pressed
+   {
+		case ' ': state = !state; redraw(); break;
+		case 27: exit(1); break; // Esc was pressed
+		case 13: mPos = 0; sPos = 0; redraw(); break;
+		case 'q': lx += 0.1; redraw(); break;
+		case 'a': lx -= 0.1; redraw(); break;
+		case 'w': ly += 0.1; redraw(); break;
+		case 's': ly -= 0.1; redraw(); break;
+		case 'e': lz += 0.1; redraw(); break;
+		case 'd': lz -= 0.1; redraw(); break;
+
 	}
  }
 
@@ -99,7 +115,7 @@ void AppWindow::glutDisplay ()
     }
 
    if (_watch.changed) {
-	_watch.build(0.5f, 0.35f, 0.175f);
+	_watch.build(0.5f, mPos, sPos);
    }
    // Define our scene transformation:
    GsMat rx, ry, stransf;
@@ -110,8 +126,24 @@ void AppWindow::glutDisplay ()
    // Define our projection transformation:
    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
    GsMat camview, persp, sproj;
-
+   // Define light source as 1, 1, 1
+   GsMat shadow;
+   float r = -0.5;
+   //float lx, ly, lz;
+   //lx = 1.0f; ly = 0.5f; lz = -0.5f;
+   /*
+   shadow.setl1(1.0f, 0.0f, 0.0f, 0.0f);
+   shadow.setl2(0.0f, 1.0f, 0.0f, 0.25f);
+   shadow.setl3(0.0f, 0.0f, 1.0f, 0.0f);
+   shadow.setl4(0.0f, -1.0f, 0.0f, 0.0f);
+   */
+   shadow.setl1(1.0f, -(lx/ly), 0.0f, r*(lx/ly));
+   shadow.setl2(0.0f, 0.0f, 0.0f, r);
+   shadow.setl3(0.0f, -(lz/ly), 1.0f, r*(lz/ly));
+   shadow.setl4(0.0f, 0.0f, 0.0f, 1.0f);
+   
    GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
+
    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
    float aspect=1.0f, znear=0.1f, zfar=50.0f;
@@ -131,9 +163,29 @@ void AppWindow::glutDisplay ()
 	   _axis.draw(stransf, sproj);
 	   //_watch.draw(stransf, sproj);
    }
+  // _watch.drawLightSource(lx, ly, lz);
    _watch.draw(stransf, sproj);
+   _watch.draw(shadow * stransf, sproj);
+
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
 }
 
+void AppWindow::glutIdle() {
+	if (state) {
+		int glutTime = glutGet(GLUT_ELAPSED_TIME);
+		if (glutTime % 1000 == 0) {
+			if (mPos == 59 && sPos == 59)
+				mPos = 0;
+			else if (sPos == 59)
+				++mPos;
+			if (sPos == 59)
+				sPos = 0;
+			else
+				++sPos;
+			std::cout << sPos << std::endl;
+			glutPostRedisplay();
+		}
+	}
+}

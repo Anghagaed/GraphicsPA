@@ -13,49 +13,32 @@
 # include <gsim/gs_vec.h>
 # include "ogl_tools.h"
 # include <math.h>
+# include <iostream>
 
 class SoWatch : public GlObjects {
 private:
 	std::vector<GsVec>   P; // coordinates for Lines
+	std::vector<GsVec>   PP; // coordinates for Points
 	//std::vector<GsVec>   T;	// coordinates for Triangles
 	std::vector<GsColor> C; // colors
+	std::vector<GsColor> CC; // colors
 	int _numpoints;         // saves the number of points
 	float x, y, z;			// Circular center point of the stopwatch
 	float r;				// Radius from center point -> edge of stopwatch
-	float mlen, slen;		// Length of the minute and second hand from center
-	float mq, sq;			// Angle of the minute and second hand
+	std::vector<float> angles;	// 60 Angle goes from 0 to 2 PI
 
 	void buildCircle();
 	void buildTicky();
-	void buildHand();
+	void buildHand(int mqC, int sqC);
+	void createParameters();
 public:
 	SoWatch();
 	void init(const GlProgram& prog);
-	void build(float r, float mlen, float slen);
+	void build(float r, int mqC, int sqC);
 
 	void draw(GsMat& tr, GsMat& pr);
 
-	
+	void drawLightSource(float lx, float ly, float lz);
 };
 
 #endif // SO_WATCH_H
-
-#ifdef WIN32
-#include <sys/types.h>
-#include <sys/timeb.h>
-#else
-#include <sys/time.h>
-#endif
-double get_time()
-{
-	#ifdef WIN32
-		// if better precision is needed in Windows, use QueryPerformanceCounter
-		_timeb tp;
-		_ftime_s(&tp);
-		return 0.001*(double)tp.millitm + (double)tp.time;
-	#else
-		timeval tp;
-		if (gettimeofday(&tp, 0) == -1) return 0;
-		return 0.000001*(double)tp.tv_usec + (double)tp.tv_sec;
-	#endif
-}
