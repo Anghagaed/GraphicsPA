@@ -34,6 +34,9 @@ class AppWindow : public GlutWindow
     int _w, _h;
 	int mPos, sPos;
 	bool state;
+	bool drawIt;
+	float startTime;
+	float callTime;
 
 	// Light Source
 	float lx, ly, lz;

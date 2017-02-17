@@ -72,5 +72,6 @@ void SoAxis::draw ( GsMat& tr, GsMat& pr )
    glUniformMatrix4fv ( uniloc[1], 1, GL_FALSE, pr.e );
 
    glDrawArrays ( GL_LINES, 0, _numpoints );
+
  }
 

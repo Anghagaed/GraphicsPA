@@ -17,6 +17,8 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    mPos = 0;
    sPos = 0;
    state = true;
+   drawIt = true;
+   startTime = glutGet(GLUT_ELAPSED_TIME);
 
    lx = 0.5f;
    ly = 0.5f;
@@ -52,12 +54,13 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 		case ' ': state = !state; redraw(); break;
 		case 27: exit(1); break; // Esc was pressed
 		case 13: mPos = 0; sPos = 0; redraw(); break;
-		case 'q': lx += 0.1; redraw(); break;
-		case 'a': lx -= 0.1; redraw(); break;
-		case 'w': ly += 0.1; redraw(); break;
-		case 's': ly -= 0.1; redraw(); break;
-		case 'e': lz += 0.1; redraw(); break;
-		case 'd': lz -= 0.1; redraw(); break;
+		case 'q': lx += 0.05; redraw(); break;
+		case 'a': lx -= 0.05; redraw(); break;
+		case 'w': ly += 0.05; redraw(); break;
+		case 's': ly -= 0.05; redraw(); break;
+		case 'e': lz += 0.05; redraw(); break;
+		case 'd': lz -= 0.05; redraw(); break;
+		case '/': drawIt = !drawIt; redraw(); break;
 
 	}
  }
@@ -126,17 +129,11 @@ void AppWindow::glutDisplay ()
    // Define our projection transformation:
    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
    GsMat camview, persp, sproj;
-   // Define light source as 1, 1, 1
+   // Define light source l as (lx, ly, lz)
+   // Draw the light source
+
    GsMat shadow;
    float r = -0.5;
-   //float lx, ly, lz;
-   //lx = 1.0f; ly = 0.5f; lz = -0.5f;
-   /*
-   shadow.setl1(1.0f, 0.0f, 0.0f, 0.0f);
-   shadow.setl2(0.0f, 1.0f, 0.0f, 0.25f);
-   shadow.setl3(0.0f, 0.0f, 1.0f, 0.0f);
-   shadow.setl4(0.0f, -1.0f, 0.0f, 0.0f);
-   */
    shadow.setl1(1.0f, -(lx/ly), 0.0f, r*(lx/ly));
    shadow.setl2(0.0f, 0.0f, 0.0f, r);
    shadow.setl3(0.0f, -(lz/ly), 1.0f, r*(lz/ly));
@@ -166,7 +163,8 @@ void AppWindow::glutDisplay ()
   // _watch.drawLightSource(lx, ly, lz);
    _watch.draw(stransf, sproj);
    //_watch.draw(shadow * stransf, sproj);
-   _watch.draw(stransf*shadow, sproj);
+   if (drawIt)
+	_watch.draw(stransf*shadow, sproj);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
@@ -175,8 +173,9 @@ void AppWindow::glutDisplay ()
 
 void AppWindow::glutIdle() {
 	if (state) {
+		/*
 		int glutTime = glutGet(GLUT_ELAPSED_TIME);
-		if (glutTime % 1000 == 0) {
+		if (glutTime %  1000 == 0) {
 			if (mPos == 59 && sPos == 59)
 				mPos = 0;
 			else if (sPos == 59)
@@ -188,5 +187,9 @@ void AppWindow::glutIdle() {
 			std::cout << sPos << std::endl;
 			glutPostRedisplay();
 		}
+		*/
+		float toCheck = 1000 / 60;
+		callTime = 
 	}
 }
+
