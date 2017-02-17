@@ -35,6 +35,7 @@ void AppWindow::initPrograms ()
    // Init my scene objects:
    _axis.init ( _prog );
    _watch.init(_prog);
+   ls.init(_prog);
  }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -130,7 +131,7 @@ void AppWindow::glutDisplay ()
    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
    GsMat camview, persp, sproj;
    // Define light source l as (lx, ly, lz)
-   // Draw the light source
+   ls.build(lx, ly, lz);
 
    GsMat shadow;
    float r = -0.5;
@@ -165,7 +166,7 @@ void AppWindow::glutDisplay ()
    //_watch.draw(shadow * stransf, sproj);
    if (drawIt)
 	_watch.draw(stransf*shadow, sproj);
-
+   ls.draw(stransf, sproj);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
@@ -188,8 +189,21 @@ void AppWindow::glutIdle() {
 			glutPostRedisplay();
 		}
 		*/
-		float toCheck = 1000 / 60;
-		callTime = 
+		float toCheck = 1000 / 120;
+		callTime = glutGet(GLUT_ELAPSED_TIME);
+		if (callTime - startTime > toCheck) {
+			startTime = callTime;
+			if (mPos == 59 && sPos == 119)
+				mPos = 0;
+			else if (sPos == 119)
+				++mPos;
+			if (sPos == 119)
+				sPos = 0;
+			else
+				++sPos;
+			std::cout << sPos << std::endl;
+			glutPostRedisplay();
+		}
 	}
 }
 

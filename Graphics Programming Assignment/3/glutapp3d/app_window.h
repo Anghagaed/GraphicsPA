@@ -9,14 +9,7 @@
 # include "glut_window.h"
 # include "so_axis.h"
 # include "so_watch.h"
-
-
-#ifdef WIN32
-#include <sys/types.h>
-#include <sys/timeb.h>
-#else
-#include <sys/time.h>
-#endif
+# include "LightSource.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -27,6 +20,7 @@ class AppWindow : public GlutWindow
     // My scene objects:
     SoAxis _axis;
 	SoWatch _watch;
+	LightSource ls;
     // App data:
     enum MenuEv { evOption0, evOption1 };
     float _rotx, _roty, _fovy;

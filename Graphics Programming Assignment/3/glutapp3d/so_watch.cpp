@@ -26,7 +26,15 @@ void SoWatch::createParameters() {
 	float dQ = -(2 * PI / 60);
 
 	while (q > -(3 * PI / 2) - dQ) {
-		angles.push_back(q);
+		Mangles.push_back(q);
+		q += dQ;
+	}
+
+	q = PI / 2;
+	dQ /= 2;
+
+	while (q > -(3 * PI / 2) - dQ) {
+		Sangles.push_back(q);
 		q += dQ;
 	}
 }
@@ -43,25 +51,25 @@ void SoWatch::buildCircle() {
 }
 
 void SoWatch::buildTicky() {
-	for (int i = 0; i < angles.size(); ++i) {
+	for (int i = 0; i < Mangles.size(); ++i) {
 		if (i % 5 == 0) {
-			P.push_back(GsVec(x + r * cos(angles[i]), y + r * sin(angles[i]), z)); C.push_back(GsColor::magenta);
-			P.push_back(GsVec(x + r * cos(angles[i]) * 0.85f, y + r * sin(angles[i]) * 0.85f, z)); C.push_back(GsColor::magenta);
+			P.push_back(GsVec(x + r * cos(Mangles[i]), y + r * sin(Mangles[i]), z)); C.push_back(GsColor::magenta);
+			P.push_back(GsVec(x + r * cos(Mangles[i]) * 0.85f, y + r * sin(Mangles[i]) * 0.85f, z)); C.push_back(GsColor::magenta);
 		}
 		else {
-			P.push_back(GsVec(x + r * cos(angles[i]), y + r * sin(angles[i]), z)); C.push_back(GsColor::white);
-			P.push_back(GsVec(x + r * cos(angles[i]) * 0.925f, y + r * sin(angles[i]) * 0.925f, z)); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + r * cos(Mangles[i]), y + r * sin(Mangles[i]), z)); C.push_back(GsColor::white);
+			P.push_back(GsVec(x + r * cos(Mangles[i]) * 0.925f, y + r * sin(Mangles[i]) * 0.925f, z)); C.push_back(GsColor::white);
 		}
 	}
 }
 
 void SoWatch::buildHand(int mqC, int sqC) {
 	
-	P.push_back(GsVec(x + r * cos(angles[sqC]) * 0.55f, y + r * sin(angles[sqC]) * 0.55f, z)); C.push_back(GsColor::cyan);
-	P.push_back(GsVec(x + r * cos(angles[sqC]) * 0.05f, y + r * sin(angles[sqC]) * 0.05f, z)); C.push_back(GsColor::cyan);
+	P.push_back(GsVec(x + r * cos(Mangles[mqC]) * 0.55f, y + r * sin(Mangles[mqC]) * 0.55f, z)); C.push_back(GsColor::cyan);
+	P.push_back(GsVec(x + r * cos(Mangles[mqC]) * 0.05f, y + r * sin(Mangles[mqC]) * 0.05f, z)); C.push_back(GsColor::cyan);
 
-	P.push_back(GsVec(x + r * cos(angles[mqC]) * 0.75f, y + r * sin(angles[mqC]) * 0.75f, z)); C.push_back(GsColor::yellow);
-	P.push_back(GsVec(x + r * cos(angles[mqC]) * 0.15f, y + r * sin(angles[mqC]) * 0.15f, z)); C.push_back(GsColor::yellow);
+	P.push_back(GsVec(x + r * cos(Sangles[sqC]) * 0.75f, y + r * sin(Sangles[sqC]) * 0.75f, z)); C.push_back(GsColor::yellow);
+	P.push_back(GsVec(x + r * cos(Sangles[sqC]) * 0.15f, y + r * sin(Sangles[sqC]) * 0.15f, z)); C.push_back(GsColor::yellow);
 	
 }
 
@@ -112,14 +120,3 @@ void SoWatch::draw(GsMat& tr, GsMat& pr)
 	*/
 }
 
-void SoWatch::drawLightSource(float lx, float ly, float lz) {
-	PP.clear(); CC.clear();
-
-	PP.push_back(GsVec(lx, ly, lz)); CC.push_back(GsColor::white);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
-	glBufferData(GL_ARRAY_BUFFER, PP.size() * 3 * sizeof(float), &PP[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
-	glBufferData(GL_ARRAY_BUFFER, CC.size() * 4 * sizeof(gsbyte), &CC[0], GL_STATIC_DRAW);
-	PP.resize(0); CC.resize(0);
-}

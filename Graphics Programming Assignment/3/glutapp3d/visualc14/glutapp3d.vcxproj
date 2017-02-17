@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\app_main.cpp" />
+    <ClCompile Include="..\LightSource.cpp" />
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
     <ClCompile Include="..\glut_window.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\so_watch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\LightSource.h" />
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />
     <ClInclude Include="..\glut_window.h" />

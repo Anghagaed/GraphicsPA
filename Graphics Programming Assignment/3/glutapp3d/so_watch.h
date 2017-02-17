@@ -18,14 +18,15 @@
 class SoWatch : public GlObjects {
 private:
 	std::vector<GsVec>   P; // coordinates for Lines
-	std::vector<GsVec>   PP; // coordinates for Points
+	std::vector<GsVec>   PP; // coordinates for Lines
 	//std::vector<GsVec>   T;	// coordinates for Triangles
 	std::vector<GsColor> C; // colors
 	std::vector<GsColor> CC; // colors
 	int _numpoints;         // saves the number of points
 	float x, y, z;			// Circular center point of the stopwatch
 	float r;				// Radius from center point -> edge of stopwatch
-	std::vector<float> angles;	// 60 Angle goes from 0 to 2 PI
+	std::vector<float> Mangles;	// 60 Angle goes from 0 to 2 PI
+	std::vector<float> Sangles;	// 120 Angle goes from 0 to 2 PI
 
 	void buildCircle();
 	void buildTicky();
@@ -37,8 +38,6 @@ public:
 	void build(float r, int mqC, int sqC);
 
 	void draw(GsMat& tr, GsMat& pr);
-
-	void drawLightSource(float lx, float ly, float lz);
 };
 
 #endif // SO_WATCH_H
