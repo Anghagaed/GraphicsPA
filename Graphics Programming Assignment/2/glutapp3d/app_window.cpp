@@ -14,9 +14,9 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _rotx = _roty = 0;
    _w = w;
    _h = h;
-   len = 0.30;
+   len = 0.50;
    rt = 0.30;
-   rb = 0.15;
+   rb = 0.30;
    _numfaces = 16;
  }
 

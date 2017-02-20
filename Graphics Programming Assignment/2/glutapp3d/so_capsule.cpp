@@ -80,7 +80,8 @@ void SoCapsule::calculateParameters() {
 }
 
 void SoCapsule::drawTop() {
-	for (int j = 0; j < dy.size() - 1; ++j) {
+	int j = 0;
+	//for (int j = 0; j < dy.size() - 1; ++j) {
 		for (int i = 0; i < dx.size() - 1; ++i) {
 			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i], y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
 			P.push_back(GsVec(x + rt * cos(dy[j]) * dx[i + 1], y + len / 2 + rt * sin(dy[j]), z + rt * cos(dy[j]) * dz[i + 1])); C.push_back(GsColor::white);
@@ -90,7 +91,7 @@ void SoCapsule::drawTop() {
 			P.push_back(GsVec(x + rt * cos(dy[j+1]) * dx[i] , y + len / 2 + rt * sin(dy[j+1]), z + rt * cos(dy[j+1]) * dz[i])); C.push_back(GsColor::white);
 			P.push_back(GsVec(x + rt * cos(dy[j+1]) * dx[i + 1] , y + len / 2 + rt * sin(dy[j+1]), z + rt * cos(dy[j+1]) * dz[i + 1])); C.push_back(GsColor::white);
 		}
-	}
+	//}
 }
 
 void SoCapsule::drawMiddle() {
@@ -106,7 +107,8 @@ void SoCapsule::drawMiddle() {
 }
 
 void SoCapsule::drawBottom() {
-	for (int j = 0; j < dy.size() - 1; ++j) {
+	int j = 0;
+	//for (int j = 0; j < dy.size() - 1; ++j) {
 		for (int i = 0; i < dx.size() - 1; ++i) {
 			P.push_back(GsVec(x + rb * cos(dy[j]) * dx[i], -( y + len / 2 + rb * sin(dy[j])), z + rb * cos(dy[j]) * dz[i])); C.push_back(GsColor::white);
 			P.push_back(GsVec(x + rb * cos(dy[j]) * dx[i + 1], -(y + len / 2 + rb * sin(dy[j])), z + rb * cos(dy[j]) * dz[i + 1])); C.push_back(GsColor::white);
@@ -116,5 +118,5 @@ void SoCapsule::drawBottom() {
 			P.push_back(GsVec(x + rb * cos(dy[j + 1]) * dx[i], -(y + len / 2 + rb * sin(dy[j + 1])), z + rb * cos(dy[j + 1]) * dz[i])); C.push_back(GsColor::white);
 			P.push_back(GsVec(x + rb * cos(dy[j + 1]) * dx[i + 1], -(y + len / 2 + rb * sin(dy[j + 1])), z + rb * cos(dy[j + 1]) * dz[i + 1])); C.push_back(GsColor::white);
 		}
-	}
+	//}
 }
