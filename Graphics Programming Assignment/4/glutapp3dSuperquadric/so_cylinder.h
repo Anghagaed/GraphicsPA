@@ -20,8 +20,8 @@
 class SoCylinder : public GlObjects
 {
 private:
-	GlShader _vshgou, _fshgou, _vshphong, _fshphong;
-	GlProgram _proggouraud, _progphong;
+	GlShader _vshphong, _fshphong;
+	GlProgram _progphong;
 	GsArray<GsVec>   P; // coordinates
 	GsArray<GsColor> C; // diffuse colors per face
 	GsArray<GsVec>   N; // normals
@@ -30,7 +30,6 @@ private:
 	int _nfaces;
 	float x, y, z;
 	float r, l;
-	bool _phong;
 	bool _flatn;
 	std::vector < float > dx, dz;
 private:
@@ -38,13 +37,13 @@ private:
 	void buildTop();
 	void buildBottom();
 	void calculateParameters();
+	void normalize(GsPnt a, GsPnt b, GsPnt c);
 public:
 	GsArray<GsVec> NL; // normal lines computed in last build
 public:
 	SoCylinder();
 	void init();
 	void flat(bool b) { _flatn = b; }
-	void phong(bool b) { _phong = b; }
 	void build(float r, float l, int _nfaces);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l);
 };

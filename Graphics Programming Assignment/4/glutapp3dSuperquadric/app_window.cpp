@@ -15,7 +15,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _roty = gspi/4.0f;
    _w = w;
    _h = h;
-   _numfaces = 15;
+   _numfaces = 3;
 
    A=B=C=0.5f;
    R=2.0f; S=2.0f; T=0.9f;
@@ -60,10 +60,11 @@ void AppWindow::initPrograms ()
    _light.set ( GsVec(0,0,10), GsColor(90,90,90,255), GsColor::white, GsColor::white );
 
    // Load demo model:
-   _superq.build ( R,S,T,A,B,C );
+   //_superq.build ( R,S,T,A,B,C );
+
 
    // Build normals object:
-   _lines.build ( _superq.NL, GsColor::yellow );
+   //_lines.build ( _cylinder.NL, GsColor::yellow );
  }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -121,7 +122,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	switch (key) {
 	case 'q': _numfaces += 1; redraw(); break;
 	case 'a': _numfaces -= 1; redraw(); break;
-
+	case 'z': _normals = !_normals; break;
 	}
  }
 
@@ -229,6 +230,7 @@ void AppWindow::glutDisplay ()
    //_superq.draw ( stransf, sproj, _light );
    if ( _normals ) _lines.draw ( stransf, sproj );
    _cylinder.draw(stransf, sproj, _light);
+   _lines.build(_cylinder.NL, GsColor::yellow);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front
