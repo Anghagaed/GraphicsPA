@@ -26,6 +26,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _normals = false;
    _flatn = true;
    _phong = false;
+   _normals = true;
 
    initPrograms ();
  }
@@ -64,7 +65,7 @@ void AppWindow::initPrograms ()
 
 
    // Build normals object:
-   //_lines.build ( _cylinder.NL, GsColor::yellow );
+   _lines.build ( _cylinder.NL, GsColor::yellow );
  }
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
@@ -122,7 +123,10 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	switch (key) {
 	case 'q': _numfaces += 1; redraw(); break;
 	case 'a': _numfaces -= 1; redraw(); break;
-	case 'z': _normals = !_normals; break;
+	case 'z': _cylinder.flat(true); redraw(); break;
+	case 'x': _cylinder.flat(false); redraw(); break;
+	case 'c': _normals = true; redraw(); break;
+	case 'v': _normals = false; redraw(); break;
 	}
  }
 
@@ -196,8 +200,8 @@ void AppWindow::glutDisplay ()
    if ( _axis.changed ) // needs update
     { _axis.build(1.0f); // axis has radius 1.0
     }
-   std::cout << "Starting building" << std::endl;
    _cylinder.build(0.25, 0.50, _numfaces);
+   _lines.build(_cylinder.NL, GsColor::yellow);
 
    // Define our scene transformation:
    GsMat rx, ry, stransf;
@@ -225,12 +229,12 @@ void AppWindow::glutDisplay ()
    //  shaders vectors on the left side of a multiplication to a matrix.
 
    // Draw:
-   std::cout << "Starting draw \n";
    if ( _viewaxis ) _axis.draw ( stransf, sproj );
    //_superq.draw ( stransf, sproj, _light );
+
+   _lines.build(_cylinder.NL, GsColor::yellow);
    if ( _normals ) _lines.draw ( stransf, sproj );
    _cylinder.draw(stransf, sproj, _light);
-   _lines.build(_cylinder.NL, GsColor::yellow);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front

@@ -15,8 +15,8 @@ SoCylinder::SoCylinder()
 
 void SoCylinder::init()
 {
-	_vshphong.load_and_compile(GL_VERTEX_SHADER, "../vsh_mcol_phong.glsl");
-	_fshphong.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_mcol_phong.glsl");
+	_vshphong.load_and_compile(GL_VERTEX_SHADER, "../vsh_mcol_gouraud.glsl");
+	_fshphong.load_and_compile(GL_FRAGMENT_SHADER, "../fsh_gouraud.glsl");
 	_progphong.init_and_link(_vshphong, _fshphong);
 
 	// Define buffers needed:
@@ -59,12 +59,25 @@ void SoCylinder::buildBody() {
 		P.push() = d;
 		P.push() = c;
 
-		N.push() = a;
-		N.push() = b;
-		N.push() = c;
+		GsVec n1, n2;
+		const float ns = 0.05f;
+		if (_flatn) {
+			n1 = normal(c, a, b); n2 = normal(a, c, d);
+			N.push() = n1; N.push() = n1; N.push() = n1;
+			N.push() = n2; N.push() = n2; N.push() = n2;
+			n1 *= ns; n2 *= ns;
+			GsPnt f1c = (a + c + b) / 3.0f; NL.push() = f1c; NL.push() = f1c + n1;
+			GsPnt f2c = (a + d + c) / 3.0f; NL.push() = f2c; NL.push() = f2c + n2;
+		}
+		else {
+			N.push() = GsVec(a.x, 0, a.z);
+			N.push() = GsVec(b.x, 0, b.z);
+			N.push() = GsVec(c.x, 0, c.z);
 
-		normalize(a, b, c);
-		normalize(a, d, c);
+			N.push() = GsVec(a.x, 0, a.z);
+			N.push() = GsVec(b.x, 0, d.z);
+			N.push() = GsVec(c.z, 0, c.z);
+		}
 	}
 }
 
@@ -78,7 +91,19 @@ void SoCylinder::buildTop() {
 		P.push() = b;
 		P.push() = c;
 
-		normalize(a, b, c);
+		GsVec n;
+		const float ns = 0.05f;
+		if (_flatn) {
+			n = normal(a, c, b);
+			N.push() = n; N.push() = n; N.push() = n;
+			n *= ns;
+			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
+		}
+		else {
+			N.push() = GsVec(0, a.y, 0);
+			N.push() = GsVec(0, b.y, 0);
+			N.push() = GsVec(0, c.y, 0);
+		}
 	}
 }
 
@@ -93,27 +118,25 @@ void SoCylinder::buildBottom() {
 		P.push() = b;
 		P.push() = c;
 
-		normalize(a, b, c);
+		GsVec n;
+		const float ns = 0.05f;
+		if (_flatn) {
+			n = normal(c, a, b);
+			N.push() = n; N.push() = n; N.push() = n;
+			n *= ns;
+			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
+		}
+		else {
+			N.push() = GsVec(0, a.y, 0);
+			N.push() = GsVec(0, b.y, 0);
+			N.push() = GsVec(0, c.y, 0);
+		}
 	}
-}
-
-void SoCylinder::normalize(GsPnt a, GsPnt b, GsPnt c) {
-	GsVec n;
-	const float ns = 0.05f;
-	if (_flatn) {
-		n = normal(a, b, c);
-		N.push() = n; N.push() = n; N.push() = n;
-		n *= ns;
-		GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
-	}
-	else {
-
-	}
-
 }
 
 void SoCylinder::build(float r, float l, int _nfaces)
 {
+	NL.capacity(0);
 	this->r = r; this->l = l; this->_nfaces = _nfaces;
 
 	this->calculateParameters();
@@ -146,7 +169,7 @@ void SoCylinder::build(float r, float l, int _nfaces)
 	_numpoints = P.size();
 
 	// free non-needed memory:
-	P.capacity(0); C.capacity(0); N.capacity(0);
+	P.capacity(0); C.capacity(0); N.capacity(0); 
 	dx.clear(); dz.clear();
 	_mtl.specular.set(255, 255, 255);
 	_mtl.shininess = 8; // increase specular effect

@@ -37,7 +37,6 @@ private:
 	void buildTop();
 	void buildBottom();
 	void calculateParameters();
-	void normalize(GsPnt a, GsPnt b, GsPnt c);
 public:
 	GsArray<GsVec> NL; // normal lines computed in last build
 public:
