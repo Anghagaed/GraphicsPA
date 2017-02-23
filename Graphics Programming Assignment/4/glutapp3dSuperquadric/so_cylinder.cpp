@@ -70,13 +70,22 @@ void SoCylinder::buildBody() {
 			GsPnt f2c = (a + d + c) / 3.0f; NL.push() = f2c; NL.push() = f2c + n2;
 		}
 		else {
+			/*
 			N.push() = GsVec(a.x, 0, a.z);
 			N.push() = GsVec(b.x, 0, b.z);
 			N.push() = GsVec(c.x, 0, c.z);
 
 			N.push() = GsVec(a.x, 0, a.z);
-			N.push() = GsVec(b.x, 0, d.z);
+			N.push() = GsVec(d.x, 0, d.z);
 			N.push() = GsVec(c.z, 0, c.z);
+			*/
+			N.push() = GsVec(c.x, 0, c.z);
+			N.push() = GsVec(b.x, 0, b.z);
+			N.push() = GsVec(a.x, 0, a.z);
+
+			N.push() = GsVec(c.z, 0, c.z);
+			N.push() = GsVec(d.x, 0, d.z);
+			N.push() = GsVec(a.x, 0, a.z);
 		}
 	}
 }
@@ -100,9 +109,14 @@ void SoCylinder::buildTop() {
 			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
 		}
 		else {
+			/*
 			N.push() = GsVec(0, a.y, 0);
 			N.push() = GsVec(0, b.y, 0);
 			N.push() = GsVec(0, c.y, 0);
+			*/
+			N.push() = GsVec(0, 1.0f, 0);
+			N.push() = GsVec(0, 1.0f, 0);
+			N.push() = GsVec(0, 1.0f, 0);
 		}
 	}
 }
@@ -127,9 +141,14 @@ void SoCylinder::buildBottom() {
 			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
 		}
 		else {
+			/*
 			N.push() = GsVec(0, a.y, 0);
 			N.push() = GsVec(0, b.y, 0);
 			N.push() = GsVec(0, c.y, 0);
+			*/
+			N.push() = GsVec(0, 1.0f, 0);
+			N.push() = GsVec(0, 1.0f, 0);
+			N.push() = GsVec(0, 1.0f, 0);
 		}
 	}
 }
