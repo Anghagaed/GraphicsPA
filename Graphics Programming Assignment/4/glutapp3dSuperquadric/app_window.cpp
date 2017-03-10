@@ -120,6 +120,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
    if ( _normals ) _lines.build ( _superq.NL, GsColor::blue );
     redraw(); 
 	*/
+	 float inc = 0.05f;
 	switch (key) {
 	case 'q': _numfaces += 1; redraw(); break;
 	case 'a': _numfaces -= 1; redraw(); break;
@@ -127,6 +128,8 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	case 'x': _cylinder.flat(false); redraw(); break;
 	case 'c': _normals = true; redraw(); break;
 	case 'v': _normals = false; redraw(); break;
+	case 'w': _light.pos += GsVec(inc, 0, 0); redraw(); break;
+	case 's': _light.pos -= GsVec(inc, 0, 0); redraw(); break;
 	}
  }
 
@@ -200,7 +203,7 @@ void AppWindow::glutDisplay ()
    if ( _axis.changed ) // needs update
     { _axis.build(1.0f); // axis has radius 1.0
     }
-   _cylinder.build(0.25, 0.50, _numfaces);
+   _cylinder.build(0.40, 0.70, _numfaces);
    _lines.build(_cylinder.NL, GsColor::yellow);
 
    // Define our scene transformation:

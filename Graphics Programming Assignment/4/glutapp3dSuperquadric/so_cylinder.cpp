@@ -70,22 +70,28 @@ void SoCylinder::buildBody() {
 			GsPnt f2c = (a + d + c) / 3.0f; NL.push() = f2c; NL.push() = f2c + n2;
 		}
 		else {
-			/*
-			N.push() = GsVec(a.x, 0, a.z);
-			N.push() = GsVec(b.x, 0, b.z);
-			N.push() = GsVec(c.x, 0, c.z);
-
-			N.push() = GsVec(a.x, 0, a.z);
-			N.push() = GsVec(d.x, 0, d.z);
-			N.push() = GsVec(c.z, 0, c.z);
-			*/
-			N.push() = GsVec(c.x, 0, c.z);
-			N.push() = GsVec(b.x, 0, b.z);
-			N.push() = GsVec(a.x, 0, a.z);
-
-			N.push() = GsVec(c.z, 0, c.z);
-			N.push() = GsVec(d.x, 0, d.z);
-			N.push() = GsVec(a.x, 0, a.z);
+			n1 = GsVec(a.x, 0, a.z);
+			n1.normalize();
+			N.push() = n1; NL.push() = a;
+			NL.push(a + n1*ns);
+			n1 = GsVec(b.x, 0, b.z); 
+			n1.normalize();
+			N.push() = n1; NL.push() = b;
+			NL.push(b + n1*ns);
+			n1 = GsVec(c.x, 0, c.z);
+			n1.normalize();
+			N.push() = n1; NL.push() = c;
+			NL.push(c + n1*ns);
+			
+			n2 = GsVec(a.x, 0, a.z);
+			n2.normalize();
+			N.push() = n2;
+			n2 = GsVec(d.x, 0, d.z);
+			n2.normalize();
+			N.push() = n2; NL.push() = d;
+			NL.push(d + n2*ns);
+			n2 = GsVec(c.x, 0, c.z);
+			N.push() = n2;
 		}
 	}
 }
@@ -109,15 +115,19 @@ void SoCylinder::buildTop() {
 			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
 		}
 		else {
-			/*
-			N.push() = GsVec(0, a.y, 0);
-			N.push() = GsVec(0, b.y, 0);
-			N.push() = GsVec(0, c.y, 0);
-			*/
-			N.push() = GsVec(0, 1.0f, 0);
-			N.push() = GsVec(0, 1.0f, 0);
-			N.push() = GsVec(0, 1.0f, 0);
+			n = GsVec(0, 1.0f, 0);
+			a = b;
+			N.push() = n; NL.push() = a;
+			NL.push(a + n*ns);
+			N.push() = n;
+			N.push() = n;
 		}
+	}
+	if (!_flatn) {
+		GsPnt n = GsPnt(0, l / 2, 0);
+		GsPnt N = GsPnt(0, 0.15f, 0);
+		NL.push() = n;
+		NL.push() = N + n;
 	}
 }
 
@@ -141,15 +151,18 @@ void SoCylinder::buildBottom() {
 			GsPnt fc = (a + c + b) / 3.0f; NL.push() = fc; NL.push() = fc + n;
 		}
 		else {
-			/*
-			N.push() = GsVec(0, a.y, 0);
-			N.push() = GsVec(0, b.y, 0);
-			N.push() = GsVec(0, c.y, 0);
-			*/
-			N.push() = GsVec(0, 1.0f, 0);
-			N.push() = GsVec(0, 1.0f, 0);
-			N.push() = GsVec(0, 1.0f, 0);
+			n = GsVec(0, -1.0f, 0);
+			N.push() = n; NL.push() = b;
+			NL.push(b + n*ns);
+			N.push() = n;
+			N.push() = n;
 		}
+	}
+	if (!_flatn) {
+		GsPnt n = GsPnt(0, -l / 2, 0);
+		GsPnt N = GsPnt(0, -0.15f, 0);
+		NL.push() = n;
+		NL.push() = N + n;
 	}
 }
 
@@ -163,8 +176,11 @@ void SoCylinder::build(float r, float l, int _nfaces)
 	this->buildTop();
 	this->buildBottom();
 
-	C.size(P.size()); C.setall(GsColor::blue);
-
+	C.size(P.size());
+	if (_flatn)
+		C.setall(GsColor::red);
+	else
+		C.setall(GsColor::green);
 	glBindVertexArray(va[0]);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
