@@ -14,10 +14,10 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _rotx = _roty = 0;
    _w = w;
    _h = h;
-   len = 0.50;
+   len = 0.30;
    rt = 0.30;
-   rb = 0.30;
-   _numfaces = 16;
+   rb = 0.15;
+   _numfaces = 8;
  }
 
 void AppWindow::initPrograms ()
@@ -135,7 +135,7 @@ void AppWindow::glutDisplay ()
 		_axis.build(1.0f); // axis has radius 1.0
 		
     }
-   _capsule.build(len, rt, rb, _numfaces);
+   _capsule.build(len, rt, rt, _numfaces);
    // Define our scene transformation:
    GsMat rx, ry, stransf;
    rx.rotx ( _rotx );

@@ -63,7 +63,7 @@ void SoTexturedTube::init()
 void SoTexturedTube::calculateParameters() {
 	int layers = _nfaces / 4;
 	double dQ = 2 * PI / _nfaces;
-	for (double i = 0; i <= (2 * PI + dQ); i += dQ) {
+	for (double i = (2 * PI + dQ); i >= 0; i -= dQ) {
 		dx.push_back(cos(i));
 		dz.push_back(sin(i));
 	}
