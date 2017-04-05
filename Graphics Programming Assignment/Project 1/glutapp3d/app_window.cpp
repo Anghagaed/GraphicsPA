@@ -79,15 +79,21 @@ void AppWindow::initPrograms ()
    initialPos.setl3(0, 0, 1, 0.25);
    initialPos.setl4(0, 0, 0, 1);
    
-   head.createCylinder(0.25, 0.25, initialPos, myTrans);
-
+   //head.createCylinder(0.25, 0.25, initialPos, myTrans);
+   /*
    initialPos.setl1(1, 0, 0, 0.25);
    initialPos.setl2(0, 1, 0, -0.25);
    initialPos.setl3(0, 0, 1, 0.25);
    initialPos.setl4(0, 0, 0, 1);
+   */
+   head.createSphere(0.25, initialPos, myTrans);
 
-   //head.createSphere(0.25, initialPos, myTrans);
+   initialPos.setl1(1, 0, 0, -0.25);
+   initialPos.setl2(0, 1, 0, -0.25);
+   initialPos.setl3(0, 0, 1, -0.25);
+   initialPos.setl4(0, 0, 0, 1);
    
+   head.createSphere(0.25, initialPos, myTrans);
 
    // Load demo model:
    //_superq.build ( R,S,T,A,B,C );
@@ -202,15 +208,35 @@ void AppWindow::glutDisplay ()
    transl.setl2(0, 1, 0, 0.5);
    transl.setl3(0, 0, 1, 0.5);
    transl.setl4(0, 0, 0, 1);
-   
+   /*
+   GsMat test;
+   test.setl1(1, 0, 0, 0.5);
+   test.setl2(0, 1, 0, 0.5);
+   test.setl3(0, 0, 1, 0.5);
+   test.setl4(0, 0, 0, 1);
+
+   GsMat* test = new GsMat;
+   test->setl1(1, 0, 0, 0.5);
+   test->setl2(0, 1, 0, 0.5);
+   test->setl3(0, 0, 1, 0.5);
+   test->setl4(0, 0, 0, 1);
+   */
+   GsMat& test = *(new GsMat);
+   test.setl1(1, 0, 0, 0.5);
+   test.setl2(0, 1, 0, 0.5);
+   test.setl3(0, 0, 1, 0.5);
+   test.setl4(0, 0, 0, 1);
+
    // Draw:
    //_texturedcylinder.draw(stransf*Rotx*Roty*Rotz, sproj, _light);
    _testSphere.setMyTrans(Rotx * Roty * Rotz);
-   _testSphere.draw(stransf, sproj, _light);
-   _testSphere.drawShadow(stransf, sproj, _light);
+   //_testSphere.draw(stransf, sproj, _light);
+   //_testSphere.drawShadow(stransf, sproj, _light);
+   _testSphere2.setInitialPos(test);
+   delete &test;
    //_testSphere2.draw(stransf, sproj, _light);
    //_testSphere2.drawShadow(stransf, sproj, _light);
-   //head.draw(stransf, sproj, _light);
+   head.draw(stransf, sproj, _light);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front

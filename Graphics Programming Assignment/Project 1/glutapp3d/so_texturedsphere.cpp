@@ -207,7 +207,7 @@ void SoTexturedSphere::build(float r, int _lfaces, int _layers)
 
 	this->calculateParameters();
 	this->buildTop();
-	this->buildBottom();
+	//this->buildBottom();
 	cout << "Size of P is " << P.size() << endl;
 	_numpoints = P.size();
 

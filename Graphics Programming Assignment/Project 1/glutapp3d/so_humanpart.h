@@ -17,8 +17,8 @@ class SoHumanPart {
 private:
 	string imagePath;
 	GsMat shadow;
-	vector<SoTexturedSphere> spherList;
-	vector<SoTexturedCylinder> cylinList;
+	vector<SoTexturedSphere*> spherList;
+	vector<SoTexturedCylinder*> cylinList;
 
 	// Sphere Parameters
 	int sLfaces, sLayers;
