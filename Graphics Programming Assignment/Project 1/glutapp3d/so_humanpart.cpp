@@ -35,18 +35,26 @@ void SoHumanPart::init(const GsMat& shadowMat, const string& imagePath) {
 }
 
 void SoHumanPart::draw(const GsMat& tr, const GsMat& pr, const GsLight& l) {
-	//cout << "spherList.size " << spherList.size() << endl;
-	//cout << "cylinList.size " << cylinList.size() << endl;
 	for (int i = 0; i < spherList.size(); ++i) {
-		//cout << "in draw sphere " << i << endl;
 		spherList[i]->draw(tr, pr, l);
 		spherList[i]->drawShadow(tr, pr, l);
 	}
 
 	for (int i = 0; i < cylinList.size(); ++i) {
-		//cout << "in draw cylinder" << endl;
 		cylinList[i]->draw(tr, pr, l);
 		cylinList[i]->drawShadow(tr, pr, l);
+	}
+}
+
+void SoHumanPart::reset() {
+	GsMat iden;
+	iden.identity();
+	for (int i = 0; i < spherList.size(); ++i) {
+		spherList[i]->setMyTrans(iden);
+	}
+
+	for (int i = 0; i < cylinList.size(); ++i) {
+		cylinList[i]->setMyTrans(iden);
 	}
 }
 

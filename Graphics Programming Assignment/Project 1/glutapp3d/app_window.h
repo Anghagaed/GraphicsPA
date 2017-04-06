@@ -9,16 +9,14 @@
 # include <gsim/gs_vec.h>
 # include "ogl_tools.h"
 # include "glut_window.h"
-# include "so_humanpart.h"
-# include "so_texturedsphere.h"
+# include "so_human.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
  { private :
 
     // My scene objects:
-	 SoHumanPart head, leftarm, rightarm, leftleg, rightleg;
-	 SoTexturedSphere _testSphere, _testSphere2;
+	 SoHuman _human;
     GsLight _light;
     
     // App data:

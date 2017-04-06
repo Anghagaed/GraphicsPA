@@ -34,9 +34,9 @@ private:
 	int _nfaces;
 	float x, y, z;
 	float r, l;
-	GLuint _texid;
+	GLuint _texid1, _texid2;
 	std::vector < float > dx, dz;
-	std::string imagePath;
+	std::string imagePath, shadowPath;
 	GsMat initialPos, myTrans, shadow;
 
 private:

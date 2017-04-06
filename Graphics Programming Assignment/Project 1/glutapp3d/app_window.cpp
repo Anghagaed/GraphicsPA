@@ -31,11 +31,6 @@ void AppWindow::printInfo()
  {
 	std::cout << "CSE 170 - Project 1" << std::endl;
 	std::cout << "Hierachical Object : Human Model" << std::endl;
-	std::cout << "" << std::endl;
-	std::cout << "" << std::endl;
-	std::cout << "" << std::endl;
-	std::cout << "" << std::endl;
-	std::cout << "" << std::endl;
  }
 
 void AppWindow::initPrograms ()
@@ -44,56 +39,20 @@ void AppWindow::initPrograms ()
    // initializes its own program(s). This makes sharing more difficult but is probably easier
    // to manage.
 
-   // Path of Texture
-	
-	std::string imagePath = "../skin.png";
-	_testSphere.init(0, 0, 0, imagePath);
-	_testSphere.build(0.25, 15, 6);
-	_testSphere2.init(0, 0, 0, imagePath);
-	_testSphere2.build(0.25, 15, 6);
    // set light:
    _light.set ( GsVec(0.5f,0.5f,0.5f), GsColor(90,90,90,255), GsColor::white, GsColor::white );
    // Make shadow matrix
    GsMat shadow;
    float lx, ly, lz, h;
+   std::string imagePath = "../skin.png";
    h = -0.5;
    lx = _light.pos.x;  ly = _light.pos.y;  lz = _light.pos.z;
    shadow.setl1(1.0f, -(lx / ly), 0.0f, h*(lx / ly));
    shadow.setl2(0.0f, 0.0f, 0.0f, h);
    shadow.setl3(0.0f, -(lz / ly), 1.0f, h*(lz / ly));
    shadow.setl4(0.0f, 0.0f, 0.0f, 1.0f);
-   cout << shadow << endl;
-   _testSphere.setShadow(shadow);
-   // create and build head
-   head.init(shadow, imagePath);
-   GsMat initialPos, myTrans;
-   myTrans.identity();
-   initialPos.setl1(1, 0, 0, 0);
-   initialPos.setl2(0, 1, 0, 0);
-   initialPos.setl3(0, 0, 1, 0);
-   initialPos.setl4(0, 0, 0, 1);
-   head.createSphere(0.25, initialPos, myTrans);
-   
-   initialPos.setl1(1, 0, 0, 0.25);
-   initialPos.setl2(0, 1, 0, -0.25);
-   initialPos.setl3(0, 0, 1, 0.25);
-   initialPos.setl4(0, 0, 0, 1);
-   
-   //head.createCylinder(0.25, 0.25, initialPos, myTrans);
-   /*
-   initialPos.setl1(1, 0, 0, 0.25);
-   initialPos.setl2(0, 1, 0, -0.25);
-   initialPos.setl3(0, 0, 1, 0.25);
-   initialPos.setl4(0, 0, 0, 1);
-   */
-   head.createSphere(0.25, initialPos, myTrans);
 
-   initialPos.setl1(1, 0, 0, -0.25);
-   initialPos.setl2(0, 1, 0, -0.25);
-   initialPos.setl3(0, 0, 1, -0.25);
-   initialPos.setl4(0, 0, 0, 1);
-   
-   head.createSphere(0.25, initialPos, myTrans);
+   _human.init(shadow, imagePath);
 
    // Load demo model:
    //_superq.build ( R,S,T,A,B,C );
@@ -208,19 +167,7 @@ void AppWindow::glutDisplay ()
    transl.setl2(0, 1, 0, 0.5);
    transl.setl3(0, 0, 1, 0.5);
    transl.setl4(0, 0, 0, 1);
-   /*
-   GsMat test;
-   test.setl1(1, 0, 0, 0.5);
-   test.setl2(0, 1, 0, 0.5);
-   test.setl3(0, 0, 1, 0.5);
-   test.setl4(0, 0, 0, 1);
 
-   GsMat* test = new GsMat;
-   test->setl1(1, 0, 0, 0.5);
-   test->setl2(0, 1, 0, 0.5);
-   test->setl3(0, 0, 1, 0.5);
-   test->setl4(0, 0, 0, 1);
-   */
    GsMat& test = *(new GsMat);
    test.setl1(1, 0, 0, 0.5);
    test.setl2(0, 1, 0, 0.5);
@@ -228,15 +175,8 @@ void AppWindow::glutDisplay ()
    test.setl4(0, 0, 0, 1);
 
    // Draw:
-   //_texturedcylinder.draw(stransf*Rotx*Roty*Rotz, sproj, _light);
-   _testSphere.setMyTrans(Rotx * Roty * Rotz);
-   //_testSphere.draw(stransf, sproj, _light);
-   //_testSphere.drawShadow(stransf, sproj, _light);
-   _testSphere2.setInitialPos(test);
-   delete &test;
-   //_testSphere2.draw(stransf, sproj, _light);
-   //_testSphere2.drawShadow(stransf, sproj, _light);
-   head.draw(stransf, sproj, _light);
+   //head.draw(stransf, sproj, _light);
+   _human.draw(stransf, sproj, _light);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front

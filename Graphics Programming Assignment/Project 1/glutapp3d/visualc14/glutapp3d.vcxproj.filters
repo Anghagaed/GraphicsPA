@@ -58,6 +58,12 @@
     <ClCompile Include="..\so_texturedsphere.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\so_human.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\floor.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -130,6 +136,12 @@
       <Filter>myapp</Filter>
     </ClInclude>
     <ClInclude Include="..\so_humanpart.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\so_human.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\floor.h">
       <Filter>myapp</Filter>
     </ClInclude>
   </ItemGroup>

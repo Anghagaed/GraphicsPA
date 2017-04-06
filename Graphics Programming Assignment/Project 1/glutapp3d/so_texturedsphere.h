@@ -35,9 +35,9 @@ private:
 	int _numfaces;
 	GsPnt center;
 	float r;			// radius
-	GLuint _texid;
+	GLuint _texid1, _texid2;
 	std::vector < float > dx, dy, dz;
-	std::string imagePath;
+	std::string imagePath, shadowPath;
 	GsMat initialPos, myTrans, shadow;
 private:
 	void buildTop();

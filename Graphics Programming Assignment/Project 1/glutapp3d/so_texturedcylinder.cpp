@@ -17,6 +17,7 @@ SoTexturedCylinder::SoTexturedCylinder()
 	myTrans.identity();
 
 	shadow.identity();
+	shadowPath = "../shadow.png";
 }
 
 void SoTexturedCylinder::setInitialPos(const GsMat& posMat) {
@@ -58,13 +59,13 @@ void SoTexturedCylinder::init(float x, float y, float z, string& imagePath)
 	_progphong.uniform_location(10, "Tex1");
 
 	// Copy paste here
-	GsImage I;
-	gsuint id;
-	if (!I.load(imagePath.c_str())) { std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1); }
+	GsImage I1, I2;
+	gsuint id1, id2;
+	if (!I1.load(imagePath.c_str())) { std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1); }
 
-	glGenTextures(1, &_texid);
-	glBindTexture(GL_TEXTURE_2D, _texid);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, I.w(), I.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I.data());
+	glGenTextures(1, &_texid1);
+	glBindTexture(GL_TEXTURE_2D, _texid1);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, I1.w(), I1.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I1.data());
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -76,7 +77,25 @@ void SoTexturedCylinder::init(float x, float y, float z, string& imagePath)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
-	I.init(0, 0); // free image from CPU
+	I1.init(0, 0); // free image from CPU
+
+	if (!I2.load(shadowPath.c_str())) { std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1); }
+
+	glGenTextures(1, &_texid2);
+	glBindTexture(GL_TEXTURE_2D, _texid2);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, I2.w(), I2.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I2.data());
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+
+	I2.init(0, 0); // free image from CPU
 }
 
 void SoTexturedCylinder::calculateParameters() {
@@ -192,6 +211,7 @@ void SoTexturedCylinder::build(float r, float l, int _nfaces)
 void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l)
 {
 	GsMat toSend;
+	//toSend = tr * myTrans * initialPos;
 	toSend = tr * initialPos * myTrans;
 	float f[4];
 	float sh = (float)_mtl.shininess;
@@ -200,7 +220,7 @@ void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l
 	glUseProgram(_progphong.id);
 
 	glBindVertexArray(va[0]);
-	glBindTexture(GL_TEXTURE_2D, _texid);
+	glBindTexture(GL_TEXTURE_2D, _texid1);
 
 	// Updates uniforms
 	glUniformMatrix4fv(_progphong.uniloc[0], 1, GL_FALSE, toSend.e);
@@ -213,7 +233,7 @@ void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l
 	glUniform4fv(_progphong.uniloc[7], 1, _mtl.diffuse.get(f));
 	glUniform4fv(_progphong.uniloc[8], 1, _mtl.specular.get(f));
 	glUniform1fv(_progphong.uniloc[9], 1, &sh);
-	glUniform1ui(_progphong.uniloc[10], _texid);
+	glUniform1ui(_progphong.uniloc[10], _texid1);
 
 	glBindVertexArray(va[0]);
 	glDrawArrays(GL_TRIANGLES, 0, _numpoints);
@@ -224,7 +244,7 @@ void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l
 void SoTexturedCylinder::drawShadow(const GsMat& tr, const GsMat& pr, const GsLight& l)
 {
 	GsMat toSend;
-	toSend = tr * initialPos * myTrans * shadow;
+	toSend = tr * shadow * myTrans * initialPos;
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;
@@ -232,7 +252,7 @@ void SoTexturedCylinder::drawShadow(const GsMat& tr, const GsMat& pr, const GsLi
 	glUseProgram(_progphong.id);
 
 	glBindVertexArray(va[0]);
-	glBindTexture(GL_TEXTURE_2D, _texid);
+	glBindTexture(GL_TEXTURE_2D, _texid2);
 
 	// Updates uniforms
 	glUniformMatrix4fv(_progphong.uniloc[0], 1, GL_FALSE, toSend.e);
@@ -245,7 +265,7 @@ void SoTexturedCylinder::drawShadow(const GsMat& tr, const GsMat& pr, const GsLi
 	glUniform4fv(_progphong.uniloc[7], 1, _mtl.diffuse.get(f));
 	glUniform4fv(_progphong.uniloc[8], 1, _mtl.specular.get(f));
 	glUniform1fv(_progphong.uniloc[9], 1, &sh);
-	glUniform1ui(_progphong.uniloc[10], _texid);
+	glUniform1ui(_progphong.uniloc[10], _texid2);
 
 	glBindVertexArray(va[0]);
 	glDrawArrays(GL_TRIANGLES, 0, _numpoints);

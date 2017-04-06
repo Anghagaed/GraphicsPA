@@ -31,6 +31,7 @@ public:
 	SoHumanPart(const string& imagePath);
 	void init(const GsMat& shadowMat, const string& imagePath);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l);
+	void reset();
 	void createSphere(float r, const GsMat& initialPos, const GsMat& myTrans);
 	void createCylinder(float r, float l, const GsMat& initialPos, const GsMat& myTrans);
 };
