@@ -38,7 +38,7 @@ private:
 	GLuint _texid1, _texid2;
 	std::vector < float > dx, dy, dz;
 	std::string imagePath, shadowPath;
-	GsMat initialPos, myTrans, shadow;
+	GsMat initialPos, myTrans, shadow, glbmov;
 private:
 	void buildTop();
 	void buildBottom();
@@ -58,6 +58,10 @@ public:
 	void setInitialPos(const GsMat& posMat);
 	void setMyTrans(const GsMat& transMat);
 	void setShadow(const GsMat& shadowMat);
+	void setGlbMov(const GsMat& glbmov);
+
+	void applyInitialPos(const GsMat& posMat);
+	void applyMyTrans(const GsMat& transMat);
 };
 
 #endif SO_TEXTUREDSPHERE_H

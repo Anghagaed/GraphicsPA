@@ -34,6 +34,11 @@ public:
 	void reset();
 	void createSphere(float r, const GsMat& initialPos, const GsMat& myTrans);
 	void createCylinder(float r, float l, const GsMat& initialPos, const GsMat& myTrans);
+	void createSphere(float r, const GsMat& initialPos, const GsMat& myTrans, string imagePath);
+	void createCylinder(float r, float l, const GsMat& initialPos, const GsMat& myTrans, string imagePath);
+
+	void updateGlobalMovement(const GsMat& glbMov);
+	void updateMyTrans(const GsMat& rot);
 };
 
 

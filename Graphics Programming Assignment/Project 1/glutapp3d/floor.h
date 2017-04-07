@@ -33,7 +33,6 @@ private:
 	int _numpoints;     // just saves the number of points
 	float x, y, z, l, w;
 	GLuint _texid1;
-	GsMaterial _mtl;
 	
 	std::string imagePath;
 private:
@@ -42,7 +41,7 @@ public:
 
 public:
 	SoFloor();
-	void init(float x, float y, float z, float l, float w);
+	void init(float x, float y, float z, float l, float w, std::string imagePath);
 	void build();
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l);
 };

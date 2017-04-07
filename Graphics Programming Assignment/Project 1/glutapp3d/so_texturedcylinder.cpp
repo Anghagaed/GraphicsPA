@@ -16,6 +16,10 @@ SoTexturedCylinder::SoTexturedCylinder()
 
 	myTrans.identity();
 
+	glbmov.identity();
+
+	jointMovement.identity();
+
 	shadow.identity();
 	shadowPath = "../shadow.png";
 }
@@ -29,8 +33,21 @@ void SoTexturedCylinder::setMyTrans(const GsMat& transMat) {
 void SoTexturedCylinder::setShadow(const GsMat& shadowMat) {
 	shadow = shadowMat;
 }
+void SoTexturedCylinder::setJntMov(const GsMat& jntMat) {
+	jointMovement = jntMat;
+}
+void SoTexturedCylinder::applyInitialPos(const GsMat& posMat) {
+	initialPos = posMat * initialPos;
+}
+void SoTexturedCylinder::applyMyTrans(const GsMat& transMat) {
+	myTrans = transMat * myTrans;
+}
 void SoTexturedCylinder::resetMyTrans() {
 	myTrans.identity();
+}
+
+void SoTexturedCylinder::setGlbMov(const GsMat& glbmov) {
+	this->glbmov = glbmov;
 }
 
 void SoTexturedCylinder::init(float x, float y, float z, string& imagePath)
@@ -212,7 +229,7 @@ void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l
 {
 	GsMat toSend;
 	//toSend = tr * myTrans * initialPos;
-	toSend = tr * initialPos * myTrans;
+	toSend = tr  * glbmov * jointMovement * myTrans * initialPos;
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;
@@ -244,7 +261,7 @@ void SoTexturedCylinder::draw(const GsMat& tr, const GsMat& pr, const GsLight& l
 void SoTexturedCylinder::drawShadow(const GsMat& tr, const GsMat& pr, const GsLight& l)
 {
 	GsMat toSend;
-	toSend = tr * shadow * myTrans * initialPos;
+	toSend = tr * shadow * glbmov * jointMovement * myTrans * initialPos;
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;

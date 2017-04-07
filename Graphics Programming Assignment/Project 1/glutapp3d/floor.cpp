@@ -6,12 +6,11 @@ SoFloor::SoFloor()
 {
 	_numpoints = 0;
 	x = 0.0f; y = 0.0f; z = 0.0f; l = 0.0f; w = 0.0f;
-	imagePath = "../floor.png";
 }
 
-void SoFloor::init(float x, float y, float z, float l, float w)
+void SoFloor::init(float x, float y, float z, float l, float w, string imagePath)
 {
-	this->x = x; this->y = y; this->z = z; this->l = l; this->w = w;
+	this->x = x; this->y = y; this->z = z; this->l = l; this->w = w; this->imagePath = imagePath;
 
 	_vshphong.load_and_compile(GL_VERTEX_SHADER, "../texgouraud.vert");
 	_fshphong.load_and_compile(GL_FRAGMENT_SHADER, "../texgouraud.frag");
@@ -56,40 +55,45 @@ void SoFloor::init(float x, float y, float z, float l, float w)
 	I1.init(0, 0); // free image from CPU
 }
 
-void SoFloor::build() {
-	for (int i = 0; i < dx.size() - 1; ++i) {
-		GsPnt a, b, c;
-		GsVec n;
-		a = GsPnt(x, y + l / 2, z);
-		b = GsPnt(x + r * dx[i], y + l / 2, z + r * dz[i]);
-		c = GsPnt(x + r * dx[i + 1], y + l / 2, z + r * dz[i + 1]);
+void SoFloor::buildSquare() {
+	GsPnt a, b, c, d;
 
-		// a, b, c
-		P.push() = a;  P.push() = b; P.push() = c;
+	a = GsPnt(x - l / 2, y, z - w / 2);
+	b = GsPnt(x - l / 2, y, z + w / 2);
+	c = GsPnt(x + l / 2, y, z + w / 2);
+	d = GsPnt(x + l / 2, y, z - w / 2);
 
-		n = GsVec(0.0f, 1.0f, 0.0f);
-		N.push() = n; N.push() = n; N.push() = n;
+	// a, b, c
+	P.push() = a; P.push() = b; P.push() = c;
+	// a, d, c
+	P.push() = a; P.push() = d; P.push() = c;
 
-		a = GsPnt(x, -(y + l / 2), z);
-		b = GsPnt(x + r * dx[i], -(y + l / 2), z + r * dz[i]);
-		c = GsPnt(x + r * dx[i + 1], -(y + l / 2), z + r * dz[i + 1]);
+	/*
+	T.push_back(GsVec2(0.0f, 0.0f));						// for point a
+	T.push_back(GsVec2(1.0f, 0.0f));						// for point b
+	T.push_back(GsVec2(1.0f, 1.0f));						// for point c
+	T.push_back(GsVec2(0.0f, 1.0f));						// for point d
+	*/
 
-		// a, b, c
-		P.push() = a;  P.push() = b; P.push() = c;
+	// a, b, c
+	T.push_back(GsVec2(0.0f, 0.0f));						
+	T.push_back(GsVec2(1.0f, 0.0f));						
+	T.push_back(GsVec2(1.0f, 1.0f));						
+	// a, d, c
+	T.push_back(GsVec2(0.0f, 0.0f));
+	T.push_back(GsVec2(0.0f, 1.0f));						
+	T.push_back(GsVec2(1.0f, 1.0f));
 
-		n = GsVec(0.0f, -1.0f, 0.0f);
-		N.push() = n; N.push() = n; N.push() = n;
+	GsVec n1 = GsVec(0.0f, 1.0f, 0.0f);
+	for (int i = 0; i < 6; ++i) { N.push() = n1; }
 
-	}
 }
 
 void SoFloor::build()
 {
 	T.clear();
-	
 
-
-
+	this->buildSquare();
 
 	_numpoints = P.size();
 

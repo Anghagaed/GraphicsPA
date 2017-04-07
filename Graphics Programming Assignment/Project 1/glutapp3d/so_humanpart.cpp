@@ -67,15 +67,6 @@ void SoHumanPart::createSphere(float r, const GsMat& initialPos, const GsMat& my
 	toPush->setShadow(shadow);
 
 	spherList.push_back(toPush);
-
-	/*
-	spherList.push_back(toPush);
-	spherList[spherList.size() - 1].init(0, 0, 0, imagePath);
-	spherList[spherList.size() - 1].build(r, sLfaces, sLayers);
-	spherList[spherList.size() - 1].setInitialPos(initialPos);
-	spherList[spherList.size() - 1].setMyTrans(myTrans);
-	spherList[spherList.size() - 1].setShadow(shadow);
-	*/
 }
 
 void SoHumanPart::createCylinder(float r, float l, const GsMat& initialPos, const GsMat& myTrans) {
@@ -88,12 +79,48 @@ void SoHumanPart::createCylinder(float r, float l, const GsMat& initialPos, cons
 	toPush->setShadow(shadow);
 
 	cylinList.push_back(toPush);
-	/*
+}
+
+void SoHumanPart::createSphere(float r, const GsMat& initialPos, const GsMat& myTrans, string imagePath) {
+	SoTexturedSphere* toPush = new SoTexturedSphere();
+	toPush->init(0, 0, 0, imagePath);
+	toPush->build(r, sLfaces, sLayers);
+	toPush->setInitialPos(initialPos);
+	toPush->setMyTrans(myTrans);
+	toPush->setShadow(shadow);
+
+	spherList.push_back(toPush);
+}
+
+void SoHumanPart::createCylinder(float r, float l, const GsMat& initialPos, const GsMat& myTrans, string imagePath) {
+	SoTexturedCylinder* toPush = new SoTexturedCylinder();
+
+	toPush->init(0, 0, 0, imagePath);
+	toPush->build(r, l, rNFaces);
+	toPush->setInitialPos(initialPos);
+	toPush->setMyTrans(myTrans);
+	toPush->setShadow(shadow);
+
 	cylinList.push_back(toPush);
-	cylinList[cylinList.size() - 1].init(0, 0, 0, imagePath);
-	cylinList[cylinList.size() - 1].build(r, l, rNFaces);
-	cylinList[cylinList.size() - 1].setInitialPos(initialPos);
-	cylinList[cylinList.size() - 1].setMyTrans(myTrans);
-	cylinList[cylinList.size() - 1].setShadow(shadow);
+}
+
+void SoHumanPart::updateGlobalMovement(const GsMat& glbMov) {
+	for (int i = 0; i < spherList.size(); ++i) {
+		spherList[i]->setGlbMov(glbMov);
+	}
+
+	for (int i = 0; i < cylinList.size(); ++i) {
+		cylinList[i]->setGlbMov(glbMov);
+	}
+}
+
+void SoHumanPart::updateMyTrans(const GsMat& rot) {
+	/*
+	for (int i = 0; i < spherList.size(); ++i) {
+		spherList[i]->applyMyTrans(rot);
+	}
 	*/
+	for (int i = 0; i < cylinList.size(); ++i) {
+		cylinList[i]->setJntMov(rot);
+	}
 }

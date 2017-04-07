@@ -10,14 +10,18 @@
 # include "ogl_tools.h"
 # include "glut_window.h"
 # include "so_human.h"
+# include "floor.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
  { private :
 
     // My scene objects:
-	 SoHuman _human;
+	SoHuman _human;
     GsLight _light;
+	SoFloor _floor;
+	SoTexturedSphere _object;
+	SoTexturedCylinder _test;
     
     // App data:
     enum MenuEv { evOption0, evOption1 };

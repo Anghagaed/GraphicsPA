@@ -37,7 +37,7 @@ private:
 	GLuint _texid1, _texid2;
 	std::vector < float > dx, dz;
 	std::string imagePath, shadowPath;
-	GsMat initialPos, myTrans, shadow;
+	GsMat initialPos, myTrans, shadow, glbmov, jointMovement;
 
 private:
 	void buildBody();
@@ -56,6 +56,12 @@ public:
 	void setInitialPos(const GsMat& posMat);
 	void setMyTrans(const GsMat& transMat);
 	void setShadow(const GsMat& shadowMat);
+	void setGlbMov(const GsMat& glbmov);
+	void setJntMov(const GsMat& jntMat);
+
+	void applyInitialPos(const GsMat& posMat);
+	void applyMyTrans(const GsMat& transMat);
+
 };
 
 #endif // SO_TEXTUREDCYLINDER_H

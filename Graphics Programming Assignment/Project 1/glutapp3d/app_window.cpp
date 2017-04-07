@@ -37,23 +37,48 @@ void AppWindow::initPrograms ()
  {
    // We are not directly initializing glsl programs here, instead, each scene object
    // initializes its own program(s). This makes sharing more difficult but is probably easier
-   // to manage.
 
+   // to manage.
+	std::string imagePath;
+	GsMat shadow, transl;
+	float h;
    // set light:
    _light.set ( GsVec(0.5f,0.5f,0.5f), GsColor(90,90,90,255), GsColor::white, GsColor::white );
-   // Make shadow matrix
-   GsMat shadow;
-   float lx, ly, lz, h;
-   std::string imagePath = "../skin.png";
-   h = -0.5;
+
+   h = -1.0f;
+   // create floor
+   imagePath = "../gears.png";
+   _floor.init(0.0f, h - 0.01f, 0.0f, 7.5f, 7.5f, imagePath);
+   _floor.build();
+
+   // create object
+   imagePath = "../color2.png";
+   transl.translation(0.0f, h - 0.01f, 0.0f);
+   _object.init(0.0f, 0.0f, 0.0f, imagePath);
+   _object.build(0.15f, 15, 6);
+   _object.setInitialPos(transl);
+
+   // Make shadow matrix for all human parts
+   float lx, ly, lz;
+   imagePath = "../skin1.png";
    lx = _light.pos.x;  ly = _light.pos.y;  lz = _light.pos.z;
    shadow.setl1(1.0f, -(lx / ly), 0.0f, h*(lx / ly));
    shadow.setl2(0.0f, 0.0f, 0.0f, h);
    shadow.setl3(0.0f, -(lz / ly), 1.0f, h*(lz / ly));
    shadow.setl4(0.0f, 0.0f, 0.0f, 1.0f);
 
-   _human.init(shadow, imagePath);
+   _object.setShadow(shadow);
+   // create human using skin texture
+   _human.init(shadow);
 
+   // test objects
+   GsMat rot;
+   _test.init(0.0f, 0.0f, 0.0f, imagePath);
+   _test.build(0.15f, 0.4f, 25);
+   _test.setShadow(shadow);
+   transl.translation(-0.45, 0.20f, 0.0f);
+   rot.rotz(PIOVER2);
+   _test.setInitialPos(rot * transl);
    // Load demo model:
    //_superq.build ( R,S,T,A,B,C );
  }
@@ -70,13 +95,36 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
+	const float incr = GS_TORAD(2.5f);
+	const float incf = 0.05f;
 	switch (key) {
-	case 'q': qx+=0.05; redraw(); break;
-	case 'a': qx-=0.05; redraw(); break;
-	case 'w': qy += 0.05; redraw(); break;
-	case 's': qy -= 0.05; redraw(); break;
-	case 'e': qz += 0.05; redraw(); break;
-	case 'd': qz -= 0.05; redraw(); break;
+		/*
+	case 'q': qx -= 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	case 'a': qx += 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	//case 'w': qy += 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	//case 's': qy -= 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	case 'e': qz -= 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	case 'd': qz += 0.025; _human.updateGlbMov(qx, qz);  redraw(); break;
+	*/
+	case 'h':      _roty -= incr; redraw(); break;
+	case 'j':     _roty += incr; redraw(); break;
+	case 'n':        _rotx += incr; redraw(); break;
+	case 'u':      _rotx -= incr; redraw(); break;
+	
+	case 'q': 
+		if (qy > -0.75) {
+			qy += -0.025; _human.rotateArm(qy); redraw();
+		} break;
+	case 'a': 
+		if (qy < 0.75) {
+			qy -= -0.025; _human.rotateArm(qy); redraw(); 
+		} break;
+	case 'w': redraw(); break;
+	case 's': redraw(); break;
+	case 'e': redraw(); break;
+	case 'd': redraw(); break;
+	case 'r': qx = 0.0f; qz = 0.0f; _human.updateGlbMov(qx, qz); redraw(); break;
+		
 	}
  }
 
@@ -86,10 +134,10 @@ void AppWindow::glutSpecial ( int key, int x, int y )
    const float incr=GS_TORAD(2.5f);
    const float incf=0.05f;
    switch ( key )
-    { case GLUT_KEY_LEFT:      _roty-=incr; break;
-      case GLUT_KEY_RIGHT:     _roty+=incr; break;
-      case GLUT_KEY_UP:        _rotx+=incr; break;
-      case GLUT_KEY_DOWN:      _rotx-=incr; break;
+    { case GLUT_KEY_LEFT:      qx -= 0.025; _human.updateGlbMov(qx, qz); break;
+      case GLUT_KEY_RIGHT:     qx += 0.025; _human.updateGlbMov(qx, qz); break;
+      case GLUT_KEY_UP:        qz -= 0.025; _human.updateGlbMov(qx, qz); break;
+      case GLUT_KEY_DOWN:      qz += 0.025; _human.updateGlbMov(qx, qz); break;
       case GLUT_KEY_PAGE_UP:   _fovy-=incf; break;
       case GLUT_KEY_PAGE_DOWN: _fovy+=incf; break;
       default: return; // return without rendering
@@ -157,26 +205,12 @@ void AppWindow::glutDisplay ()
    //  format, what will cause our values to be transposed, and we will then have in our 
    //  shaders vectors on the left side of a multiplication to a matrix.
 
-   GsMat Rotx, Roty, Rotz;
-   Rotx.rotx(sin(qx), cos(qx));
-   Roty.roty(sin(qy), cos(qy));
-   Rotz.rotz(sin(qz), cos(qz));
-
-   GsMat transl;
-   transl.setl1(1, 0, 0, 0.5);
-   transl.setl2(0, 1, 0, 0.5);
-   transl.setl3(0, 0, 1, 0.5);
-   transl.setl4(0, 0, 0, 1);
-
-   GsMat& test = *(new GsMat);
-   test.setl1(1, 0, 0, 0.5);
-   test.setl2(0, 1, 0, 0.5);
-   test.setl3(0, 0, 1, 0.5);
-   test.setl4(0, 0, 0, 1);
-
    // Draw:
-   //head.draw(stransf, sproj, _light);
+   //_object.draw(stransf, sproj, _light);
    _human.draw(stransf, sproj, _light);
+   _floor.draw(stransf, sproj, _light);
+   _object.draw(stransf, sproj, _light);
+   _object.drawShadow(stransf, sproj, _light);
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
    glutSwapBuffers(); // we were drawing to the back buffer, now bring it to the front

@@ -14,7 +14,7 @@ using namespace std;
 
 class SoHuman {
 private:
-	string imagePath;
+	string imagePath, jointImage;
 	SoHumanPart head, torso, leftArm, leftLeg, rightArm, rightLeg;
 private:
 	// create functions that creates the base unit to form the human parts
@@ -31,7 +31,7 @@ public:
 	~SoHuman();
 	
 	// init and build all SoHumanPart objects
-	void init(const GsMat& shadowMat, const string& imagePath);
+	void init(const GsMat& shadowMat);
 	// draw all SoHumanPart objects and its shadow
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l);
 
@@ -39,28 +39,26 @@ public:
 	void reset();
 
 	// Head interface
-	//void headUpdate(GsMat& myTrans);
 	void headReset() { head.reset(); }
 
 	// Torso interface
-	//void torsoUpdate(GsMat& myTrans);
 	void torsoReset() { torso.reset(); }
 
 	// leftArm interface
-	//void leftArmUpdate(GsMat& myTrans);
 	void leftArmReset() { leftArm.reset(); }
 
 	// rightArm interface
-	//void rightArmUpdate(GsMat& myTrans);
 	void rightArmReset() { rightArm.reset(); }
 
 	// leftLeg interface
-	//void leftLegUpdate(GsMat& myTrans);
 	void leftLegReset() { leftLeg.reset(); }
 
 	// rightLeg interface
-	//void rightLegUpdate(GsMat& myTrans);
 	void rightLegReset() { rightLeg.reset(); }
+
+	void updateGlbMov(float dx, float dz);
+
+	void rotateArm(float dy);
 };
 
 

@@ -15,8 +15,9 @@ SoTexturedSphere::SoTexturedSphere()
 
 	myTrans.identity();
 
-	shadow.identity();
+	glbmov.identity();
 
+	shadow.identity();
 	shadowPath = "../shadow.png";
 }
 
@@ -29,8 +30,20 @@ void SoTexturedSphere::setMyTrans(const GsMat& transMat) {
 void SoTexturedSphere::setShadow(const GsMat& shadowMat) {
 	shadow = shadowMat;
 }
+
+void SoTexturedSphere::applyInitialPos(const GsMat& posMat) {
+	initialPos = posMat * initialPos;
+}
+void SoTexturedSphere::applyMyTrans(const GsMat& transMat) {
+	myTrans = transMat * myTrans;
+}
+
 void SoTexturedSphere::resetMyTrans() {
 	myTrans.identity();
+}
+
+void SoTexturedSphere::setGlbMov(const GsMat& glbmov) {
+	this->glbmov = glbmov;
 }
 
 void SoTexturedSphere::init(float x, float y, float z, string& imagePath)
@@ -263,7 +276,7 @@ void SoTexturedSphere::build(float r, int _lfaces, int _layers)
 void SoTexturedSphere::draw(const GsMat& tr, const GsMat& pr, const GsLight& l)
 {
 	GsMat toSend;
-	toSend = tr * myTrans * initialPos;
+	toSend = tr * glbmov * myTrans * initialPos;
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;
@@ -296,7 +309,7 @@ void SoTexturedSphere::drawShadow(const GsMat& tr, const GsMat& pr, const GsLigh
 {
 	//cout << "Size of P is " << P.size() << endl;
 	GsMat toSend;
-	toSend = tr * shadow * myTrans * initialPos;
+	toSend = tr * shadow * glbmov * myTrans * initialPos;
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;
