@@ -27,11 +27,6 @@ void draw3D::init() {
 }
 
 void draw3D::build(const GsArray<GsVec>& ctrl) {
-	cout << "Points in draw3D" << endl;
-	//cout << ctrl.size() << endl;
-	//for (int i = 0; i < ctrl.size(); ++i) {
-		//cout << ctrl[i] << endl;
-	//}
 
 	GsVec offset = GsVec(0.0f, 0.0f, 0.3f);
 	for (int i = 0; i < ctrl.size() - 1; ++i) {
@@ -65,10 +60,6 @@ void draw3D::build(const GsArray<GsVec>& ctrl) {
 	}
 	C.size(P.size());
 	C.setall(color);
-	cout << P.size() << endl;
-	for (int i = 0; i < P.size(); ++i) {
-		cout << P[i] << endl;
-	}
 
 
 	glBindVertexArray(va[0]);
