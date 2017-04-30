@@ -71,7 +71,7 @@ void SoCurve::build(int numSegs, const GsArray<GsVec>& ctrlpnts, curveType type)
 		C.size(P.size());
 		C.setall(GsColor::magenta);
 	}
-	else if (BOSPLINE) {
+	else if (type == BOSPLINE) {
 		GsArray<GsVec> newCtrl, temp;
 		for (int i = 1; i < ctrlpnts.size() - 1; ++i) {
 			temp = bospline(i, ctrlpnts);
