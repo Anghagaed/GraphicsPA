@@ -174,7 +174,6 @@ void AppWindow::glutDisplay ()
    // (see demo program in gltutors-projection.7z, we are replicating the same behavior here)
    GsMat camview, persp, sproj;
    float x, y, z;
-   _object.getXYZ(x, y, z);
    GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
    //GsVec eye(x+2, y+1, z+2), center(0, 0, 0), up(0, 1, 0);
    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
