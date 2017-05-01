@@ -38,10 +38,14 @@ private:
 	// Objects
 	SoHead _head;
 	SoBody _body;
-	SoArm _arm1;
-	SoArm _arm2;
-	SoLeg _leg1;
-	SoLeg _leg2;
+	SoArm _armLeft1;
+	SoArm _armLeft2;
+	SoArm _armRight1;
+	SoArm _armRight2;
+	SoLeg _legLeft1;
+	SoLeg _legLeft2;
+	SoLeg _legRight1;
+	SoLeg _legRight2;
 	SoJoint _joint1;				// between head and body
 	SoJoint _joint2;				// between body and leg1
 	SoJoint _joint3;				// between body and leg2
@@ -50,17 +54,20 @@ private:
 	
 	// For building
 	float _nfaces;						// 16 faces
-	float _radiusB;						// 0.5 top radius
-	float _radiusT;						// 0.5 bot radius
+	float _radius;
 	
 	// For drawing
 	GsMat mBody;
 	GsMat mHead;
-	GsMat mArm1;
-	GsMat mArm2;
+	GsMat mArmLeft1;
+	GsMat mArmLeft2;
+	GsMat mArmRight1;
+	GsMat mArmRight2;
 	GsMat mArmRot;
-	GsMat mLeg1;
-	GsMat mLeg2;
+	GsMat mLegLeft1;
+	GsMat mLegLeft2;
+	GsMat mLegRight1;
+	GsMat mLegRight2;
 	GsMat mJoint1;
 	GsMat mJoint2;
 	GsMat mJoint3;

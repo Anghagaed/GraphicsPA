@@ -247,7 +247,7 @@ void SoArm::drawCircle(double radiusTop, double radiusBot, double height, double
 	}
 }
 
-void SoArm::drawCapsule(int nfaces, double radiusTop, double radiusBot)
+void SoArm::drawCapsule(int nfaces, double radiusTop, double radiusBot, double height)
 {
 	// Variables
 	if (radiusTop < 0 || radiusBot < 0)
@@ -255,7 +255,7 @@ void SoArm::drawCapsule(int nfaces, double radiusTop, double radiusBot)
 		std::cout << "TOP OR BOT RADIUS IS NEGATIVE!\n";
 		return;
 	}
-	double height = 1.0; // 1/2 height of the cylinder
+//	double height = 1.0; // 1/2 height of the cylinder
 	int frame_num = ((nfaces - 1) / 2); // # of frames for top and bot "circles"
 	double circle_rate = (M_PI / 2.0) / frame_num; // rate of angle that changes the radius of "circle"
 
@@ -294,7 +294,7 @@ void SoArm::drawCapsule(int nfaces, double radiusTop, double radiusBot)
 	}
 }
 
-void SoArm::build(int nfaces, double radiusTop, double radiusBot)
+void SoArm::build(int nfaces, double radiusTop, double radiusBot, double height)
 {
 	if (nfaces < 3) // Error check
 	{
@@ -303,7 +303,7 @@ void SoArm::build(int nfaces, double radiusTop, double radiusBot)
 	}
 	P.size(0); T.size(0); N.size(0); NL.size(0); // set size to zero, just in case
 
-	drawCapsule(nfaces, radiusTop, radiusBot); // draws "Capsule"
+	drawCapsule(nfaces, radiusTop, radiusBot, height); // draws "Capsule"
 
 	_mtl.specular.set(255, 255, 255);
 	_mtl.shininess = 30; // increase specular effect

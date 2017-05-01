@@ -28,7 +28,7 @@ private:
 	GLuint _texid;
 	int _numpoints;     // just saves the number of points
 	bool _flatn;
-	void drawCapsule(int nfaces, double radiusTop, double radiusBot);
+	void drawCapsule(int nfaces, double radiusTop, double radiusBot, double height);
 	void drawTube(double radiusTop, double radiusBot, double height, double sine_r, double cosine_r, double sine_l, double cosine_l);
 	void SoArm::drawCircle(double radiusTop, double radiusBot, double height, double sine_r, double cosine_r, double sine_l, double cosine_l);
 public:
@@ -37,7 +37,7 @@ public:
 	SoArm();
 	void init();
 	void flat(bool b) { _flatn = b; }
-	void build(int nfaces, double radiusTop, double radiusBot);
+	void build(int nfaces, double radiusTop, double radiusBot, double height);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs);
 	void updateTexture(bool which);
 };
