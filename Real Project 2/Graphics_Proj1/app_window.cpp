@@ -197,7 +197,7 @@ void AppWindow::glutDisplay ()
    _object.draw(stransf, sproj, _light, _fs, _lightCoord);
 
    // Everything else
-   _floor.draw(stransf, sproj, _light, _fs);
+   //_floor.draw(stransf, sproj, _light, _fs);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

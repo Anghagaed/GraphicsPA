@@ -15,7 +15,7 @@ SoObject::SoObject()
 
 	// Drawing cylinder stuff
 	_nfaces = 16;
-	_radius = 0.25f;
+	_radius = 0.25f/4;
 
 	// Jump animation stuff
 	animateUp = false;
@@ -35,12 +35,18 @@ SoObject::SoObject()
 
 void SoObject::init()
 {
-	_body.init(0,0.50,0,"../metaltexture.jpg");
+	_body.init(0.0f,0.0f,0.0f, "../metaltexture.jpg");
+	_legLeft1.init(0.0, 0.0f, 0.0f, "../metaltexture.jpg");
+	_legRight1.init(0.0, 0.0f, 0.0f, "../metaltexture.jpg");
+	_jointLegL.init(0.0f, 0.0f, 0.0f, "../pinktexture.jpg");
 }
 
 void SoObject::build()
 {
-	_body.build(_radius/4, 0.5, _nfaces);
+	_body.build(_radius, 0.4, _nfaces);
+	_jointLegL.build(0.025f/2, _radius / 3, _nfaces);
+	_legLeft1.build(_radius / 6, 0.125f, _nfaces);
+	_legRight1.build(_radius / 6, 0.125f, _nfaces);
 }
 
 void SoObject::draw(const GsMat& stransf, const GsMat& sproj, const GsLight& l, const float& fs, const GsVec lcoord)
@@ -56,7 +62,46 @@ void SoObject::draw(const GsMat& stransf, const GsMat& sproj, const GsLight& l, 
 	// Body:
 	// Drawing body
 	ftransform = stransf*translationMatrix;
-	_body.draw(ftransform, sproj, l, fs);				// draw body
+	temp1.translation(0.0f, 0.5f, 0.0f);
+	_body.draw(ftransform * temp1, sproj, l, fs);				// draw body
+	
+	// Drawing Right Leg
+	// _jointLegL1
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.2875f, _radius/2);
+	_jointLegL.draw(ftransform * temp2 * temp1, sproj, l, fs);
+
+	// Drawing Left Leg 1
+	temp1.translation(_radius / 4, 0.2125f, _radius / 2);
+	_legLeft1.draw(ftransform * temp1, sproj, l, fs);
+
+	// _jointLegL2
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.1375, _radius / 2);
+	_jointLegL.draw(ftransform * temp2 * temp1, sproj, l, fs);
+
+	// Drawing Left Leg 2
+	temp1.translation(_radius / 4, 0.0625f, _radius / 2);
+	_legLeft1.draw(ftransform * temp1, sproj, l, fs);
+
+	// Drawing Right Leg
+	// _jointLegR1
+	temp1.rotx(PI / 2);
+	temp2.translation(- _radius / 4, 0.2875f, - _radius / 2);
+	_jointLegL.draw(ftransform * temp2 * temp1, sproj, l, fs);
+
+	// Drawing Right Leg 1
+	temp1.translation(- _radius / 4, 0.2125f, - _radius / 2);
+	_legRight1.draw(ftransform * temp1, sproj, l, fs);
+
+	// _jointLegR2
+	temp1.rotx(PI / 2);
+	temp2.translation(- _radius / 4, 0.1375, - _radius / 2);
+	_jointLegL.draw(ftransform * temp2 * temp1, sproj, l, fs);
+
+	// Drawing Right Leg 2
+	temp1.translation(- _radius / 4, 0.0625f, - _radius / 2);
+	_legRight1.draw(ftransform * temp1, sproj, l, fs);
 }
 
 void SoObject::jump(bool& animate)

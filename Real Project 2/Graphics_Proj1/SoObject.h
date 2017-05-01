@@ -51,7 +51,14 @@ private:
 	SoJoint _joint3;				// between body and leg2
 	SoJoint _joint4;				// between body and arm1
 	SoJoint _joint5;				// between body and arm2
-	
+
+	SoJoint _jointLegL1;			// between body and left Leg 1
+	SoJoint _jointLegL2;			// between left leg 1 and left leg 2
+	SoJoint _jointLegR1;			// between body and right leg 1
+	SoJoint _jointLegR2;			// between right leg 1 and body
+
+	SoJoint _jointLegL;
+	SoJoint _jointLegR;
 	// For building
 	float _nfaces;						// 16 faces
 	float _radius;

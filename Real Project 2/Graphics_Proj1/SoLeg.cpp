@@ -105,6 +105,33 @@ void SoLeg::buildBody() {
 	}
 }
 
+void SoLeg::buildHat() {
+	for (int i = 0; i < dx.size() - 1; ++i) {
+		GsPnt a, b, c;
+		GsVec n;
+		a = GsPnt(x, y + l / 2, z);
+		b = GsPnt(x + r * dx[i], y + l / 2, z + r * dz[i]);
+		c = GsPnt(x + r * dx[i + 1], y + l / 2, z + r * dz[i + 1]);
+
+		// a, b, c
+		P.push() = a;  P.push() = b; P.push() = c;
+
+		n = GsVec(0.0f, 1.0f, 0.0f);
+		N.push() = n; N.push() = n; N.push() = n;
+
+		a = GsPnt(x, y - (l / 2), z);
+		b = GsPnt(x + r * dx[i], y - (l / 2), z + r * dz[i]);
+		c = GsPnt(x + r * dx[i + 1], y - (l / 2), z + r * dz[i + 1]);
+
+		// a, b, c
+		P.push() = a;  P.push() = b; P.push() = c;
+
+		n = GsVec(0.0f, -1.0f, 0.0f);
+		N.push() = n; N.push() = n; N.push() = n;
+
+	}
+}
+
 void SoLeg::build(float r, float l, int _nfaces)
 {
 	T.clear();
