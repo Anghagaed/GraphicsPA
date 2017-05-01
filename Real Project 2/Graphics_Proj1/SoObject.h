@@ -88,6 +88,9 @@ private:
 	GsMat mJoint4;
 	GsMat mJoint5;
 
+	bool spinJointArmBool[4];		// 1 = left arm outer joint, 0 = left arm inner joint, 3 = right arm outer joint, 2 = right arm inner joint
+
+
 	// For animation
 	bool animateUp;
 	bool animateDown;
@@ -113,6 +116,7 @@ public:
 	void move(bool& animate, bool& front);		// check and animate (will be used in idle() function in app_window)
 	void getXYZ(float x, float y, float z);
 	void turn(bool& animate, bool& left);
+	void keyFrame1();
 	void rotateHCW();
 	void rotateHCCW();
 	void rotateL1CW();					// rotate the leg1 clockwise by a constant
