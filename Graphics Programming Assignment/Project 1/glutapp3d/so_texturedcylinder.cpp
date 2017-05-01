@@ -171,9 +171,9 @@ void SoTexturedCylinder::buildHat() {
 		n = GsVec(0.0f, 1.0f, 0.0f);
 		N.push() = n; N.push() = n; N.push() = n;
 
-		a = GsPnt(x					, - ( y + l / 2 ) , z);
-		b = GsPnt(x + r * dx[i]		, - ( y + l / 2 ) , z + r * dz[i]);
-		c = GsPnt(x + r * dx[i + 1] , - ( y + l / 2 ) , z + r * dz[i + 1]);
+		a = GsPnt(x					, y - ( l / 2 ) , z);
+		b = GsPnt(x + r * dx[i]		, y - ( l / 2 ) , z + r * dz[i]);
+		c = GsPnt(x + r * dx[i + 1] , y - ( l / 2 ) , z + r * dz[i + 1]);
 
 		// a, b, c
 		P.push() = a;  P.push() = b; P.push() = c;

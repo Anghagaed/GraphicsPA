@@ -35,7 +35,7 @@ SoObject::SoObject()
 
 void SoObject::init()
 {
-	_body.init(0,0.25,0,"../metaltexture.jpg");
+	_body.init(0,0.50,0,"../metaltexture.jpg");
 }
 
 void SoObject::build()

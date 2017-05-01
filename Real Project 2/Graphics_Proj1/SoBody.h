@@ -39,6 +39,7 @@ private:
 	std::string imagePath;
 private:
 	void buildBody();
+	void buildHat();
 	void calculateParameters();
 public:
 public:
