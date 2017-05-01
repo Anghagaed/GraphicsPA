@@ -11,6 +11,19 @@
 # include "SoJoint.h"
 # include <gsim/gs_mat.h>
 # include <gsim/gs_light.h>
+
+// Defines:
+/*
+#define PIOVER2 M_PI / 2
+#define PI M_PI
+#define THREEPI 3 * M_PI / 2
+#define TWOPI 2 * M_PI
+#define NEGPIOVER2 -M_PI / 2
+#define NEGPI -M_PI
+#define NEGTHREEPI -3 * M_PI / 2
+#define NEGTWOPI -2 * M_PI
+*/
+
 // Basically... This is the main object for this project!!
 // Guess what? It jumps up and down with a press of a button!
 // WOAH!! THAT IS SO COOL!!!
@@ -66,8 +79,10 @@ private:
 	float rotateA1by;					// rotation angle for arm1
 	float rotateA2by;					// rotation angle for arm2
 	float rotateby;						// model rotation
-	float* PI;
-	int index;
+
+	// foward vector (Doggo's)
+	GsVec forwardVec;
+	float moveOffset;
 
 public:
 	SoObject();
@@ -75,7 +90,6 @@ public:
 	void build();
 	void jump(bool& animate);					// check and animate (will be used in idle() function in app_window)
 	void move(bool& animate, bool& front);		// check and animate (will be used in idle() function in app_window)
-	int find(float value);
 	void getXYZ(float x, float y, float z);
 	void turn(bool& animate, bool& left);
 	void rotateHCW();
