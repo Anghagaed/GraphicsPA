@@ -1,48 +1,50 @@
+#include "SoHead.h"
 
-# include "SoHead.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <iostream>
+using namespace std;
 
 SoHead::SoHead()
 {
 	_numpoints = 0;
-	_flatn = false;
+	r = 0;
+	x = 0;
+	y = 0;
+	z = 0;
+	l = 0;
+	_nfaces = 0;
 }
 
-void SoHead::init()
+void SoHead::init(float x, float y, float z, string imagePath)
 {
-	_vsh.load_and_compile(GL_VERTEX_SHADER, "../texgouraud.vert");
-	_fsh.load_and_compile(GL_FRAGMENT_SHADER, "../texgouraud.frag");
-	_prog.init_and_link(_vsh, _fsh);
+	this->x = x; this->y = y; this->z = z; this->imagePath = imagePath;
+
+	_vshphong.load_and_compile(GL_VERTEX_SHADER, "../texgouraud.vert");
+	_fshphong.load_and_compile(GL_FRAGMENT_SHADER, "../texgouraud.frag");
+	_progphong.init_and_link(_vshphong, _fshphong);
 
 	// Define buffers needed:
 	gen_vertex_arrays(1); // will use 1 vertex array
 	gen_buffers(3);       // will use 3 buffers
 
-	_prog.uniform_locations(12); // will send 9 variables
+	_progphong.uniform_locations(12); // will send 10 variables
+	_progphong.uniform_location(0, "vTransf");
+	_progphong.uniform_location(1, "vProj");
+	_progphong.uniform_location(2, "lPos");
+	_progphong.uniform_location(3, "la");
+	_progphong.uniform_location(4, "ld");
+	_progphong.uniform_location(5, "ls");
+	_progphong.uniform_location(6, "ka");
+	_progphong.uniform_location(7, "kd");
+	_progphong.uniform_location(8, "ks");
+	_progphong.uniform_location(9, "sh");
+	_progphong.uniform_location(10, "Tex1");
+	_progphong.uniform_location(11, "fs");
 
-	_prog.uniform_location(0, "vTransf");
-	_prog.uniform_location(1, "vProj");
-	_prog.uniform_location(2, "lPos");
-	_prog.uniform_location(3, "la");
-	_prog.uniform_location(4, "ld");
-	_prog.uniform_location(5, "ls");
-	_prog.uniform_location(6, "ka");
-	_prog.uniform_location(7, "kd");
-	_prog.uniform_location(8, "ks");
-	_prog.uniform_location(9, "sh");
-	_prog.uniform_location(10, "Tex1");
-	_prog.uniform_location(11, "fs");
-
-
+	// Copy paste here
 	GsImage I;
 	gsuint id;
-	if (!I.load("../doggo.png"))
-	{
-		std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1);
-	}
-	glGenTextures(1, &_texid); // generated ids start at 1
+	if (!I.load(imagePath.c_str())) { std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1); }
+
+	glGenTextures(1, &_texid);
 	glBindTexture(GL_TEXTURE_2D, _texid);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, I.w(), I.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I.data());
 
@@ -59,315 +61,145 @@ void SoHead::init()
 	I.init(0, 0); // free image from CPU
 }
 
-void SoHead::updateTexture(bool which)
-{
- if (!which) // Texture # 1
- {
-
- GsImage I;
- gsuint id;
- if (!I.load("../doggo.png"))
- {
- std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1);
- }
- glGenTextures(1, &_texid); // generated ids start at 1
- glBindTexture(GL_TEXTURE_2D, _texid);
- glTexImage2D(GL_TEXTURE_2D, 0, 4, I.w(), I.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I.data());
-
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
- glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
- glGenerateMipmap(GL_TEXTURE_2D);
-
- glBindTexture(GL_TEXTURE_2D, 0);
- glBindVertexArray(0);
-
- I.init(0, 0);
-
- }
- else // Texture # 2
- {
-
- GsImage I;
- gsuint id;
- if (!I.load("../black.png"))
- {
- std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1);
- }
- glGenTextures(1, &_texid); // generated ids start at 1
- glBindTexture(GL_TEXTURE_2D, _texid);
- glTexImage2D(GL_TEXTURE_2D, 0, 4, I.w(), I.h(), 0, GL_RGBA, GL_UNSIGNED_BYTE, I.data());
-
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
- glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
- glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
- glGenerateMipmap(GL_TEXTURE_2D);
-
- glBindTexture(GL_TEXTURE_2D, 0);
- glBindVertexArray(0);
-
- I.init(0, 0);
-
- }
-
-}
-
-// Draws Tube
-void SoHead::drawTube(double radiusTop, double radiusBot, double height, double sine_r, double cosine_r, double sine_l, double cosine_l)
-{
-	// Get a,b,c,d
-	// Get top coordinates
-	double radius = radiusTop;
-	// side of the rectangles in the tube setion
-	double x_r = radius * sine_r;
-	double x_l = radius * sine_l;
-	// apothem of the rectangles in the tube section
-	double z_r = radius * cosine_r;
-	double z_l = radius * cosine_l;
-	GsPnt a, b, c, d; // Points
-	a = GsPnt(x_r, height, z_r);
-	b = GsPnt(x_l, height, z_l);
-
-	// Get bot coordinates
-	radius = radiusBot;
-	x_r = radius * sine_r;
-	x_l = radius * sine_l;
-	z_r = radius * cosine_r;
-	z_l = radius * cosine_l;
-
-	c = GsPnt(x_r, -height, z_r);
-	d = GsPnt(x_l, -height, z_l);
-
-	// top triangle
-	P.push() = (a);
-	P.push() = (b);
-	P.push() = (c);
-
-	// bot triangle
-	P.push() = (d);
-	P.push() = (c);
-	P.push() = (b);
-
-	GsVec n1, n2, n3, n4;
-	const double ns = 0.25f; // how long they appear in the screen
-
-	if (_flatn)
-	{
-		n1 = normal(a, b, c);
-		n2 = normal(a, d, c);
-		N.push() = n1; N.push() = n1; N.push() = n1;
-		N.push() = n2; N.push() = n2; N.push() = n2;
-		n1 *= ns; n2 *= ns;
-	}
-	else
-	{
-		// a, b = top
-		// c, d = bot
-		n1 = GsVec((double)a.x, 0.0, (double)a.z);
-		n2 = GsVec((double)b.x, 0.0, (double)b.z);
-		n3 = GsVec((double)c.x, 0.0, (double)c.z);
-		n4 = GsVec((double)d.x, 0.0, (double)d.z);
-		n1.normalize();
-		// top
-		N.push() = (n1);
-		N.push() = (n2);
-		N.push() = (n3);
-		// bot
-		N.push() = (n2);
-		N.push() = (n3);
-		N.push() = (n4);
+void SoHead::calculateParameters() {
+	int layers = _nfaces / 4;
+	double dQ = TWOPI / _nfaces;
+	for (double i = (TWOPI + dQ); i >= 0; i -= dQ) {
+		dx.push_back(cos(i));
+		dz.push_back(sin(i));
 	}
 }
 
-// Draws Circle
-void SoHead::drawCircle(double radiusTop, double radiusBot, double height, double sine_r, double cosine_r, double sine_l, double cosine_l) //, int frame_num, double circle_rate, double radius, double curr_angle_r, double curr_angle_l)
-{
-	// Get top coordinates
-	double radius = radiusTop;
-	// side of the rectangles in the tube setion
-	double x_r = radius * sine_r;
-	double x_l = radius * sine_l;
-	// apothem of the rectangles in the tube section
-	double z_r = radius * cosine_r;
-	double z_l = radius * cosine_l;
-	GsPnt a, b, c; // Points
-	a = GsPnt(x_r, height, z_r);
-	b = GsPnt(x_l, height, z_l);
+void SoHead::buildBody() {
+	for (int i = 0; i < dx.size() - 1; ++i) {
+		GsPnt a, b, c, d;
+		a = GsPnt(x + r * dx[i], y + l / 2, z + r * dz[i]);
+		b = GsPnt(x + r * dx[i + 1], y + l / 2, z + r * dz[i + 1]);
+		c = GsPnt(x + r * dx[i + 1], y - (l / 2), z + r * dz[i + 1]);
+		d = GsPnt(x + r * dx[i], y - (l / 2), z + r * dz[i]);
 
+		P.push() = a;
+		P.push() = b;
+		P.push() = c;
 
-	a = GsPnt(x_r, height, z_r);
-	b = GsPnt(x_l, height, z_l);
-	c = GsPnt(0.0, height, 0.0);
-	P.push() = (a);
-	P.push() = (b);
-	P.push() = (c);
-	GsVec n1, n2, n3, n4;
-	const float ns = 0.05f; // how long they appear in the screen
-	if (_flatn)
-	{
-		n1 = normal(a, c, b);
-		N.push() = n1; N.push() = n1; N.push() = n1;
-	}
-	else
-	{
-		n1 = GsVec(0.0, 1.0, 0.0);
-		N.push() = n1; N.push() = n1; N.push() = n1;
-	}
-	// bot
-	// Get top coordinates
-	radius = radiusBot;
-	// side of the rectangles in the tube setion
-	x_r = radius * sine_r;
-	x_l = radius * sine_l;
-	// apothem of the rectangles in the tube section
-	z_r = radius * cosine_r;
-	z_l = radius * cosine_l;
+		P.push() = a;
+		P.push() = d;
+		P.push() = c;
 
-	a = GsPnt(x_r, -height, z_r);
-	b = GsPnt(x_l, -height, z_l);
-	c = GsPnt(0.0, -height, 0.0);
+		T.push_back(GsVec2(((float)i) / _nfaces, 0));						// for point a
+		T.push_back(GsVec2(((float)i + 1.0f) / _nfaces, 0));				// for point b
+		T.push_back(GsVec2(((float)i + 1.0f) / _nfaces, 1));				// for point c
 
-	P.push() = (a);
-	P.push() = (b);
-	P.push() = (c);
+		T.push_back(GsVec2(((float)i) / _nfaces, 0));						// for point a
+		T.push_back(GsVec2(((float)i) / _nfaces, 1));						// for point d
+		T.push_back(GsVec2(((float)i + 1.0f) / _nfaces, 1));				// for point c
 
-	if (_flatn)
-	{
-		n1 = normal(a, b, c);
-		N.push() = n1; N.push() = n1; N.push() = n1;
-	}
-	else
-	{
-		n1 = GsVec(0.0, -1.0, 0.0);
-		N.push() = n1; N.push() = n1; N.push() = n1;
+		GsVec n1, n2;
+		n1 = GsVec(a.x, 0, a.z); n1.normalize(); N.push() = n1;
+		n1 = GsVec(b.x, 0, b.z); n1.normalize(); N.push() = n1;
+		n1 = GsVec(c.x, 0, c.z); n1.normalize(); N.push() = n1;
+
+		n2 = GsVec(a.x, 0, a.z); n2.normalize(); N.push() = n2;
+		n2 = GsVec(d.x, 0, d.z); n2.normalize(); N.push() = n2;
+		n2 = GsVec(c.x, 0, c.z); n2.normalize(); N.push() = n2;
 	}
 }
 
-void SoHead::drawCapsule(int nfaces, double radiusTop, double radiusBot)
-{
-	// Variables
-	if (radiusTop < 0 || radiusBot < 0)
-	{
-		std::cout << "TOP OR BOT RADIUS IS NEGATIVE!\n";
-		return;
-	}
-	double height = 1.0; // 1/2 height of the cylinder
-	int frame_num = ((nfaces - 1) / 2); // # of frames for top and bot "circles"
-	double circle_rate = (M_PI / 2.0) / frame_num; // rate of angle that changes the radius of "circle"
+void SoHead::buildHat() {
+	for (int i = 0; i < dx.size() - 1; ++i) {
+		GsPnt a, b, c;
+		GsVec n;
+		a = GsPnt(x, y + l / 2, z);
+		b = GsPnt(x + r * dx[i], y + l / 2, z + r * dz[i]);
+		c = GsPnt(x + r * dx[i + 1], y + l / 2, z + r * dz[i + 1]);
 
-												   // (Degrees) * (Radian Conversion) = Radian
-	double angle_rate = 360.0 / nfaces * M_PI / 180; // rate the triangle rotates
-	double angle_l = -360.0 / nfaces * M_PI / 180 / 2; // default left side
-	double angle_r = 360.0 / nfaces * M_PI / 180 / 2; // default right side
+		// a, b, c
+		P.push() = a;  P.push() = b; P.push() = c;
 
-	float textRate = 1.0f / nfaces;
+		n = GsVec(0.0f, 1.0f, 0.0f);
+		N.push() = n; N.push() = n; N.push() = n;
 
-	for (int i = 0; i < nfaces; i++)
-	{
-		// side of the rectangles in the tube setion
-		double sine_r = (double)sin(angle_r + (angle_rate * i));
-		double sine_l = (double)sin(angle_l + (angle_rate * i));
+		a = GsPnt(x, y - (l / 2), z);
+		b = GsPnt(x + r * dx[i], y - (l / 2), z + r * dz[i]);
+		c = GsPnt(x + r * dx[i + 1], y - (l / 2), z + r * dz[i + 1]);
 
-		// apothem of the rectangles in the tube section
-		double cosine_r = (double)cos(angle_r + (angle_rate * i));
-		double cosine_l = (double)cos(angle_l + (angle_rate * i));
+		// a, b, c
+		P.push() = a;  P.push() = b; P.push() = c;
 
-		drawTube(radiusTop, radiusBot, height, sine_r, cosine_r, sine_l, cosine_l); // draws tube
+		n = GsVec(0.0f, -1.0f, 0.0f);
+		N.push() = n; N.push() = n; N.push() = n;
 
-		GsVec a, b, c, d;
-		a = GsVec2(textRate*(i + 1), 1.0f);
-		b = GsVec2(textRate*i, 1.0f);
-		c = GsVec2(textRate*(i + 1), 0.0f);
-		d = GsVec2(textRate*i, 0.0f);
-		T.push() = c;
-		T.push() = d;
-		T.push() = a;
-
-		T.push() = b;
-		T.push() = a;
-		T.push() = d;
-		//drawCircle(radiusTop, radiusBot, height, sine_r, cosine_r, sine_l, cosine_l); // draws "circles"
 	}
 }
 
-void SoHead::build(int nfaces, double radiusTop, double radiusBot)
+void SoHead::build(float r, float l, int _nfaces)
 {
-	if (nfaces < 3) // Error check
-	{
-		std::cout << "nfaces should not be less than 3. nfaces currently is " << nfaces << std::endl;
-		return;
-	}
-	P.size(0); T.size(0); N.size(0); NL.size(0); // set size to zero, just in case
+	T.clear();
+	this->r = r; this->l = l; this->_nfaces = _nfaces;
 
-	drawCapsule(nfaces, radiusTop, radiusBot); // draws "Capsule"
+	this->calculateParameters();
+	this->buildBody();
+	this->buildHat();
 
-	_mtl.specular.set(255, 255, 255);
-	_mtl.shininess = 30; // increase specular effect
+	_numpoints = P.size();
 
-						 // send data to OpenGL buffers:
+
 	glBindVertexArray(va[0]);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
-	// P
 	glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
 	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float)*P.size(), P.pt(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	// N
 	glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
 	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float)*N.size(), N.pt(), GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	// T
 	glBindBuffer(GL_ARRAY_BUFFER, buf[2]);
-	glBufferData(GL_ARRAY_BUFFER, T.size() * 2 * sizeof(float), T.pt(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, T.size() * 2 * sizeof(float), &T[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
 
 	glBindVertexArray(0); // break the existing vertex array object binding.
 
-						  // save size so that we can free our buffers and later just draw the OpenGL arrays:
-	_numpoints = P.size();
 
-	// free non-needed memory:
-	P.capacity(0); N.capacity(0); T.capacity(0);
+						  // free non-needed memory:
+	P.capacity(0); T.clear(); N.capacity(0);
+	dx.clear(); dz.clear();
+	//_mtl.specular.set(255, 255, 255);
+	_mtl.diffuse.set(255, 0, 0);
+	_mtl.shininess = 8; // increase specular effect
 }
+
 void SoHead::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs)
 {
-	if (fs < 0)
-	{
-		std::cout << "NEGATIVE FS! INCREASE FS!\n";
-		return;
-	}
 	float f[4];
 	float sh = (float)_mtl.shininess;
 	if (sh<0.001f) sh = 64;
 
-	glUseProgram(_prog.id);
+	glUseProgram(_progphong.id);
+
 	glBindVertexArray(va[0]);
 	glBindTexture(GL_TEXTURE_2D, _texid);
 
-	glUniformMatrix4fv(_prog.uniloc[0], 1, GL_FALSE, tr.e);
-	glUniformMatrix4fv(_prog.uniloc[1], 1, GL_FALSE, pr.e);
-	glUniform3fv(_prog.uniloc[2], 1, l.pos.e);
-	glUniform4fv(_prog.uniloc[3], 1, l.amb.get(f));
-	glUniform4fv(_prog.uniloc[4], 1, l.dif.get(f));
-	glUniform4fv(_prog.uniloc[5], 1, l.spe.get(f));
-	glUniform4fv(_prog.uniloc[6], 1, _mtl.ambient.get(f));
-	glUniform4fv(_prog.uniloc[7], 1, _mtl.diffuse.get(f));
-	glUniform4fv(_prog.uniloc[8], 1, _mtl.specular.get(f));
-	glUniform1fv(_prog.uniloc[9], 1, &sh);
-	glUniform1ui(_prog.uniloc[10], _texid);
-	glUniform1fv(_prog.uniloc[11], 1, &fs);
+	// Updates uniforms
+	glUniformMatrix4fv(_progphong.uniloc[0], 1, GL_FALSE, tr.e);
+	glUniformMatrix4fv(_progphong.uniloc[1], 1, GL_FALSE, pr.e);
+	glUniform3fv(_progphong.uniloc[2], 1, l.pos.e);
+	glUniform4fv(_progphong.uniloc[3], 1, l.amb.get(f));
+	glUniform4fv(_progphong.uniloc[4], 1, l.dif.get(f));
+	glUniform4fv(_progphong.uniloc[5], 1, l.spe.get(f));
+	glUniform4fv(_progphong.uniloc[6], 1, _mtl.ambient.get(f));
+	glUniform4fv(_progphong.uniloc[7], 1, _mtl.diffuse.get(f));
+	glUniform4fv(_progphong.uniloc[8], 1, _mtl.specular.get(f));
+	glUniform1fv(_progphong.uniloc[9], 1, &sh);
+	glUniform1ui(_progphong.uniloc[10], _texid);
+	glUniform1fv(_progphong.uniloc[11], 1, &fs);
 
 	glBindVertexArray(va[0]);
 	glDrawArrays(GL_TRIANGLES, 0, _numpoints);
 	glBindVertexArray(0); // break the existing vertex array object binding.
+
 }
 

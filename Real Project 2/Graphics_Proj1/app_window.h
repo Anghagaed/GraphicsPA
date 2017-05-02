@@ -38,6 +38,8 @@ class AppWindow : public GlutWindow
 	bool _front;
 	bool _left;
 	float _fs;
+	bool _animate;
+	int keyframe;
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();

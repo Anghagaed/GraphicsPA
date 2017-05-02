@@ -22,10 +22,12 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _lasttime = gs_time();
    _animateinc = 0.1f;
    _jump = false;
-   _move = false;
+   _move = true;
    _front = false;
    _left = false;
    _rotate = false;
+   _animate = false;
+   keyframe = 0;
    initPrograms ();
    _fs = 0.10f;
 }
@@ -72,18 +74,10 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 
       case ' ': _viewaxis = !_viewaxis; break;
 	  case 'z': _jump = true; break;
-	  case 'q': _object.rotateHCW(); break;
-	  case 'a': _object.rotateHCCW(); break;
-	  case 'w': _object.rotateL1CW(); break;
-	  case 's': _object.rotateL1CCW(); break;
-	  case 'e': _object.rotateL2CW(); break;
-	  case 'd': _object.rotateL2CCW(); break;
-	  case 'r': _object.rotateA1CW(); break;
-	  case 'f': _object.rotateA1CCW(); break;
-	  case 't': _object.rotateA2CW(); break;
-	  case 'g': _object.rotateA2CCW(); break;
 	  case 'x':  _fs += 0.05; redraw(); break;
 	  case 'c':  _fs -= 0.05; redraw(); break;
+	  case 'h': _animate = true; keyframe = 1; break;
+	  case 'j': _move = true; break;
 	  case '8': _move = true; _front = true; break;
 	  case '2': _move = true; _front = false; break;
 	  case '4': _rotate = true; _left = true; break;
@@ -135,10 +129,18 @@ void AppWindow::glutReshape ( int w, int h )
 
 void AppWindow::glutIdle ()
  {
-	_object.jump(_jump);
-	_object.move(_move, _front);
-	_object.turn(_rotate, _left);
-	redraw();
+	// millisecond * 60 / 1000 = 1/60 second
+	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0)
+	{
+		if (keyframe == 1 && _animate)
+			_object.keyFrame1(_animate);
+		else
+			keyframe = 0;
+		_object.jump(_jump);
+		_object.move(_move);
+		_object.turn(_rotate, _left);
+		redraw();
+	}
  }
 GsMat shadowMatrix(float light[3])
 {
@@ -175,7 +177,6 @@ void AppWindow::glutDisplay ()
    GsMat camview, persp, sproj;
    float x, y, z;
    GsVec eye(0,0,2), center(0,0,0), up(0,1,0);
-   //GsVec eye(x+2, y+1, z+2), center(0, 0, 0), up(0, 1, 0);
    camview.lookat ( eye, center, up ); // set our 4x4 "camera" matrix
 
    float aspect=1.0f, znear=0.1f, zfar=50.0f;
