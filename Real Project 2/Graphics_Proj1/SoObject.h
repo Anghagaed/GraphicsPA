@@ -73,6 +73,9 @@ private:
 	GsVec forwardVec;
 	float moveOffset;
 
+	GsMat ftransform;						// final transform matrix
+	GsMat translationMatrix;				// matrix for whole object translation
+
 	// Curve
 	int numsegs;
 	GsArray<GsVec> ctrlpnts;				// control points
@@ -87,6 +90,12 @@ private:
 	GsMat hRArm1;							// handles horizontal rotation for right arm1
 	GsMat vRArm2;							// handles vertical rotation for right arm2
 	GsMat hRArm2;							// handles horizontal rotation for right arm2
+
+private:
+	void drawHead(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
+	void drawArms(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
+	void drawLegs(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
+	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 
 public:
 	SoObject();

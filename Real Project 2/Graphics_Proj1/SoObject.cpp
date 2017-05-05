@@ -149,112 +149,79 @@ void SoObject::hturnRArm2(float amount)
 
 }
 
-void SoObject::draw(const GsMat& stransf, const GsMat& sproj, const GsLight& l, const float& fs, const GsVec lcoord)
+void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
-	GsMat ftransform;									// final transform matrix
-
 	// Whole object translation
-	GsMat translationMatrix, temp1, temp2;
+	GsMat temp1, temp2;
 	temp1.translation(moveXby, moveYby, moveZby);		// rigid translation
 	temp2.roty(rotateby);								// rotation matrix
 	translationMatrix = temp1 * temp2;
 
+	ftransform = tr*translationMatrix;					// apply perspective matrix? (this should be multiplied at the most left corner)
+	
 	// Head:
-	// Drawing head
-	ftransform = stransf*translationMatrix;
-	temp1.translation(0.0f, 0.8f, 0.0f);						// rigid translation matrix (to put the head in the correct place)
-	temp2.roty(M_PI/2);											// rotation matrix (to align with the whole body)
-	_head.draw(ftransform * temp1 * temp2, sproj, l, fs);				// draw head
+	drawHead(pr, l, fs, lcoord);
 
 	// Body:
-	// Drawing body
-	ftransform = stransf*translationMatrix;
-	temp1.translation(0.0f, 0.5f, 0.0f);
-	_body.draw(ftransform * temp1, sproj, l, fs);				// draw body
+	drawBody(pr, l, fs, lcoord);
 	
-	// Drawing Right Leg
-	// _jointLegL1
-	temp1.rotx(PI / 2);
-	temp2.translation(_radius / 4, 0.2875f, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, sproj, l, fs);
-
-	// Drawing Left Leg 1
-	temp1.translation(_radius / 4, 0.2125f, 0.0f);
-	_leg.draw(ftransform * temp1, sproj, l, fs);
-
-	// _jointLegL2
-	temp1.rotx(PI / 2);
-	temp2.translation(_radius / 4, 0.1375, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, sproj, l, fs);
-
-	// Drawing Left Leg 2
-	temp1.translation(_radius / 4, 0.0625f, 0.0f);
-	_leg.draw(ftransform * temp1, sproj, l, fs);
-
-	// Drawing Right Leg
-	// _jointLegR1
-	temp1.rotx(PI / 2);
-	temp2.translation(- _radius / 4, 0.2875f, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, sproj, l, fs);
-
-	// Drawing Right Leg 1
-	temp1.translation(- _radius / 4, 0.2125f, 0.0f);
-	_leg.draw(ftransform * temp1, sproj, l, fs);
-
-	// _jointLegR2
-	temp1.rotx(PI / 2);
-	temp2.translation(- _radius / 4, 0.1375, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, sproj, l, fs);
-
-	// Drawing Right Leg 2
-	temp1.translation(- _radius / 4, 0.0625f, 0.0f);
-	_leg.draw(ftransform * temp1, sproj, l, fs);
+	// Legs:
+	drawLegs(pr, l, fs, lcoord);
 
 	// Arms:
+	drawArms(pr, l, fs, lcoord);
+}
+
+void SoObject::drawHead(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
+{
+	GsMat temp1, temp2;
+	temp1.translation(0.0f, 0.8f, 0.0f);								// rigid translation matrix (to put the head in the correct place)
+	temp2.roty(M_PI / 2);												// rotation matrix (to align with the whole body)
+	_head.draw(ftransform * temp1 * temp2, pr, l, fs);					// draw head
+}
+
+void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
+{
+	GsMat temp1, temp2;
 	GsMat armRot, spin;
-	armRot.rotz(M_PI/2);
+	armRot.rotz(M_PI / 2);
 	// Drawing arms
 	// Left arm joint1
 	GsMat armLJoint1Pos;
 	armLJoint1Pos.translation(_radius + 0.025, 0.6, 0);
-	if (spinJointArmBool[0] == true) 
+	if (spinJointArmBool[0] == true)
 	{
 		spin.rotz(PI / 2);
 	}
-	else 
+	else
 	{
 		spin.identity();
 	}
-	ftransform = stransf*translationMatrix*armLJoint1Pos*spin;
-	_armJoint.draw(ftransform, sproj, l, fs);		// draw joint (between body and left arm)
+	_armJoint.draw(ftransform*armLJoint1Pos*spin, pr, l, fs);		// draw joint (between body and left arm)
+												
 	// Left arm joint2
 	GsMat armLJoint2Pos;
 	armLJoint2Pos.translation(_radius + 0.025 + 0.1, 0.6, 0);
-	if (spinJointArmBool[1] == true) 
+	if (spinJointArmBool[1] == true)
 	{
 		spin.roty(PI / 2);
 	}
-	else 
+	else
 	{
 		spin.identity();
 	}
-	ftransform = stransf*translationMatrix*armLJoint2Pos*spin;
-	_armJoint.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_armJoint.draw(ftransform*armLJoint2Pos*spin, pr, l, fs);		// draw joint (between left arms)
+												
 	// Left arm1
 	GsMat lArm1Pos;
 	lArm1Pos.translation(_radius + 0.075, 0.6, 0);
-	ftransform = stransf*translationMatrix*lArm1Pos*armRot*spin;
-	_arm.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_arm.draw(ftransform*lArm1Pos*armRot*spin, pr, l, fs);			// draw joint (between left arms)
+											
 	// Left arm2
 	GsMat lArm2Pos, temp3;
 	lArm2Pos.translation(_radius + 0.025 + 0.1 + 0.05, 0.6, 0);
-	//temp2.identity();
-	//temp3.identity();
-	//temp2.rotz(PI / 2);
-	//temp3.roty(-PI / 2);
 	temp1 = armLJoint2Pos * spin * temp3 * armLJoint2Pos.inverse();
-	ftransform = stransf*temp1*translationMatrix*lArm2Pos*armRot;
-	_arm.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_arm.draw(ftransform*temp1*lArm2Pos*armRot, pr, l, fs);			// draw joint (between left arms)
 
 	// Right arm joint1
 	GsMat armRJoint1Pos;
@@ -263,36 +230,85 @@ void SoObject::draw(const GsMat& stransf, const GsMat& sproj, const GsLight& l, 
 	{
 		spin.rotx(PI / 2);
 	}
-	else 
+	else
 	{
 		spin.identity();
 	}
-	ftransform = stransf*translationMatrix*armRJoint1Pos*spin;
-	_armJoint.draw(ftransform, sproj, l, fs);		// draw joint (between body and left arm)
+	_armJoint.draw(ftransform*armRJoint1Pos*spin, pr, l, fs);		// draw joint (between body and right arm)
+												
 	// Right arm joint2
 	GsMat armRJoint2Pos;
 	armRJoint2Pos.translation(-(_radius + 0.025 + 0.1), 0.6, 0);
-	if (spinJointArmBool[3] == true) 
+	if (spinJointArmBool[3] == true)
 	{
 		spin.rotx(PI / 2);
 	}
-	else 
+	else
 	{
 		spin.identity();
 	}
-	ftransform = stransf*translationMatrix*armRJoint2Pos*spin;
-	_armJoint.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_armJoint.draw(ftransform*armRJoint2Pos*spin, pr, l, fs);		// draw joint (between right arms)
+												
 	// Right arm1
 	GsMat rArm1Pos;
 	rArm1Pos.translation(-(_radius + 0.075), 0.6, 0);
-	ftransform = stransf*translationMatrix*rArm1Pos*armRot;
-	_arm.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_arm.draw(ftransform*rArm1Pos*armRot, pr, l, fs);				// draw right arm1
+	
 	// Right arm2
 	GsMat rArm2Pos;
 	rArm2Pos.translation(-(_radius + 0.025 + 0.1 + 0.05), 0.6, 0);
-	ftransform = stransf*translationMatrix*rArm2Pos*armRot;
-	_arm.draw(ftransform, sproj, l, fs);		// draw joint (between left arms)
+	_arm.draw(ftransform*rArm2Pos*armRot, pr, l, fs);				// draw right arm2
 }
+
+void SoObject::drawLegs(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
+{
+	GsMat temp1, temp2;
+	// Drawing Left Leg
+	// _jointLegL1
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.2875f, 0.0f);
+	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+
+	// Drawing Left Leg 1
+	temp1.translation(_radius / 4, 0.2125f, 0.0f);
+	_leg.draw(ftransform * temp1, pr, l, fs);
+
+	// _jointLegL2
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.1375, 0.0f);
+	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+
+	// Drawing Left Leg 2
+	temp1.translation(_radius / 4, 0.0625f, 0.0f);
+	_leg.draw(ftransform * temp1, pr, l, fs);
+
+	// Drawing Right Leg
+	// _jointLegR1
+	temp1.rotx(PI / 2);
+	temp2.translation(-_radius / 4, 0.2875f, 0.0f);
+	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+
+	// Drawing Right Leg 1
+	temp1.translation(-_radius / 4, 0.2125f, 0.0f);
+	_leg.draw(ftransform * temp1, pr, l, fs);
+
+	// _jointLegR2
+	temp1.rotx(PI / 2);
+	temp2.translation(-_radius / 4, 0.1375, 0.0f);
+	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+
+	// Drawing Right Leg 2
+	temp1.translation(-_radius / 4, 0.0625f, 0.0f);
+	_leg.draw(ftransform * temp1, pr, l, fs);
+}
+
+void SoObject::drawBody(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
+{
+	GsMat temp1, temp2;
+	temp1.translation(0.0f, 0.5f, 0.0f);
+	_body.draw(ftransform * temp1, pr, l, fs);				// draw body
+}
+
 
 void SoObject::jump(bool& animate)
 {
