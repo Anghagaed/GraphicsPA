@@ -43,26 +43,12 @@ private:
 	SoBody _body;
 	
 	// Arms
-	SoArm _armLeft1;
-	SoArm _armLeft2;
-	SoArm _armRight1;
-	SoArm _armRight2;
-	SoJoint _armLeftJoint1;					// between body and arm1
-	SoJoint _armLeftJoint2;					// between body and arm1
-	SoJoint _armRightJoint1;				// between body and arm2
-	SoJoint _armRightJoint2;				// between body and arm2
+	SoArm _arm;
+	SoJoint _armJoint;
 	
 	// Legs
-	SoLeg _legLeft1;
-	SoLeg _legLeft2;
-	SoLeg _legRight1;
-	SoLeg _legRight2;
-	SoJoint _jointLegL1;					// between body and left Leg 1
-	SoJoint _jointLegL2;					// between left leg 1 and left leg 2
-	SoJoint _jointLegR1;					// between body and right leg 1
-	SoJoint _jointLegR2;					// between right leg 1 and body
-	SoJoint _jointLegL;
-	SoJoint _jointLegR;
+	SoLeg _leg;
+	SoJoint _jointLeg;
 	
 	// For building
 	float _nfaces;							// 16 faces
