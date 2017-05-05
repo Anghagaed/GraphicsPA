@@ -19,6 +19,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _w = w;
    _h = h;
 
+   stop = false;
    _lasttime = gs_time();
    _animateinc = 0.1f;
    _jump = false;
@@ -78,6 +79,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	  case 'c':  _fs -= 0.05; redraw(); break;
 	  case 'h': _animate = true; keyframe = 1; break;
 	  case 'j': _move = true; break;
+	  case 'l': stop = !stop; break;
 	  case '8': _move = true; _front = true; break;
 	  case '2': _move = true; _front = false; break;
 	  case '4': _rotate = true; _left = true; break;
@@ -130,7 +132,7 @@ void AppWindow::glutReshape ( int w, int h )
 void AppWindow::glutIdle ()
  {
 	// millisecond * 60 / 1000 = 1/60 second
-	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0)
+	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
 		if (keyframe == 1 && _animate)
 			_object.keyFrame1(_animate);
