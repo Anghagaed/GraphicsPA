@@ -73,6 +73,9 @@
     <ClCompile Include="..\SoJoint.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
+    <ClCompile Include="..\model.cpp">
+      <Filter>modeling tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\gsim\gs.h">
@@ -162,6 +165,9 @@
     <ClInclude Include="..\SoJoint.h">
       <Filter>myapp</Filter>
     </ClInclude>
+    <ClInclude Include="..\model.h">
+      <Filter>modeling tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="myapp">
@@ -175,6 +181,9 @@
     </Filter>
     <Filter Include="graphsim tools">
       <UniqueIdentifier>{c9628ba3-d800-4870-ba96-41f6812019fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modeling tools">
+      <UniqueIdentifier>{37951645-2c95-4e94-a8a7-7aec3540e596}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -134,13 +134,13 @@ void AppWindow::glutIdle ()
 	// millisecond * 60 / 1000 = 1/60 second
 	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
-		if (keyframe == 1 && _animate)
+		/*if (keyframe == 1 && _animate)
 			_object.keyFrame1(_animate);
 		else
 			keyframe = 0;
 		_object.jump(_jump);
 		_object.move(_move);
-		_object.turn(_rotate, _left);
+		_object.turn(_rotate, _left);*/
 		redraw();
 	}
  }

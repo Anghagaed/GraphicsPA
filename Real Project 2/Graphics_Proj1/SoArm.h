@@ -47,6 +47,8 @@ public:
 	void init(float x, float y, float z, std::string imagePath);
 	void build(float r, float l, int _nfaces);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs);
+	GsVec firstJointPts();
+	GsVec secondJointPts();
 };
 
 #endif // SO_TEXTUREDTUBE_H

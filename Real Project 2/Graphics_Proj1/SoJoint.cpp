@@ -171,7 +171,13 @@ void SoJoint::build(float r, float l, int _nfaces)
 	_mtl.diffuse.set(255, 0, 0);
 	_mtl.shininess = 8; // increase specular effect
 }
+GsVec SoJoint::firstJointPts() {
+	return GsVec(r, 0.0f, 0.0f);
+}
 
+GsVec SoJoint::secondJointPts() {
+	return GsVec(-r, 0.0f, 0.0f);
+}
 void SoJoint::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs)
 {
 	float f[4];

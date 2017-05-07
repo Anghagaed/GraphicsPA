@@ -68,6 +68,8 @@ private:
 
 	float angleLeftArm1;
 	float angleLeftArm2;
+	float angleLeftJoint1;
+	float angleLeftJoint2;
 
 	// foward vector (Doggo's)
 	GsVec forwardVec;
@@ -81,6 +83,8 @@ private:
 	GsArray<GsVec> ctrlpnts;				// control points
 	GsArray<GsVec> P;						// coordinates
 
+	GsVec LArm1vec;							// directing left arm1 is facing
+
 	GsMat vLArm1;							// handles vertical rotation for left arm1
 	GsMat hLArm1;							// handles horizontal rotation for left arm1
 	GsMat vLArm2;							// handles vertical rotation for left arm2
@@ -91,12 +95,13 @@ private:
 	GsMat vRArm2;							// handles vertical rotation for right arm2
 	GsMat hRArm2;							// handles horizontal rotation for right arm2
 
+	double wholeArmRot = 0;
+
 private:
 	void drawHead(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawArms(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawLegs(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
-
 public:
 	SoObject();
 	void init();
@@ -108,11 +113,13 @@ public:
 
 	// rotations
 	// amount = radian
-	void vturnLArm1(float amount);			// rotate left arm1 vertically
-	void hturnLArm1(float amount);			// rotate left arm1 horizontally
-	void vturnLArm2(float amount);			// rotate left arm2 vertically
-	void hturnLArm2(float amount);			// rotate left arm2 horizontally
+	void vturnLArm1(const float& amount, const GsMat& transMatrix);			// rotate left arm1 vertically
+	void hturnLArm1(const float& amount, const GsMat& transMatrix);			// rotate left arm1 horizontally
+	void vturnLArm2(const float& amount, const GsMat& transMatrix);			// rotate left arm2 vertically
+	void hturnLArm2(const float& amount, const GsMat& transMatrix);			// rotate left arm2 horizontally
 	
+	void rotateWholeArmDown(GsMat& rotateMe);
+
 	void vturnRArm1(float amount);			// rotate right arm1 vertically
 	void hturnRArm1(float amount);			// rotate right arm1 horizontally
 	void vturnRArm2(float amount);			// rotate right arm2 vertically

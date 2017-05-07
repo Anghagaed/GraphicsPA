@@ -121,6 +121,7 @@
     <ClCompile Include="..\gsim\gs_string.cpp" />
     <ClCompile Include="..\gsim\gs_strings.cpp" />
     <ClCompile Include="..\gs_image.cpp" />
+    <ClCompile Include="..\model.cpp" />
     <ClCompile Include="..\SoArm.cpp" />
     <ClCompile Include="..\SoBody.cpp" />
     <ClCompile Include="..\SoHead.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="..\gsim\gs_trace.h" />
     <ClInclude Include="..\gs_image.h" />
     <ClInclude Include="..\gs_shared.h" />
+    <ClInclude Include="..\model.h" />
     <ClInclude Include="..\SoArm.h" />
     <ClInclude Include="..\SoBody.h" />
     <ClInclude Include="..\SoHead.h" />
