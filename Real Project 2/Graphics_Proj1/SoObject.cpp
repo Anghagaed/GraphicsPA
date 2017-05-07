@@ -198,41 +198,37 @@ void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, c
 
 	// Drawing left arm
 
-	temp2.rotz(-PI / 2);																	// Z rotation for the left arm
+	temp2.rotz(M_PI / 4);																	// Z rotation for the left arm
 
 	// Left arm joint1
-	GsMat armLJoint1Pos, initialArmLJoint1;
-	armLJoint1Pos.translation(_radius + 0.05, 0.6, 0);
-	temp = _armJoint.secondJointPts();
-	temp = armLJoint1Pos * temp;
-	temp1.translation(temp.x, temp.y, temp.z);
-	initialArmLJoint1 = temp1*temp2*temp1.inverse()*armLJoint1Pos;
-	_armJoint.draw(ftransform*initialArmLJoint1, pr, l, fs);		// draw joint (between body and left arm)
+	GsMat armLJoint1Pos;
+	armLJoint1Pos.translation(_radius + 0.025, 0.6, 0);
+	_armJoint.draw(ftransform*armLJoint1Pos, pr, l, fs);		// draw joint (between body and left arm)
 												
 	// Left arm1
 	GsMat lArm1Pos, initialArmL1;
-	lArm1Pos.translation(_radius + 0.1, 0.6, 0);
+	lArm1Pos.translation(_radius + 0.075, 0.6, 0);
 	temp = _arm.firstJointPts();
 	temp = lArm1Pos * armRot * temp;
-	temp1.translation(temp.x - 0.05, temp.y, temp.z);
+	temp1.translation(temp.x - 0.025, temp.y, temp.z);
 	initialArmL1 = temp1*temp2*temp1.inverse()*lArm1Pos*armRot;
 	_arm.draw(ftransform*initialArmL1, pr, l, fs);			// draw left arm1
 	
 	// Left arm joint2
 	GsMat armLJoint2Pos, initialArmLJoint2;
-	armLJoint2Pos.translation(_radius + 0.15, 0.6, 0.0);
+	armLJoint2Pos.translation(_radius + 0.125, 0.6, 0.0);
 	temp = _armJoint.secondJointPts();
 	temp = armLJoint2Pos * temp;
-	temp1.translation(temp.x-0.1, temp.y, temp.z);
+	temp1.translation(temp.x-0.075, temp.y, temp.z);
 	initialArmLJoint2 = temp1*temp2*temp1.inverse()*armLJoint2Pos;
 	_armJoint.draw(ftransform*initialArmLJoint2, pr, l, fs);		// draw joint (between left arms)
 											
 	// Left arm2
 	GsMat lArm2Pos, initialArmL2;
-	lArm2Pos.translation(_radius + 0.2, 0.6, 0);
+	lArm2Pos.translation(_radius + 0.175, 0.6, 0);
 	temp = _arm.firstJointPts();
 	temp = lArm2Pos * armRot * temp;
-	temp1.translation(temp.x - 0.15, temp.y, temp.z);
+	temp1.translation(temp.x - 0.125, temp.y, temp.z);
 	initialArmL2 = temp1*temp2*temp1.inverse()*lArm2Pos*armRot;
 	_arm.draw(ftransform*initialArmL2, pr, l, fs);			// draw left arm2
 	
@@ -240,40 +236,36 @@ void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, c
 	// Right arm
 	// Right arm joint1
 
-	temp2.rotz(PI / 2);																	// Z rotation for the right arm
+	temp2.roty(PI / 4);																	// Y rotation for the right arm
 
-	GsMat armRJoint1Pos, initialArmRJoint1;
-	armRJoint1Pos.translation(-(_radius + 0.05), 0.6, 0);
-	temp = _armJoint.firstJointPts();
-	temp = armRJoint1Pos * temp;
-	temp1.translation(temp.x, temp.y, temp.z);
-	initialArmRJoint1 = temp1*temp2*temp1.inverse()*armRJoint1Pos;
-	_armJoint.draw(ftransform*initialArmRJoint1, pr, l, fs);		// draw joint (between body and right arm)
+	GsMat armRJoint1Pos;
+	armRJoint1Pos.translation(-(_radius + 0.025), 0.6, 0);
+	_armJoint.draw(ftransform*armRJoint1Pos, pr, l, fs);		// draw joint (between body and right arm)
 
 	// Right arm1
 	GsMat rArm1Pos, initialArmR1;
-	rArm1Pos.translation(-(_radius + 0.1), 0.6, 0);
+	rArm1Pos.translation(-(_radius + 0.075), 0.6, 0);
 	temp = _arm.secondJointPts();
 	temp = rArm1Pos * armRot * temp;
-	temp1.translation(temp.x + 0.05, temp.y, temp.z);
+	temp1.translation(temp.x + 0.025, temp.y, temp.z);
 	initialArmR1 = temp1*temp2*temp1.inverse()*rArm1Pos*armRot;
 	_arm.draw(ftransform*initialArmR1, pr, l, fs);			// draw right arm1
 
 	// Right arm joint2
 	GsMat armRJoint2Pos, initialArmRJoint2;
-	armRJoint2Pos.translation(-(_radius + 0.15), 0.6, 0.0);
+	armRJoint2Pos.translation(-(_radius + 0.125), 0.6, 0.0);
 	temp = _armJoint.firstJointPts();
 	temp = armRJoint2Pos * temp;
-	temp1.translation(temp.x + 0.1, temp.y, temp.z);
+	temp1.translation(temp.x + 0.075, temp.y, temp.z);
 	initialArmRJoint2 = temp1*temp2*temp1.inverse()*armRJoint2Pos;
 	_armJoint.draw(ftransform*initialArmRJoint2, pr, l, fs);		// draw joint (between right arms)
 
 	// Right arm2
 	GsMat rArm2Pos, initialArmR2;
-	rArm2Pos.translation(-(_radius + 0.2), 0.6, 0);
+	rArm2Pos.translation(-(_radius + 0.175), 0.6, 0);
 	temp = _arm.secondJointPts();
 	temp = rArm2Pos * armRot * temp;
-	temp1.translation(temp.x + 0.15, temp.y, temp.z);
+	temp1.translation(temp.x + 0.125, temp.y, temp.z);
 	initialArmR2 = temp1*temp2*temp1.inverse()*rArm2Pos*armRot;
 	_arm.draw(ftransform*initialArmR2, pr, l, fs);			// draw left arm2
 }
