@@ -208,4 +208,3 @@ void SoJoint::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const flo
 	glBindVertexArray(0); // break the existing vertex array object binding.
 
 }
-

@@ -108,6 +108,9 @@ void SoObject::build()
 	// arms
 	_armJoint.build(0.025, 0.05, _nfaces);
 	_arm.build(0.025, 0.05, _nfaces);
+
+	// initialPos Matrix Calculation
+
 }
 
 void SoObject::keyFrame1(bool& animate)

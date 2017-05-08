@@ -78,6 +78,16 @@ private:
 	GsMat ftransform;						// final transform matrix
 	GsMat translationMatrix;				// matrix for whole object translation
 
+	GsMat iniPosArmL1, iniPosArmL2;			
+	GsMat iniPosArmR1, iniPosArmR2;
+	GsMat iniPosArmLJ1, iniPosArmLJ2;
+	GsMat iniPosArmRJ1, iniPosArmRJ2;
+
+	GsMat iniPosLegL1, iniPosLegL2;
+	GsMat iniPosLegR1, iniPosLegR2;
+	GsMat iniPosLegLJ1, iniPosLegLJ2;
+	GsMat iniPosLegRJ1, iniPosLegRJ2;
+
 	// Curve
 	int numsegs;
 	GsArray<GsVec> ctrlpnts;				// control points
