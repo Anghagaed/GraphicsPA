@@ -25,13 +25,31 @@ class SoModel : public GlObjects
     GsMaterial _mtl;    // main material
     int _numpoints;     // just saves the number of points
     bool _phong;
+
+	// move animation
+	GsVec forwardVec;
+	float moveOffset;
+	float moveYby;							// rigid movement (jump part)
+	float moveZby;							// rigid movement (move part)
+	float moveXby;							// rigid movement (move part)
+	float rotateby;							// model rotation
+	int frame_num;
+
+	// Curve
+	int numsegs;
+	GsArray<GsVec> ctrlpnts;				// control points
+	GsArray<GsVec> coord;						// coordinates
+
+
    public :
-    SoModel ();
+	SoModel ();
     void phong ( bool b ) { _phong=b; }
     bool phong () const { return _phong; }
     void init ();
     void build ( GsModel& m );
     void draw ( const GsMat& tr, const GsMat& pr, const GsLight& l );
- };
+	bool animate;
+	void move();				// check and animate (will be used in idle() function in app_window)
+};
 
 #endif // SO_MODEL_H

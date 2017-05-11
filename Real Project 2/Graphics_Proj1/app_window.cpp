@@ -197,8 +197,10 @@ void AppWindow::glutIdle ()
 	// millisecond * 60 / 1000 = 1/60 second
 	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
-		if (_animate)
-			_object.keyFrame1(_animate);
+		_model.animate = true;
+		_model.move();
+		//if (_animate)
+		//	_object.keyFrame1(_animate);
 		//else
 		//	keyframe = 0;
 		//_object.jump(_jump);
@@ -264,7 +266,7 @@ void AppWindow::glutDisplay ()
 
    // Everything else
    //_floor.draw(stransf, sproj, _light, _fs);
-   //_model.draw(stransf, sproj, _light);
+   _model.draw(stransf, sproj, _light);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

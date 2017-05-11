@@ -1,11 +1,51 @@
 
 # include "so_model.h"
 
+static int fac(int x)
+{
+	int factorial = 1;
+	for (int i = 2; i < x; ++i)
+		factorial *= i;
+	return factorial;
+}
+
+static GsVec eval_bezier(float t, const GsArray<GsVec>& ctrlpnts)
+{
+	int n = ctrlpnts.size() - 1;					// summation's n
+	GsVec result(0.0f, 0.0f, 0.0f);					// resulting point
+	float b_func = 0;								// to determine Bernstein polynomial part
+	float bin_coeff;								// binomial coefficient
+
+	for (int c = 0; c <= n; ++c)
+	{
+		bin_coeff = (float)fac(n) / (fac(n - c)*fac(c));
+		b_func = (bin_coeff*pow(t, c))*(pow((1 - t), n - c));
+		result += ctrlpnts[c] * b_func;
+	}
+	return result;
+}
+
 SoModel::SoModel()
  {
    _numpoints = 0;
    _phong = false;
+   frame_num = 0;
+   moveYby = 1.0f;
+   moveZby = 0.0f;
+   moveXby = 0.0f;
+   moveOffset = 0.025f;
+   forwardVec = GsVec(0,0,-1)*moveOffset;
+   // Create Bezier
+   numsegs = 60;
+   ctrlpnts.push() = GsVec(0.0f, moveYby, 0.0f);
+   ctrlpnts.push() = GsVec(-0.5f, moveYby, -0.5f);
+   ctrlpnts.push() = GsVec(0.0f, moveYby, -1.0f);
+   ctrlpnts.push() = GsVec(1.0f, moveYby, -1.0f);
+   ctrlpnts.push() = GsVec(0.0f, moveYby, 0.0f);
+   for (int i = 0; i <= numsegs; ++i)
+	   coord.push() = eval_bezier(i * 1.0f / numsegs, ctrlpnts);
  }
+
 
 void SoModel::init ()
  {
@@ -44,6 +84,8 @@ void SoModel::init ()
    _progphong.uniform_location ( 7, "ks" );
    _progphong.uniform_location ( 8, "sh" );
  }
+
+
 
 void SoModel::build ( GsModel& m )
  {
@@ -120,9 +162,13 @@ void SoModel::draw ( const GsMat& tr, const GsMat& pr, const GsLight& l )
    float sh = (float)_mtl.shininess;
    if ( sh<0.001f ) sh=64;
 
+   GsMat move;
+   move.translation(moveXby, moveYby, moveZby);
+   GsMat finalM = tr * move;
+
    if ( _phong )
     { glUseProgram ( _progphong.id );
-      glUniformMatrix4fv ( _progphong.uniloc[0], 1, GL_FALSE, tr.e );
+      glUniformMatrix4fv ( _progphong.uniloc[0], 1, GL_FALSE, finalM.e );
       glUniformMatrix4fv ( _progphong.uniloc[1], 1, GL_FALSE, pr.e );
       glUniform3fv ( _progphong.uniloc[2], 1, l.pos.e );
       glUniform4fv ( _progphong.uniloc[3], 1, l.amb.get(f) );
@@ -134,7 +180,7 @@ void SoModel::draw ( const GsMat& tr, const GsMat& pr, const GsLight& l )
     }
    else
     { glUseProgram ( _proggouraud.id );
-      glUniformMatrix4fv ( _proggouraud.uniloc[0], 1, GL_FALSE, tr.e );
+      glUniformMatrix4fv ( _proggouraud.uniloc[0], 1, GL_FALSE, finalM.e );
       glUniformMatrix4fv ( _proggouraud.uniloc[1], 1, GL_FALSE, pr.e );
       glUniform3fv ( _proggouraud.uniloc[2], 1, l.pos.e );
       glUniform4fv ( _proggouraud.uniloc[3], 1, l.amb.get(f) );
@@ -149,4 +195,17 @@ void SoModel::draw ( const GsMat& tr, const GsMat& pr, const GsLight& l )
    glDrawArrays ( GL_TRIANGLES, 0, _numpoints );
    glBindVertexArray(0); // break the existing vertex array object binding.
  }
+
+void SoModel::move()
+{
+	if (frame_num == numsegs + 1)
+		frame_num = 0;
+	if (animate == true)
+	{
+		//std::cout << frame_num << "\n";
+		moveXby = coord[frame_num].x;
+		moveZby = coord[frame_num].z;
+		frame_num++;
+	}
+}
 
