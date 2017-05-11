@@ -318,6 +318,29 @@ void SoObject::drawHead(const GsMat & pr, const GsLight & l, const float & fs, c
 	temp2.roty(M_PI / 2);												// rotation matrix (to align with the whole body)
 	_head.draw(ftransform * temp1 * temp2, pr, l, fs);					// draw head
 }
+// Return 0 if animation is done 1 if animation is still going on
+int SoObject::animationOne() {
+	if (frameCounter1 < 40) {
+		// Frame 1
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 < 80) {
+		// Frame 2
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 < 120) {
+		// Frame 3
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 == 120) {
+		frameCounter1 = 0;
+		return 0;
+	}
+	
+}
 
 void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
 {

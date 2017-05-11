@@ -120,6 +120,10 @@ private:
 
 	FrameAnimation ani1Frame1, ani1Frame2, ani1Frame3;
 
+
+
+	FrameAnimation CurrentFrame;
+
 	int frame;
 	bool animate;
 
@@ -128,7 +132,7 @@ private:
 	GsArray<GsVec> ctrlpnts;				// control points
 	GsArray<GsVec> P;						// coordinates
 
-	
+	int frameCounter1;
 	double wholeArmRot = 0;
 
 private:
@@ -145,6 +149,7 @@ public:
 	void turn(bool& animate, bool& left);
 	void keyFrame1(bool &_animate);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
+	int animationOne();
 };
 
 #endif // SO_OBJECT
