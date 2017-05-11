@@ -117,7 +117,7 @@ void SoObject::build()
 	armRot.rotz(M_PI / 2);
 	temp2.rotz(-M_PI / 2);																	// Z rotation for the left arm
 
-
+	// Arm
 	iniPosArmLJ1.translation(_radius + armRadius, 0.6, 0);
 
 	temp3.translation(_radius + armRadius*3, 0.6, 0);	// 1 diameter + 1 radius away from left joint 1
@@ -162,11 +162,43 @@ void SoObject::build()
 	temp = temp3 * armRot * temp;
 	temp1.translation(temp.x + armRadius*5, temp.y, temp.z);
 	iniPosArmR2 = temp1*temp2*temp1.inverse()*temp3*armRot;
+	// Leg
 	/*
-	iniPosLegL1, iniPosLegL2;
-	iniPosLegR1, iniPosLegR2;
-	iniPosLegLJ1, iniPosLegLJ2;
-	iniPosLegRJ1, iniPosLegRJ2;*/
+	iniPosLegL1 = ; iniPosLegL2 = ;
+	iniPosLegR1 = ; iniPosLegR2 = ;
+	iniPosLegLJ1 = ; iniPosLegLJ2 = ;
+	iniPosLegRJ1 = ; iniPosLegRJ2 = ;
+	*/
+	// Left Leg
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.2875f, 0.0f);
+	iniPosLegLJ1 = temp2 * temp1;
+
+	temp1.translation(_radius / 4, 0.2125f, 0.0f);
+	iniPosLegL1 = temp1;
+
+	temp1.rotx(PI / 2);
+	temp2.translation(_radius / 4, 0.1375f, 0.0f);
+	iniPosLegLJ2 = temp2 * temp1;
+
+	temp1.translation(_radius / 4, 0.0625f, 0.0f);
+	iniPosLegL2 = temp1;
+
+	// Right Leg
+	temp1.rotx(PI / 2);
+	temp2.translation(-_radius / 4, 0.2875f, 0.0f);
+	iniPosLegRJ1 = temp2 * temp1;
+
+	temp1.translation(-_radius / 4, 0.2125f, 0.0f);
+	iniPosLegR1 = temp1;
+
+	temp1.rotx(PI / 2);
+	temp2.translation(-_radius / 4, 0.1375, 0.0f);
+	iniPosLegRJ2 = temp2 * temp1;
+
+	// Drawing Right Leg 2
+	temp1.translation(-_radius / 4, 0.0625f, 0.0f);
+	iniPosLegR2 = temp1;
 }
 
 
@@ -337,41 +369,29 @@ void SoObject::drawLegs(const GsMat & pr, const GsLight & l, const float & fs, c
 	GsMat temp1, temp2;
 	// Drawing Left Leg
 	// _jointLegL1
-	temp1.rotx(PI / 2);
-	temp2.translation(_radius / 4, 0.2875f, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+	_jointLeg.draw(ftransform*iniPosLegLJ1, pr, l, fs);
 
 	// Drawing Left Leg 1
-	temp1.translation(_radius / 4, 0.2125f, 0.0f);
-	_leg.draw(ftransform * temp1, pr, l, fs);
+	_leg.draw(ftransform*iniPosLegL1, pr, l, fs);
 
 	// _jointLegL2
-	temp1.rotx(PI / 2);
-	temp2.translation(_radius / 4, 0.1375f, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+	_jointLeg.draw(ftransform*iniPosLegLJ2, pr, l, fs);
 
 	// Drawing Left Leg 2
-	temp1.translation(_radius / 4, 0.0625f, 0.0f);
-	_leg.draw(ftransform * temp1, pr, l, fs);
+	_leg.draw(ftransform * iniPosLegL2, pr, l, fs);
 
 	// Drawing Right Leg
 	// _jointLegR1
-	temp1.rotx(PI / 2);
-	temp2.translation(-_radius / 4, 0.2875f, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+	_jointLeg.draw(ftransform*iniPosLegRJ1, pr, l, fs);
 
 	// Drawing Right Leg 1
-	temp1.translation(-_radius / 4, 0.2125f, 0.0f);
-	_leg.draw(ftransform * temp1, pr, l, fs);
+	_leg.draw(ftransform * iniPosLegR1, pr, l, fs);
 
 	// _jointLegR2
-	temp1.rotx(PI / 2);
-	temp2.translation(-_radius / 4, 0.1375, 0.0f);
-	_jointLeg.draw(ftransform * temp2 * temp1, pr, l, fs);
+	_jointLeg.draw(ftransform * iniPosLegRJ2, pr, l, fs);
 
 	// Drawing Right Leg 2
-	temp1.translation(-_radius / 4, 0.0625f, 0.0f);
-	_leg.draw(ftransform * temp1, pr, l, fs);
+	_leg.draw(ftransform * iniPosLegR2, pr, l, fs);
 }
 
 void SoObject::drawBody(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
