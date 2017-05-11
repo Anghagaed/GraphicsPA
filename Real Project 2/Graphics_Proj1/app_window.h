@@ -37,15 +37,14 @@ class AppWindow : public GlutWindow
     int _w, _h;
     double _lasttime; // last time update during animation
     float _animateinc;
-	bool _jump;
-	bool _move;
-	bool _rotate;
-	bool _front;
-	bool _left;
 	float _fs;
-	bool _animate;
-	int keyframe;
-	bool stop;
+
+	// animation data:
+	bool animate1;
+	bool animate2;
+	bool animate3;
+	bool animate4;
+
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();

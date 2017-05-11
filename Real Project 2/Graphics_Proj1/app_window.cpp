@@ -19,24 +19,17 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _w = w;
    _h = h;
 
-   stop = true;
    _lasttime = gs_time();
    _animateinc = 0.1f;
-   _jump = false;
-   _move = true;
-   _front = false;
-   _left = false;
-   _rotate = false;
-   _animate = false;
-   keyframe = 0;
    initPrograms ();
    _fs = 0.10f;
-   //stop = true;
+
+   animate1 = false;
+   animate2 = false;
+   animate3 = false;
+   animate4 = false;
 }
 
-//void AppWindow::printInfo()
-// {
-// }
 
 static void printInfo(GsModel& m)
 {
@@ -109,25 +102,6 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
- //  float inc=0.025f;
- //  switch ( key )
- //   { case 27 : exit(1); // Esc was pressed
- //     //case 'i' : printInfo(); return;
-
- //     case ' ': _viewaxis = !_viewaxis; break;
-	//  case 'z': _jump = true; break;
-	//  case 'x':  _fs += 0.05; redraw(); break;
-	//  case 'c':  _fs -= 0.05; redraw(); break;
-	//  case 'h': _animate = true; keyframe = 1; break;
-	//  case 'j': _move = true; break;
-	//  case 'l': stop = !stop; break;
-	//  case '8': _move = true; _front = true; break;
-	//  case '2': _move = true; _front = false; break;
-	//  case '4': _rotate = true; _left = true; break;
-	//  case '6': _rotate = true; _left = false; break;
-	//  default : return;
-	//}
- //   redraw(); 
 	switch (key)
 	{
 	case ' ': _viewaxis = !_viewaxis; redraw(); break;
@@ -148,8 +122,10 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 		_jukebox.build(_gsm);
 		redraw();
 		break;
-	case 'g': std::cout << "Animate...\n"; stop = false; break;
-	//case 'h': std::cout << "Start Moving...\n"; _move = true; break;
+	case '1': std::cout << "Animate 1...\n"; animate1 = true; break;
+	case '2': std::cout << "Animate 2...\n"; animate2 = true; break;
+	case '3': std::cout << "Animate 3...\n"; animate3 = true; break;
+	case '4': std::cout << "Animate 4...\n"; animate4 = true; break;
 	}
  }
 
@@ -196,21 +172,28 @@ void AppWindow::glutReshape ( int w, int h )
 void AppWindow::glutIdle ()
  {
 	// millisecond * 60 / 1000 = 1/60 second
-	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
+	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0)
 	{
-		//_airplane.animate = true;
-		//_airplane.move();
-		//_car.animate = true;
-		//_car.move();
-		//if (_animate)
-		//	_object.keyFrame1(_animate);
-		//else
-		//	keyframe = 0;
-		//_object.jump(_jump);
-		//_object.move(_move);
-		//_object.turn(_rotate, _left);
-		if (!_object.animationTwo())
-			stop = true;
+		if (animate1 && !_object.animationOne())
+		{
+			animate1 = false;
+			cout << "animation1 no longer runs\n";
+		}
+		else if (animate2 && !_object.animationTwo())
+		{
+			animate2 = false;
+			cout << "animation2 no longer runs\n";
+		}
+		else if (animate3 && !_object.animationThree())
+		{
+			animate3 = false;
+			cout << "animation3 no longer runs\n";
+		}
+		else if (animate4 && !_object.animationFour())
+		{
+			animate4 = false;
+			cout << "animation4 no longer runs\n";
+		}
 		redraw();
 	}
  }
