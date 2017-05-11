@@ -131,7 +131,11 @@ private:
 	// Animation 3
 	FrameAnimation ani3Frame1, ani3Frame2, ani3Frame3;
 
+	// Walking Animation
+	FrameAnimation walkFrame1, walkFrame2, walkFrame3, walkFrame4, walkFrame5;
+
 	FrameAnimation CurrentFrame;
+
 
 	int frame;
 	bool animate;
@@ -152,6 +156,7 @@ private:
 	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void initAnimation1();
 	void initAnimation3();
+	void initWalkAnimation();
 public:
 	SoObject();
 	void init();
