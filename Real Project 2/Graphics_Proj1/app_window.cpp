@@ -177,21 +177,25 @@ void AppWindow::glutIdle ()
 		if (animate1 && !_object.animationOne())
 		{
 			animate1 = false;
+			_object.reset();
 			cout << "animation1 no longer runs\n";
 		}
 		else if (animate2 && !_object.animationTwo())
 		{
 			animate2 = false;
+			_object.reset();
 			cout << "animation2 no longer runs\n";
 		}
 		else if (animate3 && !_object.animationThree())
 		{
 			animate3 = false;
+			_object.reset();
 			cout << "animation3 no longer runs\n";
 		}
 		else if (animate4 && !_object.animationFour())
 		{
 			animate4 = false;
+			_object.reset();
 			cout << "animation4 no longer runs\n";
 		}
 		redraw();

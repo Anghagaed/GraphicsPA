@@ -155,7 +155,7 @@ private:
 	int frameCounter2;
 	int frameCounter3;
 	int frameCounter4;
-	double wholeArmRot = 0;
+	double rotAngle = 0;
 
 private:
 	void drawHead(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
@@ -171,10 +171,7 @@ public:
 	SoObject();
 	void init();
 	void build();
-	void jump(bool& animate);				// check and animate (will be used in idle() function in app_window)
-	void move(bool& animate);				// check and animate (will be used in idle() function in app_window)
-	void turn(bool& animate, bool& left);
-	void keyFrame1(bool &_animate);
+	void reset();
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	int animationOne();
 	int animationTwo();

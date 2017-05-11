@@ -244,6 +244,7 @@ void SoObject::initAnimation2() {
 		ani2Frame1.legJoint[3] = final*ani2Frame1.legJoint[3];
 	}
 	ani2Frame2.CopyFrom(ani2Frame1);
+	// Frame2
 	// Arm Left
 	{
 		float aRadius = _radius / 2.5;
@@ -788,142 +789,248 @@ void SoObject::build()
 	initFrame.body = iniPosBody;
 
 
-	initAnimation1();
+	/*initAnimation1();
 	initAnimation3();
-	initWalkAnimation();
+	initWalkAnimation();*/
 }
 
 
-// lift arms up
-void SoObject::keyFrame1(bool &_animate)
+void SoObject::reset()
 {
-	animate = _animate;
-	GsMat temp1, temp2, temp3, armRot;
-	GsVec temp;
-	armRot.rotz(M_PI / 2);
-
-	temp2.rotz(-M_PI / 2 + (frame) * M_PI / 120);
-
-	// left arm
-	newPosArmLJ1.translation(_radius + 0.025, 0.6, 0);
-
-	temp3.translation(_radius + 0.075, 0.6, 0);
-	temp = _arm.firstJointPts();
-	temp = temp3 * armRot * temp;
-	temp1.translation(temp.x - 0.025, temp.y, temp.z);
-	newPosArmL1 = temp1*temp2*temp1.inverse()*temp3*armRot;
-
-	temp3.translation(_radius + 0.125, 0.6, 0.0);
-	temp = _armJoint.secondJointPts();
-	temp = temp3 * temp;
-	temp1.translation(temp.x - 0.075, temp.y, temp.z);
-	newPosArmLJ2 = temp1*temp2*temp1.inverse()*temp3;
-
-	temp3.translation(_radius + 0.175, 0.6, 0);
-	temp = _arm.firstJointPts();
-	temp = temp3 * armRot * temp;
-	temp1.translation(temp.x - 0.125, temp.y, temp.z);
-	newPosArmL2 = temp1*temp2*temp1.inverse()*temp3*armRot;
-
-	// right arm
-	// right arm
-	temp2.rotz(M_PI / 2 - frame * M_PI / 120);
-	newPosArmRJ1.translation(-(_radius + 0.025), 0.6, 0);
-
-	temp3.translation(-(_radius + 0.075), 0.6, 0);
-	temp = _arm.secondJointPts();
-	temp = temp3 * armRot * temp;
-	temp1.translation(temp.x + 0.025, temp.y, temp.z);
-	newPosArmR1 = temp1*temp2*temp1.inverse()*temp3*armRot;
-
-	temp3.translation(-(_radius + 0.125), 0.6, 0.0);
-	temp = _armJoint.firstJointPts();
-	temp = temp3 * temp;
-	temp1.translation(temp.x + 0.075, temp.y, temp.z);
-	newPosArmRJ2 = temp1*temp2*temp1.inverse()*temp3;
-
-	temp3.translation(-(_radius + 0.175), 0.6, 0);
-	temp = _arm.secondJointPts();
-	temp = temp3 * armRot * temp;
-	temp1.translation(temp.x + 0.125, temp.y, temp.z);
-	newPosArmR2 = temp1*temp2*temp1.inverse()*temp3*armRot;
-	//cout << frame << endl;
-	if (frame < 60)
-		++frame;
-	else
-	{
-		frame = 0;
-		_animate = false;
-	}
+	//CurrentFrame.CopyFrom(initFrame);
+	CurrentFrame.Identity();
 }
 
 // Return 0 if animation is done 1 if animation is still going on
-int SoObject::animationOne() {
-	if (frameCounter1 < 40) {
+int SoObject::animationOne() 
+{
+	if (frameCounter1 < 40) 
+	{
 		// Frame 1
-		cout << "Frame1" << "\n";
+		//cout << "Frame1" << "\n";
+		frameCounter1++;
+		//CurrentFrame.CopyFrom(ani1Frame1);
+		// Leg Right 
+		{
+			float dist;
+			GsMat translate, rot, final;
+			GsVec vec;
+			dist = 0.30f;
+			translate.translation(0.0f, -dist, 0.0f);
+			rot.rotx(- frameCounter1*(PI / 3.0) / 40.0);
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.leg[2] = final;
+			ani1Frame1.leg[3] = final;
+			ani1Frame1.legJoint[2] = final;
+			ani1Frame1.legJoint[3] = final;
+		}
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-frameCounter1*(PI / 2.0) / 40.0);
+			vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.arm[0] = final;
+			ani1Frame1.arm[1] = final;
+			ani1Frame1.armJoint[0] = final;
+			ani1Frame1.armJoint[1] = final;
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-frameCounter1*(PI / 2.0)/40.0);
+			vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.arm[2] = final;
+			ani1Frame1.arm[3] = final;
+			ani1Frame1.armJoint[2] = final;
+			ani1Frame1.armJoint[3] = final;
+		}
 		CurrentFrame.CopyFrom(ani1Frame1);
-		frameCounter1++;
 		return 1;
 	}
-	else if (frameCounter1 < 80) {
+	else if (frameCounter1 <= 80) 
+	{
 		// Frame 2
-		cout << "Frame2" << "\n";
-		CurrentFrame.CopyFrom(ani1Frame2);
+		//cout << "Frame2" << "\n";
 		frameCounter1++;
+		//CurrentFrame.CopyFrom(ani1Frame2);
+		ani1Frame2.CopyFrom(ani1Frame1);
+		// Frame 2 Affects both arm and one leg right 
+		int tempCounter = frameCounter1 - 40;
+		// Leg Right
+		{
+			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
+			cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.rotx(tempCounter*(PI / 2.0)/40.0);
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.leg[3] = final*ani1Frame1.leg[3];
+			//CurrentFrame.leg[3] = final*CurrentFrame.leg[3];
+		}
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.arm[1] * iniPosArmL2*(_arm.center() + GsVec(0, aHeight / 2, -aRadius));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.roty(-tempCounter*(PI / 3.0)/40.0);
+			//final = translate;
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.arm[1] = final*ani1Frame1.arm[1];
+			//CurrentFrame.arm[1] = final*ani1Frame1.arm[1];
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.arm[3] * iniPosArmR2*(_arm.center() + GsVec(0, -aHeight / 2, -aRadius));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.roty(tempCounter*(PI / 3.0)/40.0);
+			//final = translate;
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.arm[3] = final*ani1Frame1.arm[3];
+			//CurrentFrame.arm[3] = final*ani1Frame1.arm[3];
+		}
+		CurrentFrame.CopyFrom(ani1Frame2);
 		return 1;
 	}
-	else if (frameCounter1 < 120) {
+	else if (frameCounter1 <= 120) {
 		// Frame 3
-		cout << "Frame3" << "\n";
+		//cout << "Frame3" << "\n";
+		frameCounter1++;
 		// THIS IS WHERE THE TWIRL HAPPENS
 		rotateby = (frameCounter1-80)* 2 * PI / 40;
-		frameCounter1++;
 		return 1;
 	}
-	else if (frameCounter1 == 120) {
+	else if (frameCounter1 > 120) {
 		cout << "End animation" << "\n";
 		rotateby = 0;	// 2 PI = 0
-		//CurrentFrame.CopyFrom();
 		frameCounter1 = 0;
 		return 0;
 	}
 
 }
 
-int SoObject::animationTwo() {
-	if (frameCounter2 < 40) {
-		// Frame 1
-		CurrentFrame.CopyFrom(ani2Frame1);
-		frameCounter2++;
-		return 1;
-	}
-	else if (frameCounter2 < 80) {
-		// Frame 2
-		CurrentFrame.CopyFrom(ani2Frame2);
-		frameCounter2++;
-		return 1;
-	}
-	else if (frameCounter2 < 120) {
-		// rotation
-		rotateby = (frameCounter2-120)* PI / 40.0;
-		frameCounter2++;
-		return 1;
-	}
-	else if (frameCounter2 < 160) {
-		// Frame 1
-		CurrentFrame.CopyFrom(ani2Frame1);
-		frameCounter2++;
-		return 1;
-	}
-	else if (frameCounter2 < 180) {
-		// Frame 2
-		CurrentFrame.CopyFrom(ani2Frame2);
-		frameCounter2++;
-		return 1;
-	}
-	else if (frameCounter2 == 180)
+int SoObject::animationTwo() 
+{
+	if (frameCounter2 <= 40) 
 	{
+		// Frame 1
+		frameCounter2++;
+		ani2Frame1.Identity();
+		cout << "Frame1" << "\n";
+		{
+			float radius = _radius;
+			float height = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotz(-frameCounter2*(PI / (4.0*40.0)));
+			vec = iniPosBody*_body.center();
+			translate.translation(-vec.x, -vec.y + 0.2, -vec.z);
+			final = translate.inverse()*rot*translate;
+			//final = translate;
+			for (int i = 0; i < 4; ++i)
+			{
+				ani2Frame1.arm[i] = final;
+				ani2Frame1.armJoint[i] = final;
+				//ani2Frame1.legJoint[i] = final;
+			}
+			//ani2Frame1.leg[2] = final;
+			//ani2Frame1.leg[2] = final;
+			//ani2Frame1.legJoint[0] = final;
+			//ani2Frame1.legJoint[2] = final;
+			ani2Frame1.body = final;
+			ani2Frame1.head = final;
+		}
+		//ani2Frame1.Identity();
+		// Leg Right 
+		{
+			float dist;
+			GsMat translate, rot, final;
+			GsVec vec;
+			dist = 0.30f;
+			translate.translation(0.0f, -dist, 0.0f);
+			rot.rotz(-frameCounter2*(PI / 4.0)/40.0);
+			cout << -frameCounter2*(PI / 4.0) / 40.0<< endl;
+			final = translate.inverse()*rot*translate;
+			ani2Frame1.leg[3] = final*ani2Frame1.leg[3];
+			ani2Frame1.leg[2] = final*ani2Frame1.leg[2];
+			ani2Frame1.legJoint[2] = final*ani2Frame1.legJoint[2];
+			ani2Frame1.legJoint[3] = final*ani2Frame1.legJoint[3];
+		}
+		CurrentFrame.CopyFrom(ani2Frame1);
+		return 1;
+	}
+	else if (frameCounter2 <= 80) 
+	{
+		// Frame 2
+		cout << "Frame2" << "\n";
+		frameCounter2++;
+		ani2Frame2.CopyFrom(ani2Frame1);
+		int tempCounter = frameCounter2 - 40;
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotz(tempCounter * PI / 40.0);
+			vec = ani2Frame1.armJoint[0] * iniPosArmLJ1*(_armJoint.center() - GsVec(-aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani2Frame2.arm[0] = final*ani2Frame1.arm[0];
+			ani2Frame2.arm[1] = final*ani2Frame1.arm[1];
+			//ani2Frame1.armJoint[0] = final*ani2Frame1.armJoint[0];
+			ani2Frame2.armJoint[1] = final*ani2Frame1.armJoint[1];
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotz(-tempCounter*PI/40.0);
+			vec = ani2Frame2.armJoint[2] * iniPosArmRJ1*(_armJoint.center() - GsVec(aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			//final = translate.inverse()*rot*translate;
+			ani2Frame2.arm[2] = final*ani2Frame2.arm[2];
+			ani2Frame2.arm[3] = final*ani2Frame2.arm[3];
+			//ani2Frame1.armJoint[2] = final*ani2Frame1.armJoint[2];
+			ani2Frame2.armJoint[3] = final*ani2Frame2.armJoint[3];
+		}
+		CurrentFrame.CopyFrom(ani2Frame2);
+		return 1;
+	}
+	else if (frameCounter2 <= 120) {
+		// rotation
+		frameCounter2++;
+		rotateby = (frameCounter2 - 120)*2* PI / 40.0;
+		CurrentFrame.CopyFrom(ani2Frame2);
+		return 1;
+	}
+	else if (frameCounter2 > 120) {
+		// Frame 1
 		rotateby = 0;
 		frameCounter2 = 0;
 		return 0;
@@ -932,106 +1039,259 @@ int SoObject::animationTwo() {
 
 int SoObject::animationThree()
 {
-	if (frameCounter3 < 5) {
-		// Frame 1
-		CurrentFrame.CopyFrom(ani3Frame1);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 15) {
-		// Frame 2
-		CurrentFrame.CopyFrom(ani3Frame2);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 25) {
-		// Frame 3
-		CurrentFrame.CopyFrom(ani3Frame3);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 35) {
-		// Frame 2
-		CurrentFrame.CopyFrom(ani3Frame2);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 45) {
-		// Frame 3
-		CurrentFrame.CopyFrom(ani3Frame3);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 55) {
-		// Frame 1
-		CurrentFrame.CopyFrom(ani3Frame1);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 90)
+	if (frameCounter3 < 40) 
 	{
-		// Set to default? Frame
-		rotateby = (frameCounter3-55) * PI / 45.0;
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 100) {
-		// Frame 3
-		rotateby = PI;
-		CurrentFrame.CopyFrom(ani3Frame3);
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 < 110) {
 		// Frame 1
-		CurrentFrame.CopyFrom(ani3Frame1);
 		frameCounter3++;
+		// Frame 1 Rotate Arm
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-frameCounter3*(PI / 2.0)/40.0);
+			vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame1.arm[0] = final;
+			ani3Frame1.arm[1] = final;
+			ani3Frame1.armJoint[0] = final;
+			ani3Frame1.armJoint[1] = final;
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-frameCounter3*(PI / 2.0)/40.0);
+			vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame1.arm[2] = final;
+			ani3Frame1.arm[3] = final;
+			ani3Frame1.armJoint[2] = final;
+			ani3Frame1.armJoint[3] = final;
+		}
+		CurrentFrame.CopyFrom(ani3Frame1);
 		return 1;
 	}
-	else if (frameCounter3 < 120) {
+	else if (frameCounter3 <= 80) 
+	{
+		// Frame 2
+		frameCounter3++;
+		int tempCounter = frameCounter3 - 40;
+		ani3Frame2.CopyFrom(ani3Frame1);
+		// 2nd Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCounter*(PI / 3.0)/40.0);
+			vec = ani3Frame1.arm[1] * iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame2.arm[1] = final*ani3Frame1.arm[1];
+		}
+		// 2nd Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCounter*(PI / 8.0)/40.0);
+			vec = ani3Frame1.arm[3] * iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame2.arm[3] = final*ani3Frame1.arm[3];
+		}
+		CurrentFrame.CopyFrom(ani3Frame2);
+		return 1;
+	}
+	else if (frameCounter3 <= 120) 
+	{
 		// Frame 3
-		rotateby = 0;
+		frameCounter3++;
+		int tempCounter = frameCounter3 - 80;
+		ani3Frame3.CopyFrom(ani3Frame1);
+		// Frame 3 Affects both arm
+		// 2nd Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCounter*(PI / 8.0)/40.0);
+			vec = ani3Frame1.arm[1] * iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame3.arm[1] = final*ani3Frame1.arm[1];
+		}
+		// 2nd Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCounter*(PI / 3.0)/40.0);
+			vec = ani3Frame1.arm[3] * iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani3Frame3.arm[3] = final*ani3Frame1.arm[3];
+		}
 		CurrentFrame.CopyFrom(ani3Frame3);
-		frameCounter3++;
 		return 1;
 	}
-	else if (frameCounter3 < 130) {
-		// Frame 1
-		CurrentFrame.CopyFrom(ani3Frame1);
-		frameCounter3++;
+	else if (frameCounter3 <= 160) 
+	{
+		frameCounter3 ++;
+		rotateby = (frameCounter3 - 120)*2*PI/40.0;
 		return 1;
 	}
-	else if (frameCounter3 < 170) {
-		// Set to default? Frame
-		rotateby = PI + (frameCounter3 - 130) * PI / 40.0;
-		frameCounter3++;
-		return 1;
-	}
-	else if (frameCounter3 == 130) {
+	else if (frameCounter3 > 160)
+	{
 		frameCounter3 = 0;
 		rotateby = 0;
 		return 0;
 	}
 }
 
-
 int SoObject::animationFour()
 {
-	if (frameCounter4 < 40) {
+	if (frameCounter4 <= 40) {
 		// Frame 1
-		CurrentFrame.CopyFrom(ani4Frame1);
 		frameCounter4++;
+		// Frame1
+		// rotate body, head, leg and arms (x-axis)
+		// Frame 1 Rotate Arm and Leg
+		// Body
+		{
+			float radius = _radius;
+			float height = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-frameCounter4*(PI / 4.0)/40.0);
+			vec = iniPosBody*_body.center();
+			translate.translation(-vec.x, -vec.y + 0.2, -vec.z);
+			final = translate.inverse()*rot*translate;
+			//final = translate;
+			for (int i = 0; i < 4; ++i)
+			{
+				ani4Frame1.arm[i] = final;
+				ani4Frame1.armJoint[i] = final;
+			}
+			ani4Frame1.body = final;
+			ani4Frame1.head = final;
+		}
+		// Leg Right 
+		{
+			float dist;
+			GsMat translate, rot, final;
+			GsVec vec;
+			dist = 0.30f;
+			translate.translation(0.0f, -dist, 0.0f);
+			rot.rotx(-frameCounter4*(2 * PI / 3)/40.0);
+			final = translate.inverse()*rot*translate;
+			ani4Frame1.leg[3] = final;
+			ani4Frame1.leg[2] = final;
+			ani4Frame1.legJoint[2] = final;
+			ani4Frame1.legJoint[3] = final;
+		}
+		CurrentFrame.CopyFrom(ani4Frame1);
+		ani4Frame2.CopyFrom(ani4Frame1);
 		return 1;
 	}
 	if (frameCounter4 < 80) {
 		// Frame 2
-		CurrentFrame.CopyFrom(ani4Frame2);
+		ani4Frame2.CopyFrom(ani4Frame1);
 		frameCounter4++;
+		// Frame2
+		// rotate arms (x-axis)
+		// Frame 1 Rotate Arm and Leg
+		// Arm Left
+		int tempCount = frameCounter4 - 40;
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCount*(2 * PI / 3.0)/40.0);
+			vec = ani4Frame1.arm[0] * iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[0] = final*ani4Frame1.arm[0];
+			ani4Frame2.arm[1] = final*ani4Frame1.arm[0];
+			ani4Frame2.armJoint[0] = final*ani4Frame1.armJoint[0];
+			ani4Frame2.armJoint[1] = final*ani4Frame1.armJoint[1];
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCount*(2 * PI / 3.0)/40.0);
+			vec = ani4Frame1.arm[2] * iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[2] = final*ani4Frame1.arm[2];
+			ani4Frame2.arm[3] = final*ani4Frame1.arm[3];
+			ani4Frame2.armJoint[2] = final*ani4Frame1.armJoint[2];
+			ani4Frame2.armJoint[3] = final*ani4Frame1.armJoint[3];
+		}
+		// 2nd Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCount*(PI / 3.0)/40.0);
+			vec = ani4Frame2.arm[3] * iniPosArmR2*(_armJoint.center() - GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[3] = final*ani4Frame2.arm[3];
+		}
+		// 2nd Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-tempCount*(PI / 3.0)/40.0);
+			vec = ani4Frame2.arm[1] * iniPosArmL2*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[1] = final*ani4Frame2.arm[1];
+		}
+		// 2nd Leg Right 
+		{
+			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+			cout << tempCount << endl;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani4Frame2.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.rotx(tempCount*PI / 2.0/ 40.0);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.leg[3] = final*ani4Frame2.leg[3];
+			//CurrentFrame.leg[3] = final*CurrentFrame.leg[3];
+		}
+		CurrentFrame.CopyFrom(ani4Frame2);
 		return 1;
 	}
 	if (frameCounter4 <= 120) {
 		// Frame 3
-		rotateby = (frameCounter4-80) * PI / 40.0;
+		rotateby = (frameCounter4-80) *2* PI / 40.0;
 		frameCounter4++;
 		return 1;
 	}
@@ -1145,58 +1405,14 @@ void SoObject::drawBody(const GsMat & pr, const GsLight & l, const float & fs, c
 	_body.draw(ftransform*CurrentFrame.body*iniPosBody, pr, l, fs);				// draw body
 }
 
-
-void SoObject::jump(bool& animate)
-{
-	if (animate == true)
-	{
-		if (moveYby >= 1.0f) 
-		{
-			animateDown = true;
-			animateUp = false;
-		}
-		if(animateDown == false)
-			animateUp = true;
-		const float rate = 0.01f;
-		if (animateUp == true)
-			moveYby += rate;
-		else
-		if(animateDown == true)
-			moveYby -= rate;
-		if (moveYby <= 0.0f)
-		{
-			animate = false;
-			animateUp = false;
-			animateDown = false;
-			moveYby = 0.0f;
-		}
-	}
-}
-
-void SoObject::move(bool& animate)
-{
-	if (frame_num == numsegs)
-	{
-		frame_num = 0;
-		animate = false;
-	}
-	if (animate == true)
-	{
-		moveXby = P[frame_num].x;
-		moveZby = P[frame_num].z;
-		frame_num++;
-	}
-}
-
-
-void SoObject::turn(bool & animate, bool & left)
-{
-	if (animate == true)
-	{
-		if (left == true)
-			rotateby += M_PI / 4;
-		else
-			rotateby -= M_PI / 4;
-		animate = false;
-	}
-}
+//void SoObject::turn(bool & animate, bool & left)
+//{
+//	if (animate == true)
+//	{
+//		if (left == true)
+//			rotateby += M_PI / 4;
+//		else
+//			rotateby -= M_PI / 4;
+//		animate = false;
+//	}
+//}
