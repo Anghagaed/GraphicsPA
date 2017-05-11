@@ -37,6 +37,7 @@ struct FrameAnimation {
 
 	FrameAnimation();
 	void Identity();
+	void CopyFrom(FrameAnimation& toCopy);
 };
 
 // Basically... This is the main object for this project!!
@@ -104,6 +105,8 @@ private:
 	GsMat iniPosLegR1, iniPosLegR2;
 	GsMat iniPosLegLJ1, iniPosLegLJ2;
 	GsMat iniPosLegRJ1, iniPosLegRJ2;
+	double legRadius, legHeight;
+	double legJointRadius, legJointHeight;
 
 	// new matrix
 	GsMat newPosArmL1, newPosArmL2;

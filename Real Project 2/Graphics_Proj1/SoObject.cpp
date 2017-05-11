@@ -27,6 +27,18 @@ void FrameAnimation::Identity() {
 	head.identity();
 }
 
+void FrameAnimation::CopyFrom(FrameAnimation& toCopy) {
+	for (int i = 0; i < 4; ++i) {
+		this->arm[i] = toCopy.arm[i];
+		this->leg[i] = toCopy.leg[i];
+		this->armJoint[i] = toCopy.armJoint[i];
+		this->legJoint[i] = toCopy.legJoint[i];
+	}
+
+	this->body = toCopy.body;
+	this->head = toCopy.head;
+}
+
 GsVec eval_bezier(float t, const GsArray<GsVec>& ctrlpnts)
 {
 	int n = ctrlpnts.size() - 1;					// summation's n
@@ -137,8 +149,24 @@ void SoObject::initAnimation1() {
 		ani1Frame1.armJoint[2] = final;
 		ani1Frame1.armJoint[3] = final;
 	}
+
+	//CurrentFrame.CopyFrom(ani1Frame1);
 	// 
-	// Frame 2 Affects both arm and one leg right
+	// Frame 2 Affects both arm and one leg right 
+	// Leg
+	{
+		float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+		float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+
+		GsMat translate, rot, final;
+		GsVec vec;
+		vec = ani1Frame1.leg[3]*iniPosLegR2*(_leg.center() + GsVec(0, alegHeight / 2, 0));
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		rot.roty(PI / 4);
+		final = translate;
+		//ani1Frame2.leg[3] = final;
+		CurrentFrame.leg[3] = final;
+	}
 	// Frame 3 Twirl
 }
 
@@ -169,9 +197,10 @@ void SoObject::build()
 	_body.build(_radius, 0.4, _nfaces);
 
 	// legs
-	_jointLeg.build(0.025f/2, _radius / 3, _nfaces);
-	_leg.build(_radius / 6, 0.125f, _nfaces);
-	
+	legRadius = _radius / 6; legHeight = _radius * 2;
+	legJointRadius = 0.025f / 2; legJointHeight = _radius / 3;
+	_jointLeg.build(legJointRadius, legJointHeight, _nfaces);
+	_leg.build(legRadius, legHeight, _nfaces);
 	// arms
 	armRadius = _radius / 2.5;
 	armHeight = 0.05;
