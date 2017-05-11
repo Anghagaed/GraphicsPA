@@ -175,6 +175,8 @@ class GsModel
         and does the same to the normals. */
     void invert_faces ();
 
+    GsArray<GsModel::Face>* get_edges_per_vertex();
+
     /*! Generates normals smoothly, respecting the given crease
         angle in radians. Compression is called in the end.
         If the crease angle is <0, it is not considered and

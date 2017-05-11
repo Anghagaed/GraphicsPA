@@ -116,12 +116,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\app_main.cpp" />
+    <ClCompile Include="..\gsim\gs.cpp" />
+    <ClCompile Include="..\gsim\gs_array.cpp" />
+    <ClCompile Include="..\gsim\gs_color.cpp" />
+    <ClCompile Include="..\gsim\gs_image.cpp" />
     <ClCompile Include="..\gsim\gs_input.cpp" />
+    <ClCompile Include="..\gsim\gs_mat.cpp" />
     <ClCompile Include="..\gsim\gs_material.cpp" />
+    <ClCompile Include="..\gsim\gs_model.cpp" />
+    <ClCompile Include="..\gsim\gs_model_obj.cpp" />
+    <ClCompile Include="..\gsim\gs_quat.cpp" />
     <ClCompile Include="..\gsim\gs_string.cpp" />
     <ClCompile Include="..\gsim\gs_strings.cpp" />
-    <ClCompile Include="..\gs_image.cpp" />
-    <ClCompile Include="..\model.cpp" />
+    <ClCompile Include="..\gsim\gs_tree.cpp" />
+    <ClCompile Include="..\gsim\gs_vec.cpp" />
+    <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\SoArm.cpp" />
     <ClCompile Include="..\SoBody.cpp" />
     <ClCompile Include="..\SoHead.cpp" />
@@ -132,26 +141,28 @@
     <ClCompile Include="..\so_axis.cpp" />
     <ClCompile Include="..\app_window.cpp" />
     <ClCompile Include="..\glut_window.cpp" />
-    <ClCompile Include="..\gsim\gs.cpp" />
-    <ClCompile Include="..\gsim\gs_array.cpp" />
-    <ClCompile Include="..\gsim\gs_color.cpp" />
-    <ClCompile Include="..\gsim\gs_mat.cpp" />
-    <ClCompile Include="..\gsim\gs_quat.cpp" />
-    <ClCompile Include="..\gsim\gs_vec.cpp" />
-    <ClCompile Include="..\gsim\gs_vec2.cpp" />
     <ClCompile Include="..\ogl_tools.cpp" />
+    <ClCompile Include="..\so_model.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\gsim\gs_manager.h" />
+    <ClInclude Include="..\gsim\gs.h" />
+    <ClInclude Include="..\gsim\gs_array.h" />
+    <ClInclude Include="..\gsim\gs_color.h" />
+    <ClInclude Include="..\gsim\gs_image.h" />
     <ClInclude Include="..\gsim\gs_input.h" />
     <ClInclude Include="..\gsim\gs_light.h" />
+    <ClInclude Include="..\gsim\gs_manager.h" />
+    <ClInclude Include="..\gsim\gs_mat.h" />
     <ClInclude Include="..\gsim\gs_material.h" />
+    <ClInclude Include="..\gsim\gs_model.h" />
+    <ClInclude Include="..\gsim\gs_quat.h" />
+    <ClInclude Include="..\gsim\gs_shared.h" />
     <ClInclude Include="..\gsim\gs_string.h" />
     <ClInclude Include="..\gsim\gs_strings.h" />
     <ClInclude Include="..\gsim\gs_trace.h" />
-    <ClInclude Include="..\gs_image.h" />
-    <ClInclude Include="..\gs_shared.h" />
-    <ClInclude Include="..\model.h" />
+    <ClInclude Include="..\gsim\gs_tree.h" />
+    <ClInclude Include="..\gsim\gs_vec.h" />
+    <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\SoArm.h" />
     <ClInclude Include="..\SoBody.h" />
     <ClInclude Include="..\SoHead.h" />
@@ -162,24 +173,26 @@
     <ClInclude Include="..\so_axis.h" />
     <ClInclude Include="..\app_window.h" />
     <ClInclude Include="..\glut_window.h" />
-    <ClInclude Include="..\gsim\gs.h" />
-    <ClInclude Include="..\gsim\gs_array.h" />
-    <ClInclude Include="..\gsim\gs_color.h" />
-    <ClInclude Include="..\gsim\gs_mat.h" />
-    <ClInclude Include="..\gsim\gs_quat.h" />
-    <ClInclude Include="..\gsim\gs_vec.h" />
-    <ClInclude Include="..\gsim\gs_vec2.h" />
     <ClInclude Include="..\ogl_tools.h" />
-    <ClInclude Include="..\stb_image.h" />
-    <ClInclude Include="..\stb_image_write.h" />
+    <ClInclude Include="..\so_model.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\flat.frag" />
     <None Include="..\fsh_flat.glsl" />
-    <None Include="..\fsh_mcol_phong.glsl" />
     <None Include="..\fsh_gouraud.glsl" />
+    <None Include="..\fsh_mcol_phong.glsl" />
+    <None Include="..\gouraud.frag" />
+    <None Include="..\makefile" />
+    <None Include="..\mcol_flat.vert" />
+    <None Include="..\mcol_gouraud.vert" />
+    <None Include="..\mcol_phong.frag" />
+    <None Include="..\mcol_phong.vert" />
+    <None Include="..\smtlgouraud.vert" />
+    <None Include="..\texgouraud.frag" />
+    <None Include="..\texgouraud.vert" />
     <None Include="..\vsh_mcol_flat.glsl" />
-    <None Include="..\vsh_mcol_phong.glsl" />
     <None Include="..\vsh_mcol_gouraud.glsl" />
+    <None Include="..\vsh_mcol_phong.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

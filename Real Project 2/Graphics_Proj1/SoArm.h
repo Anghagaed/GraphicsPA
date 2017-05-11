@@ -10,7 +10,7 @@
 # include <gsim/gs_material.h>
 # include <gsim/gs_array.h>
 # include "ogl_tools.h"
-# include "gs_image.h"
+# include <gsim/gs_image.h>
 # include <math.h>
 # include <vector>
 # include <string>

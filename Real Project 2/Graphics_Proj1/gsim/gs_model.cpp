@@ -9,7 +9,6 @@
 # include <iostream>
 
 # include <gsim/gs_model.h>
-# include <gsim/gs_tree.h>
 # include <gsim/gs_quat.h>
 # include <gsim/gs_strings.h>
 
@@ -314,7 +313,7 @@ bool GsModel::load ( const char* fname )
     }
  }
 
-bool GsModel::load( GsInput &in )
+bool GsModel::load ( GsInput &in )
  {
    if ( !in.valid() ) return false;
    in.commentchar ( '#' ); // ensure proper comment style
@@ -460,21 +459,6 @@ float GsModel::count_mean_vertex_degree ()
    double k=0;
    for ( i=0; i<vi.size(); i++ ) k += double(vi[i]);
    return float( k/double(vi.size()) );
-
-   /* old way:
-   GsTree<gsEdgeNode> t;
-   
-   for ( i=0; i<F.size(); i++ )
-    { t.insert_or_del ( new gsEdgeNode ( F[i].a, F[i].b ) );
-      t.insert_or_del ( new gsEdgeNode ( F[i].b, F[i].a ) );
-      t.insert_or_del ( new gsEdgeNode ( F[i].b, F[i].c ) );
-      t.insert_or_del ( new gsEdgeNode ( F[i].c, F[i].b ) );
-      t.insert_or_del ( new gsEdgeNode ( F[i].c, F[i].a ) );
-      t.insert_or_del ( new gsEdgeNode ( F[i].a, F[i].c ) );
-    }
-
-   return (float)t.size() / (float)V.size(); 
-   */
  }
 
 
@@ -672,83 +656,138 @@ void GsModel::invert_normals ()
    for ( i=0; i<N.size(); i++ ) N[i]*=-1.0;
  }
 
-struct VertexNode : public GsTreeNode // only internally used
- { int v, i, f;
-   VertexNode ( int a, int b, int c ) : v(a), i(b), f(c) {}
-   VertexNode () { v=i=f=0; }
-   VertexNode ( const VertexNode& x ) : GsTreeNode(), v(x.v), i(x.i), f(x.f) {}
-  ~VertexNode () {}
-   friend GsOutput& operator<< ( GsOutput& out, const VertexNode& /*v*/ ) { return out; };
-   friend GsInput& operator>> ( GsInput& inp, VertexNode& /*v*/ ) { return inp; }
-   static inline int compare ( const VertexNode* v1, const VertexNode* v2 )
-    { return v1->v!=v2->v ? v1->v-v2->v   // vertices are different
-                          : v1->i-v2->i;  // vertices are equal: use index i
-    }
- };
-
-static void insertv ( GsTree<VertexNode>& t, GsArray<int>& vi, int v, int f )
+static int fcompare ( const GsModel::Face *f1, const GsModel::Face *f2 )
  {
-   // array vi is only used to generated a suitable tree key sorting the vertices.
-   VertexNode *n = new VertexNode(v,++vi[v],f);
-   if ( !t.insert(n) ) std::cout<<"Wrong faces in GsModel::smooth ()!\n";
+   return f1->b-f2->b;
  }
 
+GsArray<GsModel::Face>* GsModel::get_edges_per_vertex()
+ {
+   if ( F.empty() ) return 0;
+   int i, j, k;
+
+   // Allocate array per vertex:
+   GsArray<Face>* va = new GsArray<Face>[V.size()];
+
+   // Get slight improvements by reducing re-allocations per vertex:
+   for ( i=0; i<V.size(); i++ ) va[i].capacity(8);
+
+   // Add unique edges per vertex, respecting orientation, and with face info:
+   for ( i=0; i<F.size(); i++ )
+	{ const Face& f=F[i];
+	  va[f.a].uniqinsort ( Face(i,f.b,f.c), fcompare );
+	  va[f.b].uniqinsort ( Face(i,f.c,f.a), fcompare );
+	  va[f.c].uniqinsort ( Face(i,f.a,f.b), fcompare );
+	}
+
+   // Sort edges per vertex by adjacency:
+   for ( i=0; i<V.size(); i++ )
+	{ GsArray<Face>& ea = va[i];
+	  int max = ea.size()-1;
+	  int neib=-1;
+	  for ( j=1; j<max; j++ )
+	   { neib=-1;
+		 for ( k=j; k<=max; k++ )
+		  { if ( ea[j-1].c==ea[k].b ) break; }
+		 if ( k<=max ) // found
+		  { Face tmp; GS_SWAP(ea[j],ea[k]); }
+		 else 
+		  { // It does happen to not find correct adjancency when loading external meshes
+		  }
+	   }
+	}
+
+   // return:
+   return va;
+ }
+
+// This is faster than previous global sorting method, could still try hash tables
 void GsModel::smooth ( float crease_angle )
  {
-   int v, i;
-   GsTree<VertexNode> t;
-   GsArray<int> vi;
-   GsArray<GsVec> vec; // this is just a buffer to be used in gen_normal()
+   GS_TRACE5("Starting smooth...");
+   if ( F.empty() ) return;
+   int i, vsize=V.size();
 
-   if ( !V.size() || !F.size() ) return;
+   // Get array of edges:
+   GsArray<Face>* va = get_edges_per_vertex();
+   GsArray<GsVec> na; // flat normals per face
 
-   Fn.size ( F.size() );
+   // Compute flat normals for all faces:
+   na.size ( F.size() );
+   for ( i=0; i<F.size(); i++ ) na[i] = face_normal ( i );
 
-   vi.size(V.size());
-   for ( i=0; i<vi.size(); i++ ) vi[i]=0;
-
-   for ( i=0; i<F.size(); i++ )
-    { insertv ( t, vi, F[i].a, i );
-      insertv ( t, vi, F[i].b, i );
-      insertv ( t, vi, F[i].c, i );
-      Fn[i].a = F[i].a;
-      Fn[i].b = F[i].b;
-      Fn[i].c = F[i].c;
-    }
-
-   // first pass will interpolate face normals around each vertex:
-   N.size ( V.size() );
-   vi.size(0);
-   t.gofirst ();
-   while ( t.cur()!=GsTreeNode::null )
-    { v = t.cur()->v;
-      vi.push() = t.cur()->f;
-      t.gonext();
-      if ( t.cur()==GsTreeNode::null || v!=t.cur()->v )
-       { GsVec n = GsVec::null;
-         for ( i=0; i<vi.size(); i++ ) n += face_normal ( vi[i] );
-         N[v] = n / (float)vi.size();
-         vi.size(0);
-       }
-    }
-
-   if ( crease_angle<0 ) return; // only smooth everything
+   // First pass interpolates face normals around each vertex:
+   GS_TRACE5("1st pass...");
+   Fn.size(0);
+   N.size ( vsize );
+   for ( i=0; i<vsize; i++ )
+	{ GsArray<Face>& ea = va[i];
+	  GsVec nsum (GsVec::null);
+	  for ( int j=0; j<ea.size(); j++ )
+		nsum += na[ea[j].a]; // ImprNote: normals could be weighted by face areas
+	  N[i] = nsum / (float)ea.size();
+	  N[i].normalize();
+	}
 
    // second pass will solve crease angles:
-   vi.size(0);
-   t.gofirst();
-   while ( t.cur()!=GsTreeNode::null )
-    { v = t.cur()->v;
-      vi.push() = t.cur()->f;
-      t.gonext();
-      if ( t.cur()==GsTreeNode::null || v!=t.cur()->v )
-       { gen_normal ( v, vec, vi, this, crease_angle );
-         vi.size(0);
-       }
-    }
+   if ( crease_angle>0 )
+	{ GS_TRACE5("2nd pass...");
+	  GsArray<float> ang;
+	  // Initialize Fn with the smooth normals per vertex:
+	  Fn.size(F.size());
+	  for ( i=0; i<Fn.size(); i++ ) Fn[i]=F[i];
+	  // Make normals per vertex:
+	  for ( i=0; i<vsize; i++ )
+	   { GsArray<Face>& ea = va[i];
+		 // build angle array and search for a "crease angled edge":
+		 int j, ini=-1, size=ea.size();
+		 ang.size(size);
+		 for ( j=0; j<size; j++ )
+		  { ang[j] = ::angle( na[ea[j].a], na[ea[(j+1)%size].a] );
+			if ( ini<0 && ang[j]>crease_angle ) ini=j+1;
+		  }
+		 // smooth groups of normals starting from creased angle:
+		 if ( ini>=0 )
+		  { GS_TRACE6("Vertex "<<i<<'/'<<vsize<<": crangleind="<<ini<<'/'<<size);
+			int ei, est, ncount=0, esize=size+ini; // so that we can start from any index
+			GsVec nsum = GsVec::null;
+			est=ini;
+			for ( ei=ini; ei<esize; ei++ )
+			 { j = ei%size;
+			   nsum += na[ea[j].a];
+			   ncount++;
+			   if ( ang[j]>crease_angle ) // add normal and re-start
+				{ for ( int k=est; k<=ei; k++ )
+				   { Face& fn = Fn[ea[k%size].a];
+					 if ( i==fn.a ) fn.a = N.size();
+					 else if ( i==fn.b ) fn.b = N.size();
+					 else fn.c = N.size();
+				   }
+				  N.push() = nsum / (float)ncount;
+				  N.top().normalize();
+				  nsum = GsVec::null;
+				  ncount=0; est=ei+1;
+				}
+			 }
+		  }
+	   }
+	}
 
-   remove_redundant_normals ();
+   if ( N.size()==vsize ) // result is one normal per vertex
+	{ GS_TRACE5("Smooth normals set per vertex.");
+	  Fn.size(0);
+	  //_geomode = Smooth;
+	}
+   else // normals per face per vertex
+	{ GS_TRACE5("Optimizing normals...");
+	  //_geomode = Hybrid;
+	  remove_redundant_normals ();
+	}
+
+   // Finalize:
+   delete[] va;
    compress ();
+   GS_TRACE5("Done.");
  }
 
 void GsModel::translate ( const GsVec &tr )

@@ -11,7 +11,7 @@
 # include "SoJoint.h"
 # include <gsim/gs_mat.h>
 # include <gsim/gs_light.h>
-
+using namespace std;
 // Defines:
 /*
 #define PIOVER2 M_PI / 2
@@ -78,33 +78,38 @@ private:
 	GsMat ftransform;						// final transform matrix
 	GsMat translationMatrix;				// matrix for whole object translation
 
+	// initial matrix
 	GsMat iniPosArmL1, iniPosArmL2;			
 	GsMat iniPosArmR1, iniPosArmR2;
 	GsMat iniPosArmLJ1, iniPosArmLJ2;
 	GsMat iniPosArmRJ1, iniPosArmRJ2;
+	double armRadius, armHeight;
 
 	GsMat iniPosLegL1, iniPosLegL2;
 	GsMat iniPosLegR1, iniPosLegR2;
 	GsMat iniPosLegLJ1, iniPosLegLJ2;
 	GsMat iniPosLegRJ1, iniPosLegRJ2;
 
+	// new matrix
+	GsMat newPosArmL1, newPosArmL2;
+	GsMat newPosArmR1, newPosArmR2;
+	GsMat newPosArmLJ1, newPosArmLJ2;
+	GsMat newPosArmRJ1, newPosArmRJ2;
+
+	GsMat newPosLegL1, newPosLegL2;
+	GsMat newPosLegR1, newPosLegR2;
+	GsMat newPosLegLJ1, newPosLegLJ2;
+	GsMat newPosLegRJ1, newPosLegRJ2;
+
+	int frame;
+	bool animate;
+
 	// Curve
 	int numsegs;
 	GsArray<GsVec> ctrlpnts;				// control points
 	GsArray<GsVec> P;						// coordinates
 
-	GsVec LArm1vec;							// directing left arm1 is facing
-
-	GsMat vLArm1;							// handles vertical rotation for left arm1
-	GsMat hLArm1;							// handles horizontal rotation for left arm1
-	GsMat vLArm2;							// handles vertical rotation for left arm2
-	GsMat hLArm2;							// handles horizontal rotation for left arm2
-
-	GsMat vRArm1;							// handles vertical rotation for right arm1
-	GsMat hRArm1;							// handles horizontal rotation for right arm1
-	GsMat vRArm2;							// handles vertical rotation for right arm2
-	GsMat hRArm2;							// handles horizontal rotation for right arm2
-
+	
 	double wholeArmRot = 0;
 
 private:
@@ -119,22 +124,7 @@ public:
 	void jump(bool& animate);				// check and animate (will be used in idle() function in app_window)
 	void move(bool& animate);				// check and animate (will be used in idle() function in app_window)
 	void turn(bool& animate, bool& left);
-	void keyFrame1(bool& animate);
-
-	// rotations
-	// amount = radian
-	void vturnLArm1(const float& amount, const GsMat& transMatrix);			// rotate left arm1 vertically
-	void hturnLArm1(const float& amount, const GsMat& transMatrix);			// rotate left arm1 horizontally
-	void vturnLArm2(const float& amount, const GsMat& transMatrix);			// rotate left arm2 vertically
-	void hturnLArm2(const float& amount, const GsMat& transMatrix);			// rotate left arm2 horizontally
-	
-	void rotateWholeArmDown(GsMat& rotateMe);
-
-	void vturnRArm1(float amount);			// rotate right arm1 vertically
-	void hturnRArm1(float amount);			// rotate right arm1 horizontally
-	void vturnRArm2(float amount);			// rotate right arm2 vertically
-	void hturnRArm2(float amount);			// rotate right arm2 horizontally
-	
+	void keyFrame1(bool &_animate);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 };
 

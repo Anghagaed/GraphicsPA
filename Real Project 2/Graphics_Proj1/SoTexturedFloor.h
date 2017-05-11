@@ -10,8 +10,8 @@
 # include <gsim/gs_material.h>
 # include <gsim/gs_array.h>
 # include "ogl_tools.h"
-# include "gs_shared.h"
-# include "gs_image.h"
+# include <gsim/gs_shared.h>
+# include <gsim/gs_image.h>
 
 // Scene objects should be implemented in their own classes; and
 // here is an example of how to organize a scene object in a class.

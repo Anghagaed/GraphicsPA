@@ -12,6 +12,7 @@
 # include "so_axis.h"
 # include "SoTexturedFloor.h"
 # include "SoObject.h"
+# include "so_model.h"
 
 // The functionality of your application should be implemented inside AppWindow
 class AppWindow : public GlutWindow
@@ -21,10 +22,12 @@ class AppWindow : public GlutWindow
     SoAxis _axis;
 	SoObject _object;
 	SoTexturedFloor _floor;
+	SoModel _model;
     // Scene data:
     bool  _viewaxis;
     GsLight _light;
 	GsVec _lightCoord;
+	GsModel _gsm;
     
     // App data:
     enum MenuEv { evOption0, evOption1 };
@@ -45,8 +48,8 @@ class AppWindow : public GlutWindow
     AppWindow ( const char* label, int x, int y, int w, int h );
     void initPrograms ();
     GsVec2 windowToScene ( const GsVec2& v );
-    void printInfo ();
-
+   /* void printInfo ();*/
+	void loadModel(int model);
    private : // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );

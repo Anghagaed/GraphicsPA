@@ -23,7 +23,7 @@ int main ( int argc, char** argv )
    AppWindow* w = new AppWindow ( "Superquadric - UCM CSE-170", 300, 300, 640, 480 );
 
    // Display some info:
-   w->printInfo ();
+//   w->printInfo ();
 
    // Finally start the main loop:
    w->run ();

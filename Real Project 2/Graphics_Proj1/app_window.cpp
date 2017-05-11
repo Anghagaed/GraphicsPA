@@ -33,10 +33,19 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _fs = 0.10f;
 }
 
-void AppWindow::printInfo()
- {
- }
+//void AppWindow::printInfo()
+// {
+// }
 
+static void printInfo(GsModel& m)
+{
+	std::cout << "V:  " << m.V.size() << "\n";
+	std::cout << "F:  " << m.F.size() << "\n";
+	std::cout << "N:  " << m.N.size() << "\n";
+	std::cout << "M:  " << m.M.size() << "\n";
+	std::cout << "Fn: " << m.Fn.size() << "\n";
+	std::cout << "Fm: " << m.Fm.size() << "\n";
+}
 void AppWindow::initPrograms ()
  {
    // We are not directly initializing glsl programs here, instead, each scene object
@@ -47,6 +56,7 @@ void AppWindow::initPrograms ()
    _axis.init ();
    _floor.init();
    _object.init();
+   _model.init();
    // set light:
    _lightCoord = GsVec(0.0f, 1.5f, -0.5f);
    _light.set ( GsVec(0,0,5), GsColor(90,90,90,255), GsColor::white, GsColor::white );
@@ -54,7 +64,27 @@ void AppWindow::initPrograms ()
    // Load demo model:
    _floor.build();
    _object.build();
+   loadModel(1);
  }
+
+void AppWindow::loadModel(int model)
+{
+	float f;
+	GsString file;
+	switch (model)
+	{
+	case 1: f = 0.01f; file = "../models/porsche.obj"; break;
+	case 2: f = 0.20f; file = "../models/al.obj"; break;
+	case 3: f = 0.10f; file = "../models/f-16.obj"; break;
+	default: return;
+	}
+	std::cout << "Loading " << file << "...\n";
+	if (!_gsm.load(file)) std::cout << "Error!\n";
+	printInfo(_gsm);
+	_gsm.scale(f); // to fit our camera space
+	_model.build(_gsm);
+	redraw();
+}
 
 // mouse events are in window coordinates, but your 2D scene is in [0,1]x[0,1],
 // so make here the conversion when needed
@@ -68,25 +98,58 @@ GsVec2 AppWindow::windowToScene ( const GsVec2& v )
 // Called every time there is a window event
 void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
  {
-   float inc=0.025f;
-   switch ( key )
-    { case 27 : exit(1); // Esc was pressed
-      //case 'i' : printInfo(); return;
+ //  float inc=0.025f;
+ //  switch ( key )
+ //   { case 27 : exit(1); // Esc was pressed
+ //     //case 'i' : printInfo(); return;
 
-      case ' ': _viewaxis = !_viewaxis; break;
-	  case 'z': _jump = true; break;
-	  case 'x':  _fs += 0.05; redraw(); break;
-	  case 'c':  _fs -= 0.05; redraw(); break;
-	  case 'h': _animate = true; keyframe = 1; break;
-	  case 'j': _move = true; break;
-	  case 'l': stop = !stop; break;
-	  case '8': _move = true; _front = true; break;
-	  case '2': _move = true; _front = false; break;
-	  case '4': _rotate = true; _left = true; break;
-	  case '6': _rotate = true; _left = false; break;
-	  default : return;
+ //     case ' ': _viewaxis = !_viewaxis; break;
+	//  case 'z': _jump = true; break;
+	//  case 'x':  _fs += 0.05; redraw(); break;
+	//  case 'c':  _fs -= 0.05; redraw(); break;
+	//  case 'h': _animate = true; keyframe = 1; break;
+	//  case 'j': _move = true; break;
+	//  case 'l': stop = !stop; break;
+	//  case '8': _move = true; _front = true; break;
+	//  case '2': _move = true; _front = false; break;
+	//  case '4': _rotate = true; _left = true; break;
+	//  case '6': _rotate = true; _left = false; break;
+	//  default : return;
+	//}
+ //   redraw(); 
+	switch (key)
+	{
+	case ' ': _viewaxis = !_viewaxis; redraw(); break;
+	case 27: exit(1); // Esc was pressed
+	case 's': std::cout << "Smoothing normals...\n";
+		_gsm.smooth(GS_TORAD(35));
+		printInfo(_gsm);
+		_model.build(_gsm);
+		redraw();
+		break;
+	case 'f': std::cout << "Flat normals...\n";
+		_gsm.flat();
+		printInfo(_gsm);
+		_model.build(_gsm);
+		redraw();
+		break;
+	case 'p': if (!_model.phong())
+	{
+		std::cout << "Switching to phong shader...\n";
+		_model.phong(true);
 	}
-    redraw(); 
+			  redraw();
+			  break;
+	case 'g': if (_model.phong())
+	{
+		std::cout << "Switching to gouraud shader...\n";
+		_model.phong(false);
+	}
+			  redraw();
+			  break;
+	default: loadModel(int(key - '0'));
+		break;
+	}
  }
 
 void AppWindow::glutSpecial ( int key, int x, int y )
@@ -134,13 +197,13 @@ void AppWindow::glutIdle ()
 	// millisecond * 60 / 1000 = 1/60 second
 	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
-		/*if (keyframe == 1 && _animate)
+		if (_animate)
 			_object.keyFrame1(_animate);
-		else
-			keyframe = 0;
-		_object.jump(_jump);
+		//else
+		//	keyframe = 0;
+		//_object.jump(_jump);
 		_object.move(_move);
-		_object.turn(_rotate, _left);*/
+		//_object.turn(_rotate, _left);
 		redraw();
 	}
  }
@@ -201,6 +264,7 @@ void AppWindow::glutDisplay ()
 
    // Everything else
    //_floor.draw(stransf, sproj, _light, _fs);
+   //_model.draw(stransf, sproj, _light);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

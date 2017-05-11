@@ -1,27 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\gsim\gs.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_array.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_color.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_mat.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_quat.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_vec.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_vec2.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
     <ClCompile Include="..\app_main.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
@@ -36,21 +15,6 @@
     </ClCompile>
     <ClCompile Include="..\so_axis.cpp">
       <Filter>myapp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_material.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_input.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_string.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gsim\gs_strings.cpp">
-      <Filter>graphsim tools</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gs_image.cpp">
-      <Filter>ogl tools</Filter>
     </ClCompile>
     <ClCompile Include="..\SoTexturedFloor.cpp">
       <Filter>myapp</Filter>
@@ -73,32 +37,56 @@
     <ClCompile Include="..\SoJoint.cpp">
       <Filter>myapp</Filter>
     </ClCompile>
-    <ClCompile Include="..\model.cpp">
-      <Filter>modeling tools</Filter>
+    <ClCompile Include="..\so_model.cpp">
+      <Filter>myapp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_array.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_color.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_image.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_input.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_mat.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_material.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_model.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_model_obj.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_quat.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_string.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_strings.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_tree.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_vec.cpp">
+      <Filter>graphsim tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gsim\gs_vec2.cpp">
+      <Filter>graphsim tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\gsim\gs.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_array.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_color.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_mat.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_quat.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_vec.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_vec2.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
     <ClInclude Include="..\app_window.h">
       <Filter>myapp</Filter>
     </ClInclude>
@@ -110,39 +98,6 @@
     </ClInclude>
     <ClInclude Include="..\so_axis.h">
       <Filter>myapp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_material.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_input.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_string.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_strings.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_trace.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_light.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gsim\gs_manager.h">
-      <Filter>graphsim tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\stb_image_write.h">
-      <Filter>ogl tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\stb_image.h">
-      <Filter>ogl tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gs_image.h">
-      <Filter>ogl tools</Filter>
-    </ClInclude>
-    <ClInclude Include="..\gs_shared.h">
-      <Filter>ogl tools</Filter>
     </ClInclude>
     <ClInclude Include="..\SoTexturedFloor.h">
       <Filter>myapp</Filter>
@@ -165,8 +120,62 @@
     <ClInclude Include="..\SoJoint.h">
       <Filter>myapp</Filter>
     </ClInclude>
-    <ClInclude Include="..\model.h">
-      <Filter>modeling tools</Filter>
+    <ClInclude Include="..\so_model.h">
+      <Filter>myapp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_array.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_color.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_image.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_input.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_light.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_manager.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_mat.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_material.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_model.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_quat.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_shared.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_string.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_strings.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_trace.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_tree.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_vec.h">
+      <Filter>graphsim tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gsim\gs_vec2.h">
+      <Filter>graphsim tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,24 +191,51 @@
     <Filter Include="graphsim tools">
       <UniqueIdentifier>{c9628ba3-d800-4870-ba96-41f6812019fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="modeling tools">
-      <UniqueIdentifier>{37951645-2c95-4e94-a8a7-7aec3540e596}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\fsh_flat.glsl">
+    <None Include="..\flat.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\vsh_mcol_flat.glsl">
+    <None Include="..\fsh_flat.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\fsh_gouraud.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\vsh_mcol_gouraud.glsl">
+    <None Include="..\fsh_mcol_phong.glsl">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\fsh_mcol_phong.glsl">
+    <None Include="..\gouraud.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\makefile">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\mcol_flat.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\mcol_gouraud.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\mcol_phong.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\mcol_phong.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\smtlgouraud.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\texgouraud.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\texgouraud.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_mcol_flat.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\vsh_mcol_gouraud.glsl">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\vsh_mcol_phong.glsl">
