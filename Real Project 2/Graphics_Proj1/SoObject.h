@@ -136,8 +136,12 @@ private:
 
 	// Animation 4
 	FrameAnimation ani4Frame1, ani4Frame2, ani4Frame3;
+	
+	// Walking Animation
+	FrameAnimation walkFrame1, walkFrame2, walkFrame3, walkFrame4, walkFrame5;
 
 	FrameAnimation CurrentFrame;
+
 
 	int frame;
 	bool animate;
@@ -162,6 +166,7 @@ private:
 	void initAnimation2();
 	void initAnimation3();
 	void initAnimation4();
+	void initWalkAnimation();
 public:
 	SoObject();
 	void init();

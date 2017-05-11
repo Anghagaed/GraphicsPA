@@ -104,8 +104,6 @@ SoObject::SoObject()
 
 void SoObject::initAnimation1() {
 	// Frame 1 Rotate Arm and Leg
-	GsMat recoveryRot1, recoveryRot2;
-	recoveryRot2.rotx(PI / 2); recoveryRot1.rotx(-PI / 2);
 	{
 		// Leg Right 
 		{
@@ -116,8 +114,8 @@ void SoObject::initAnimation1() {
 			translate.translation(0.0f, -dist, 0.0f);
 			rot.rotx(-(PI / 3));
 			final = translate.inverse()*rot*translate;
-			ani1Frame1.leg[3] = final;
 			ani1Frame1.leg[2] = final;
+			ani1Frame1.leg[3] = final;
 			ani1Frame1.legJoint[2] = final;
 			ani1Frame1.legJoint[3] = final;
 		}
@@ -200,7 +198,7 @@ void SoObject::initAnimation1() {
 			//CurrentFrame.arm[3] = final*ani1Frame1.arm[3];
 		}
 	}
-	CurrentFrame.CopyFrom(ani1Frame2);
+	//CurrentFrame.CopyFrom(ani1Frame2);
 	ani1Frame3.CopyFrom(ani1Frame2);
 	// Frame 3 Twirl
 	{
@@ -279,9 +277,6 @@ void SoObject::initAnimation2() {
 		//ani2Frame1.armJoint[2] = final*ani2Frame1.armJoint[2];
 		ani2Frame2.armJoint[3] = final*ani2Frame2.armJoint[3];
 	}
-	
-	//CurrentFrame.CopyFrom(ani2Frame1);
-	//ani2Frame2.CopyFrom(ani2Frame1);
 }
 
 void SoObject::initAnimation3() {
@@ -498,6 +493,143 @@ void SoObject::initAnimation4()
 	}
 }
 
+void SoObject::initWalkAnimation() {
+	// Define a translation matrix
+	GsMat moveUnit, translCount;
+	int stepCounter = 1;
+	//moveUnit.translation(0.0125f, 0.0f, 0.0125f);
+	moveUnit.translation(0.05f, 0.0f, 0.05f);
+	float Q = PI / 2;
+	// translCount always stepCounter * moveUnit
+	// Left Leg
+	// Frame 1
+	{	
+		float dist = 0.30f;
+		GsMat translate1, rot1, final1;
+		GsMat translate2, rot2, final2;
+		GsVec vec;
+		rot1.rotx(-Q);
+		rot2.rotx(Q);
+
+		translate1.translation(0.0f, -dist, 0.0f);
+		final1 = translate1.inverse()*rot1*translate1;
+		
+		vec = final1 * iniPosLegLJ2 * _jointLeg.center();
+		translate2.translation(-vec.x, -vec.y, -vec.z);
+		final2 = translate2.inverse()*rot2*translate2;
+
+		
+		walkFrame1.leg[0] = final1;
+		walkFrame1.legJoint[0] = final1;
+		walkFrame1.legJoint[1] = final1;
+		walkFrame1.leg[1] = final2 * final1;
+	}
+	// Frame 2 Everything except non-active leg is translated as we undo Frame 1
+	Q = PI / 2;
+	walkFrame2.CopyFrom(walkFrame1);
+	{
+		// Everything except non-active leg is moved up
+		// Undo Frame 1
+		float dist = 0.30f;
+		GsMat translate1, rot1, final1;
+		GsMat translate2, rot2, final2;
+		GsVec vec;
+		rot1.rotx(Q);
+		rot2.rotx(-Q);
+
+		translate1.translation(0.0f, -dist, 0.0f);
+		final1 = translate1.inverse()*rot1*translate1;
+
+		vec =  final1 * walkFrame1.legJoint[1]* iniPosLegLJ2 * _jointLeg.center();
+		translate2.translation(-vec.x, -vec.y, -vec.z);
+		final2 = translate2.inverse()*rot2*translate2;
+
+		//moveUnit.identity();
+
+		walkFrame2.leg[0] = moveUnit * final1 * walkFrame1.leg[0];
+		walkFrame2.legJoint[0] = moveUnit * final1 * walkFrame1.legJoint[0];
+		walkFrame2.legJoint[1] = moveUnit * final1 * walkFrame1.legJoint[1];
+		walkFrame2.leg[1] = moveUnit * final2 * final1 * walkFrame1.leg[1];
+
+		walkFrame2.body = moveUnit * walkFrame1.body;
+		walkFrame2.head = moveUnit * walkFrame1.head;
+		for (int i = 0; i < 4; ++i) {
+			walkFrame2.arm[i] = moveUnit * walkFrame1.arm[i];
+			walkFrame2.armJoint[i] = moveUnit * walkFrame1.armJoint[i];
+		}
+
+	}
+	walkFrame3.CopyFrom(walkFrame2);
+	// Frame 3 Move the Other Leg (Right)
+	{
+		float dist = 0.30f;
+		GsMat translate1, rot1, final1;
+		GsMat translate2, rot2, final2;
+		GsVec vec;
+		rot1.rotx(-Q);
+		rot2.rotx(Q);
+
+		translate1.translation(0.0f, -dist, 0.0f);
+		final1 = translate1.inverse()*rot1*translate1;
+
+		vec = final1 * iniPosLegRJ2 * _jointLeg.center();
+		translate2.translation(-vec.x, -vec.y, -vec.z);
+		final2 = translate2.inverse()*rot2*translate2;
+
+		
+		walkFrame3.leg[2] = moveUnit*moveUnit*final1;
+		walkFrame3.legJoint[2] = moveUnit*moveUnit*final1;
+		walkFrame3.legJoint[3] = moveUnit*moveUnit*final1;
+		walkFrame3.leg[3] = moveUnit*moveUnit * final2 * final1;
+
+		walkFrame3.body = moveUnit * walkFrame2.body;
+		walkFrame3.head = moveUnit * walkFrame2.head;
+		for (int i = 0; i < 4; ++i) {
+			walkFrame3.arm[i] = moveUnit * walkFrame2.arm[i];
+			walkFrame3.armJoint[i] = moveUnit * walkFrame2.armJoint[i];
+		}
+	}
+	walkFrame4.CopyFrom(walkFrame3);
+	Q = PI / 2;
+	// Frame 4 Undo Frame 3 Leg movement but move left leg up
+	{
+		float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+		float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+		float dist = 0.30f;
+		GsMat translate1, rot1, final1;
+		GsMat translate2, rot2, final2;
+		GsMat offset;
+		//offset.translation(0, -0.005, 0);
+		GsVec vec;
+		rot1.rotx(Q);
+		rot2.rotx(-Q);
+
+		vec = walkFrame3.legJoint[2] * iniPosLegRJ1 * (_jointLeg.center() + GsVec(0, -alegRadius, 0));
+		translate1.translation(-vec.x, -vec.y, -vec.z);
+		final1 = translate1.inverse()*rot1*translate1;
+		//final1 = translate1;
+
+		vec = final1 * walkFrame3.legJoint[3] * iniPosLegRJ2 * _jointLeg.center();
+		translate2.translation(-vec.x, -vec.y, -vec.z);
+		final2 = translate2.inverse()*rot2*translate2;
+
+
+		walkFrame4.leg[2] = final1 * walkFrame3.leg[2];
+		walkFrame4.legJoint[2] = final1 * walkFrame3.legJoint[2];
+		walkFrame4.legJoint[3] = final1 * walkFrame3.legJoint[3];
+		walkFrame4.leg[3] = final2 * final1 * walkFrame3.leg[3];
+		
+		walkFrame4.leg[0] = moveUnit * walkFrame3.leg[0];
+		walkFrame4.leg[1] = moveUnit * walkFrame3.leg[1];
+		walkFrame4.legJoint[0] = moveUnit * walkFrame3.legJoint[0];
+		walkFrame4.legJoint[1] = moveUnit * walkFrame3.legJoint[1];
+		
+	}
+	//CurrentFrame.CopyFrom(walkFrame1);
+	//CurrentFrame.CopyFrom(walkFrame2);
+	//CurrentFrame.CopyFrom(walkFrame3);
+	//CurrentFrame.CopyFrom(walkFrame4);
+}
 
 void SoObject::init()
 {
@@ -655,10 +787,10 @@ void SoObject::build()
 	initFrame.head = iniPosHead;
 	initFrame.body = iniPosBody;
 
-	//initAnimation1();
-	initAnimation2();
-	//initAnimation3();
-	//initAnimation4();
+
+	initAnimation1();
+	initAnimation3();
+	initWalkAnimation();
 }
 
 
