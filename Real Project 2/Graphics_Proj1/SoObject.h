@@ -11,6 +11,7 @@
 # include "SoJoint.h"
 # include <gsim/gs_mat.h>
 # include <gsim/gs_light.h>
+# include <math.h>
 using namespace std;
 // Defines:
 /*
@@ -71,7 +72,7 @@ private:
 	float _radius;
 	
 	// For drawing
-	bool spinJointArmBool[4];				// 1 = left arm outer joint, 0 = left arm inner joint, 3 = right arm outer joint, 2 = right arm inner joint
+	//bool spinJointArmBool[4];				// 1 = left arm outer joint, 0 = left arm inner joint, 3 = right arm outer joint, 2 = right arm inner joint
 	int frame_num;
 
 	// For animation
@@ -121,12 +122,13 @@ private:
 	GsMat newPosLegLJ1, newPosLegLJ2;
 	GsMat newPosLegRJ1, newPosLegRJ2;
 
-	// Animation 1
+	// Initial Frame
+	FrameAnimation initFrame;
 
+	// Animation 1
 	FrameAnimation ani1Frame1, ani1Frame2, ani1Frame3;
 
 	// Animation 3
-
 	FrameAnimation ani3Frame1, ani3Frame2, ani3Frame3;
 
 	FrameAnimation CurrentFrame;

@@ -62,7 +62,7 @@ SoObject::SoObject()
 	moveZby = 0.0f;
 	moveXby = 0.0f;
 	moveOffset = 0.025f;
-	//forwardVec = GsVec(0,0,-1)*moveOffset;
+	forwardVec = GsVec(0,0,1);
 
 	// Drawing cylinder stuff
 	_nfaces = 16;
@@ -78,11 +78,6 @@ SoObject::SoObject()
 
 	// Default object rotation state
 	rotateby = 0;
-
-	spinJointArmBool[0] = false;
-	spinJointArmBool[1] = false;
-	spinJointArmBool[2] = false;
-	spinJointArmBool[3] = false;
 
 	frame_num = 0;
 	frame = 0;
@@ -101,7 +96,7 @@ SoObject::SoObject()
 	ctrlpnts.push() = GsVec(0.0f, 0.0f, -1.0f);
 	ctrlpnts.push() = GsVec(1.0f, 0.0f, -1.0f);
 	ctrlpnts.push() = GsVec(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i <= numsegs; ++i)
+	for (int i = 0; i < numsegs; ++i)
 		P.push() = eval_bezier(i * 1.0f / numsegs, ctrlpnts);
 }
 
@@ -207,6 +202,7 @@ void SoObject::initAnimation1() {
 	ani1Frame3.CopyFrom(ani1Frame2);
 	// Frame 3 Twirl
 	{
+
 		// head
 		{
 		}
@@ -352,6 +348,7 @@ void SoObject::build()
 	legJointRadius = 0.025f / 2; legJointHeight = _radius / 3;
 	_jointLeg.build(legJointRadius, legJointHeight, _nfaces);
 	_leg.build(legRadius, legHeight, _nfaces);
+
 	// arms
 	armRadius = _radius / 2.5;
 	armHeight = 0.05;
@@ -452,6 +449,30 @@ void SoObject::build()
 	temp1.translation(0.0f, 0.5f, 0.0f);
 	iniPosBody = temp1;
 
+	// Setting up initFrame
+	initFrame.arm[0] = iniPosArmL1;
+	initFrame.arm[1] = iniPosArmL2;
+	initFrame.arm[2] = iniPosArmR1;
+	initFrame.arm[3] = iniPosArmR2;
+
+	initFrame.armJoint[0] = iniPosArmLJ1;
+	initFrame.armJoint[1] = iniPosArmLJ2;
+	initFrame.armJoint[2] = iniPosArmRJ1;
+	initFrame.armJoint[3] = iniPosArmRJ2;
+
+	initFrame.leg[0] = iniPosLegL1;
+	initFrame.leg[1] = iniPosLegL2;
+	initFrame.leg[2] = iniPosLegR1;
+	initFrame.leg[3] = iniPosLegR2;
+
+	initFrame.legJoint[0] = iniPosLegLJ1;
+	initFrame.legJoint[1] = iniPosLegLJ2;
+	initFrame.legJoint[2] = iniPosLegRJ1;
+	initFrame.legJoint[3] = iniPosLegLJ2;
+
+	initFrame.head = iniPosHead;
+	initFrame.body = iniPosBody;
+
 	initAnimation1();
 	initAnimation3();
 }
@@ -524,20 +545,30 @@ void SoObject::keyFrame1(bool &_animate)
 int SoObject::animationOne() {
 	if (frameCounter1 < 40) {
 		// Frame 1
+		cout << "Frame1" << "\n";
+		CurrentFrame.CopyFrom(ani1Frame1);
 		frameCounter1++;
 		return 1;
 	}
 	else if (frameCounter1 < 80) {
 		// Frame 2
+		cout << "Frame2" << "\n";
+		CurrentFrame.CopyFrom(ani1Frame2);
 		frameCounter1++;
 		return 1;
 	}
 	else if (frameCounter1 < 120) {
 		// Frame 3
+		cout << "Frame3" << "\n";
+		// THIS IS WHERE THE TWIRL HAPPENS
+		rotateby = (frameCounter1-80)* 2 * PI / 40;
 		frameCounter1++;
 		return 1;
 	}
 	else if (frameCounter1 == 120) {
+		cout << "End animation" << "\n";
+		rotateby = 0;	// 2 PI = 0
+		//CurrentFrame.CopyFrom();
 		frameCounter1 = 0;
 		return 0;
 	}
@@ -592,10 +623,17 @@ int SoObject::animationThree()
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
 	// Whole object translation
+	forwardVec = GsVec(0, 0, -1);
+	if (true)
+		forwardVec = P[40] - forwardVec;
+	else
+		forwardVec = GsVec(0, 0, -1);
 	GsMat temp1, temp2;
-	temp1.translation(moveXby, moveYby, moveZby);						// rigid translation
-	temp2.roty(rotateby);												// rotation matrix
+	temp1.translation(P[30]);									// rigid translation
+	temp2.roty(rotateby - atan(forwardVec.x / forwardVec.z));												// rotation matrix
 	translationMatrix = temp1 * temp2;
+
+	// Calculate the difference
 
 	ftransform = tr*translationMatrix;									// apply perspective matrix? (this should be multiplied at the most left corner)
 	
@@ -721,8 +759,11 @@ void SoObject::jump(bool& animate)
 
 void SoObject::move(bool& animate)
 {
-	if (frame_num == numsegs + 1)
+	if (frame_num == numsegs)
+	{
 		frame_num = 0;
+		animate = false;
+	}
 	if (animate == true)
 	{
 		moveXby = P[frame_num].x;

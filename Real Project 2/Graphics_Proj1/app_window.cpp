@@ -19,7 +19,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    _w = w;
    _h = h;
 
-   stop = false;
+   stop = true;
    _lasttime = gs_time();
    _animateinc = 0.1f;
    _jump = false;
@@ -149,6 +149,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 		redraw();
 		break;
 	case 'g': std::cout << "Animate...\n"; stop = false; break;
+	case 'h': std::cout << "Start Moving...\n"; _move = true; break;
 	}
  }
 
@@ -195,7 +196,7 @@ void AppWindow::glutReshape ( int w, int h )
 void AppWindow::glutIdle ()
  {
 	// millisecond * 60 / 1000 = 1/60 second
-	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
+	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0)
 	{
 		//_airplane.animate = true;
 		//_airplane.move();
@@ -208,8 +209,12 @@ void AppWindow::glutIdle ()
 		//_object.jump(_jump);
 		//_object.move(_move);
 		//_object.turn(_rotate, _left);
-		if (!_object.animationThree())
-			stop = true;
+		/*if (!stop && !_object.animationOne())
+			stop = true;*/
+		//else
+			//_move = true;
+		if(_move)
+			_object.move(_move);
 		redraw();
 	}
  }
