@@ -61,8 +61,8 @@ SoObject::SoObject()
 	moveYby = 0.0f;
 	moveZby = 0.0f;
 	moveXby = 0.0f;
-	moveOffset = 0.025f;
-	forwardVec = GsVec(0,0,1);
+	moveOffset = 0.05f/80;
+	forwardVec = GsVec(0,0,1)*moveOffset;
 
 	// Drawing cylinder stuff
 	_nfaces = 16;
@@ -73,6 +73,7 @@ SoObject::SoObject()
 	frameCounter2 = 0;
 	frameCounter3 = 0;
 	frameCounter4 = 0;
+	frameCounterMove = 0;
 
 	// Jump animation stuff
 	animateUp = false;
@@ -162,7 +163,7 @@ void SoObject::initAnimation1() {
 			GsMat translate, rot, final;
 			GsVec vec;
 			vec = ani1Frame1.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
-			cout << vec << endl;
+			//cout << vec << endl;
 			translate.translation(-vec.x, -vec.y, -vec.z);
 			rot.rotx(PI / 2);
 			final = translate.inverse()*rot*translate;
@@ -290,7 +291,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 2);
 		vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame1.arm[0] = final;
@@ -306,7 +307,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 2);
 		vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame1.arm[2] = final;
@@ -325,7 +326,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 3);
 		vec =  ani3Frame1.arm[1]*iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame2.arm[1] = final*ani3Frame1.arm[1];
@@ -338,7 +339,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 8);
 		vec = ani3Frame1.arm[3]*iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame2.arm[3] = final*ani3Frame1.arm[3];	
@@ -353,7 +354,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 8);
 		vec = ani3Frame1.arm[1] * iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame3.arm[1] = final*ani3Frame1.arm[1];
@@ -366,7 +367,7 @@ void SoObject::initAnimation3() {
 		GsVec vec;
 		rot.rotx(-PI / 3);
 		vec = ani3Frame1.arm[3] * iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
-		cout << vec << endl;
+		//cout << vec << endl;
 		translate.translation(-vec.x, -vec.y, -vec.z);
 		final = translate.inverse()*rot*translate;
 		ani3Frame3.arm[3] = final*ani3Frame1.arm[3];
@@ -874,7 +875,7 @@ int SoObject::animationOne()
 			GsMat translate, rot, final;
 			GsVec vec;
 			vec = ani1Frame1.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
-			cout << vec << endl;
+			//cout << vec << endl;
 			translate.translation(-vec.x, -vec.y, -vec.z);
 			rot.rotx(tempCounter*(PI / 2.0)/40.0);
 			final = translate.inverse()*rot*translate;
@@ -921,7 +922,7 @@ int SoObject::animationOne()
 		return 1;
 	}
 	else if (frameCounter1 > 120) {
-		cout << "End animation" << "\n";
+		//cout << "End animation" << "\n";
 		rotateby = 0;	// 2 PI = 0
 		frameCounter1 = 0;
 		return 0;
@@ -936,7 +937,7 @@ int SoObject::animationTwo()
 		// Frame 1
 		frameCounter2++;
 		ani2Frame1.Identity();
-		cout << "Frame1" << "\n";
+		//cout << "Frame1" << "\n";
 		{
 			float radius = _radius;
 			float height = 0.05;
@@ -969,7 +970,7 @@ int SoObject::animationTwo()
 			dist = 0.30f;
 			translate.translation(0.0f, -dist, 0.0f);
 			rot.rotz(-frameCounter2*(PI / 4.0)/40.0);
-			cout << -frameCounter2*(PI / 4.0) / 40.0<< endl;
+		//	cout << -frameCounter2*(PI / 4.0) / 40.0<< endl;
 			final = translate.inverse()*rot*translate;
 			ani2Frame1.leg[3] = final*ani2Frame1.leg[3];
 			ani2Frame1.leg[2] = final*ani2Frame1.leg[2];
@@ -982,7 +983,7 @@ int SoObject::animationTwo()
 	else if (frameCounter2 <= 80) 
 	{
 		// Frame 2
-		cout << "Frame2" << "\n";
+	//	cout << "Frame2" << "\n";
 		frameCounter2++;
 		ani2Frame2.CopyFrom(ani2Frame1);
 		int tempCounter = frameCounter2 - 40;
@@ -1275,7 +1276,7 @@ int SoObject::animationFour()
 		{
 			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
 			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
-			cout << tempCount << endl;
+			//cout << tempCount << endl;
 			GsMat translate, rot, final;
 			GsVec vec;
 			vec = ani4Frame2.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
@@ -1301,12 +1302,190 @@ int SoObject::animationFour()
 		return 0;
 	}
 }
+int SoObject::animateMove()
+{
+	// Define a translation matrix
+	GsMat moveUnit, translCount;
+	int stepCounter = 1;
+	//moveUnit.translation(0.0125f, 0.0f, 0.0125f);
+	//moveUnit.translation(0.05f, 0.0f, 0.05f);
+	moveUnit.translation(0.0, 0.0, 0.025/80.0);
+	float Q = PI / 2;
+	if (frameCounterMove <= 20)
+	{
+		// frame1
+		frameCounterMove++;
+		{
+			float dist = 0.30f;
+			GsMat translate1, rot1, final1;
+			GsMat translate2, rot2, final2;
+			GsVec vec;
+			rot1.rotx(-Q);
+			rot2.rotx(Q);
+
+			translate1.translation(0.0f, -dist, 0.0f);
+			final1 = translate1.inverse()*rot1*translate1;
+
+			vec = final1 * iniPosLegLJ2 * _jointLeg.center();
+			translate2.translation(-vec.x, -vec.y, -vec.z);
+			final2 = translate2.inverse()*rot2*translate2;
+
+
+			walkFrame1.leg[0] = final1;
+			walkFrame1.legJoint[0] = final1;
+			walkFrame1.legJoint[1] = final1;
+			walkFrame1.leg[1] = final2 * final1;
+		}
+		CurrentFrame.CopyFrom(walkFrame1);
+		return 1;
+	}
+	else if (frameCounterMove <= 40)
+	{
+		// frame2
+		frameCounterMove++;
+		Q = PI / 2;
+		walkFrame2.CopyFrom(walkFrame1);
+		{
+			// Everything except non-active leg is moved up
+			// Undo Frame 1
+			float dist = 0.30f;
+			GsMat translate1, rot1, final1;
+			GsMat translate2, rot2, final2;
+			GsVec vec;
+			rot1.rotx(Q);
+			rot2.rotx(-Q);
+
+			translate1.translation(0.0f, -dist, 0.0f);
+			final1 = translate1.inverse()*rot1*translate1;
+
+			vec = final1 * walkFrame1.legJoint[1] * iniPosLegLJ2 * _jointLeg.center();
+			translate2.translation(-vec.x, -vec.y, -vec.z);
+			final2 = translate2.inverse()*rot2*translate2;
+
+			//moveUnit.identity();
+
+			walkFrame2.leg[0] = moveUnit * final1 * walkFrame1.leg[0];
+			walkFrame2.legJoint[0] = moveUnit * final1 * walkFrame1.legJoint[0];
+			walkFrame2.legJoint[1] = moveUnit * final1 * walkFrame1.legJoint[1];
+			walkFrame2.leg[1] = moveUnit * final2 * final1 * walkFrame1.leg[1];
+
+			walkFrame2.body = moveUnit * walkFrame1.body;
+			walkFrame2.head = moveUnit * walkFrame1.head;
+			for (int i = 0; i < 4; ++i) {
+				walkFrame2.arm[i] = moveUnit * walkFrame1.arm[i];
+				walkFrame2.armJoint[i] = moveUnit * walkFrame1.armJoint[i];
+			}
+		}
+		CurrentFrame.CopyFrom(walkFrame2);
+		return 1;
+	}
+	else if (frameCounterMove <= 60)
+	{
+		// frame3
+		walkFrame3.CopyFrom(walkFrame2);
+		frameCounterMove++;
+		// Frame 3 Move the Other Leg (Right)
+		{
+			float dist = 0.30f;
+			GsMat translate1, rot1, final1;
+			GsMat translate2, rot2, final2;
+			GsVec vec;
+			rot1.rotx(-Q);
+			rot2.rotx(Q);
+
+			translate1.translation(0.0f, -dist, 0.0f);
+			final1 = translate1.inverse()*rot1*translate1;
+
+			vec = final1 * iniPosLegRJ2 * _jointLeg.center();
+			translate2.translation(-vec.x, -vec.y, -vec.z);
+			final2 = translate2.inverse()*rot2*translate2;
+
+
+			walkFrame3.leg[2] = moveUnit*moveUnit*final1;
+			walkFrame3.legJoint[2] = moveUnit*moveUnit*final1;
+			walkFrame3.legJoint[3] = moveUnit*moveUnit*final1;
+			walkFrame3.leg[3] = moveUnit*moveUnit * final2 * final1;
+
+			walkFrame3.body = moveUnit * walkFrame2.body;
+			walkFrame3.head = moveUnit * walkFrame2.head;
+			for (int i = 0; i < 4; ++i) {
+				walkFrame3.arm[i] = moveUnit * walkFrame2.arm[i];
+				walkFrame3.armJoint[i] = moveUnit * walkFrame2.armJoint[i];
+			}
+		}
+		CurrentFrame.CopyFrom(walkFrame3);
+		return 1;
+	}
+	else if (frameCounterMove <= 80)
+	{
+		// frame4
+		walkFrame4.CopyFrom(walkFrame3);
+		Q = PI / 2;
+		frameCounterMove++;
+		// Frame 4 Undo Frame 3 Leg movement but move left leg up
+		{
+			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+			float dist = 0.30f;
+			GsMat translate1, rot1, final1;
+			GsMat translate2, rot2, final2;
+			GsMat offset;
+			//offset.translation(0, -0.005, 0);
+			GsVec vec;
+			rot1.rotx(Q);
+			rot2.rotx(-Q);
+
+			vec = walkFrame3.legJoint[2] * iniPosLegRJ1 * (_jointLeg.center() + GsVec(0, -alegRadius, 0));
+			translate1.translation(-vec.x, -vec.y, -vec.z);
+			final1 = translate1.inverse()*rot1*translate1;
+			//final1 = translate1;
+
+			vec = final1 * walkFrame3.legJoint[3] * iniPosLegRJ2 * _jointLeg.center();
+			translate2.translation(-vec.x, -vec.y, -vec.z);
+			final2 = translate2.inverse()*rot2*translate2;
+
+
+			walkFrame4.leg[2] = final1 * walkFrame3.leg[2];
+			walkFrame4.legJoint[2] = final1 * walkFrame3.legJoint[2];
+			walkFrame4.legJoint[3] = final1 * walkFrame3.legJoint[3];
+			walkFrame4.leg[3] = final2 * final1 * walkFrame3.leg[3];
+
+			walkFrame4.leg[0] = moveUnit * walkFrame3.leg[0];
+			walkFrame4.leg[1] = moveUnit * walkFrame3.leg[1];
+			walkFrame4.legJoint[0] = moveUnit * walkFrame3.legJoint[0];
+			walkFrame4.legJoint[1] = moveUnit * walkFrame3.legJoint[1];
+		}
+		CurrentFrame.CopyFrom(walkFrame4);
+		return 1;
+	}
+	else if (frameCounterMove > 80)
+	{
+		frameCounterMove = 0;
+		return 0;
+	}
+}
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
+	GsVec a = forwardVec;
+	GsVec b; double tempAngle = 0;
+	if (stop == false)
+	{
+		if (frame_num != numsegs)
+			b = P[frame_num++];
+		else
+		{
+			frame_num = 0;
+			b = P[frame_num];
+		}
+		a.normalize();
+		b.normalize();
+		tempAngle = angle(a, b);
+	}
 	// Whole object translation
 	GsMat temp1, temp2;
+	
 	temp1.translation(P[frame_num]);									// rigid translation
-	temp2.roty(rotateby);												// rotation matrix
+	temp2.roty(rotateby+tempAngle);										// rotation matrix
 	translationMatrix = temp1 * temp2;
 
 	// Calculate the difference

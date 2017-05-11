@@ -28,17 +28,18 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    animate2 = false;
    animate3 = false;
    animate4 = false;
+   animateMove = true;
 }
 
 
 static void printInfo(GsModel& m)
 {
-	std::cout << "V:  " << m.V.size() << "\n";
+	/*std::cout << "V:  " << m.V.size() << "\n";
 	std::cout << "F:  " << m.F.size() << "\n";
 	std::cout << "N:  " << m.N.size() << "\n";
 	std::cout << "M:  " << m.M.size() << "\n";
 	std::cout << "Fn: " << m.Fn.size() << "\n";
-	std::cout << "Fm: " << m.Fm.size() << "\n";
+	std::cout << "Fm: " << m.Fm.size() << "\n";*/
 }
 void AppWindow::initPrograms ()
  {
@@ -122,10 +123,11 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 		_jukebox.build(_gsm);
 		redraw();
 		break;
-	case '1': std::cout << "Animate 1...\n"; animate1 = true; break;
-	case '2': std::cout << "Animate 2...\n"; animate2 = true; break;
-	case '3': std::cout << "Animate 3...\n"; animate3 = true; break;
-	case '4': std::cout << "Animate 4...\n"; animate4 = true; break;
+	case '1': std::cout << "Animate 1...\n"; animate1 = true; _object.stop = true; animateMove = false; break;
+	case '2': std::cout << "Animate 2...\n"; animate2 = true; _object.stop = true; animateMove = false; break;
+	case '3': std::cout << "Animate 3...\n"; animate3 = true; _object.stop = true; animateMove = false; break;
+	case '4': std::cout << "Animate 4...\n"; animate4 = true; _object.stop = true; animateMove = false; break;
+	//case '5': std::cout << "Animate Move...\n"; animateMove = true; break;
 	}
  }
 
@@ -177,27 +179,44 @@ void AppWindow::glutIdle ()
 		if (animate1 && !_object.animationOne())
 		{
 			animate1 = false;
+			animateMove = true;
+			_object.stop = false;
 			_object.reset();
 			cout << "animation1 no longer runs\n";
 		}
 		else if (animate2 && !_object.animationTwo())
 		{
 			animate2 = false;
+			animateMove = true;
+			_object.stop = false;
 			_object.reset();
 			cout << "animation2 no longer runs\n";
 		}
 		else if (animate3 && !_object.animationThree())
 		{
 			animate3 = false;
+			animateMove = true;
 			_object.reset();
+			_object.stop = false;
 			cout << "animation3 no longer runs\n";
 		}
 		else if (animate4 && !_object.animationFour())
 		{
 			animate4 = false;
+			animateMove = true;
 			_object.reset();
+			_object.stop = false;
 			cout << "animation4 no longer runs\n";
 		}
+		else if (animateMove == true)
+		{
+			_object.animateMove();
+			//animateMove = false;
+			//_object.reset();
+			//cout << "animationMove no longer runs\n";
+		}
+		_airplane.animate = true;
+		_airplane.move();
 		redraw();
 	}
  }
@@ -251,16 +270,16 @@ void AppWindow::glutDisplay ()
    //  shaders vectors on the left side of a multiplication to a matrix.
    
    // Draw:
-   if ( _viewaxis ) _axis.draw ( stransf, sproj );
+   //if ( _viewaxis ) _axis.draw ( stransf, sproj );
 
    // Draw the object
    _object.draw(stransf, sproj, _light, _fs, _lightCoord);
 
    // Everything else
-  // _floor.draw(stransf, sproj, _light, _fs);
-  // _airplane.draw(stransf, sproj, _light);
-  // _car.draw(stransf, sproj, _light);
-   //_jukebox.draw(stransf, sproj, _light);
+   _floor.draw(stransf, sproj, _light, _fs);
+   _airplane.draw(stransf, sproj, _light);
+   _car.draw(stransf, sproj, _light);
+   _jukebox.draw(stransf, sproj, _light);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

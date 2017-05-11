@@ -155,6 +155,7 @@ private:
 	int frameCounter2;
 	int frameCounter3;
 	int frameCounter4;
+	int frameCounterMove;
 	double rotAngle = 0;
 
 private:
@@ -168,6 +169,7 @@ private:
 	void initAnimation4();
 	void initWalkAnimation();
 public:
+	bool stop = false;
 	SoObject();
 	void init();
 	void build();
@@ -177,6 +179,7 @@ public:
 	int animationTwo();
 	int animationThree();
 	int animationFour();
+	int animateMove();
 };
 
 #endif // SO_OBJECT

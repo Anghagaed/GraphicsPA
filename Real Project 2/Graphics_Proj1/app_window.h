@@ -44,6 +44,7 @@ class AppWindow : public GlutWindow
 	bool animate2;
 	bool animate3;
 	bool animate4;
+	bool animateMove;
 
    public :
     AppWindow ( const char* label, int x, int y, int w, int h );
