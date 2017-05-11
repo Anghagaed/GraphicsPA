@@ -105,8 +105,10 @@ private:
 	GsMat iniPosLegR1, iniPosLegR2;
 	GsMat iniPosLegLJ1, iniPosLegLJ2;
 	GsMat iniPosLegRJ1, iniPosLegRJ2;
-	double legRadius, legHeight;
-	double legJointRadius, legJointHeight;
+	float legRadius, legHeight;
+	float legJointRadius, legJointHeight;
+
+	GsMat iniPosHead, iniPosBody;
 
 	// new matrix
 	GsMat newPosArmL1, newPosArmL2;

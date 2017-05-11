@@ -107,71 +107,122 @@ SoObject::SoObject()
 
 void SoObject::initAnimation1() {
 	// Frame 1 Rotate Arm and Leg
-	// Leg
+	GsMat recoveryRot1, recoveryRot2;
+	recoveryRot2.rotx(PI / 2); recoveryRot1.rotx(-PI / 2);
 	{
-		float dist;
-		GsMat translate, rot, final;
-		GsVec vec;
-		dist = 0.30f;
-		translate.translation(0.0f, -dist, 0.0f);
-		rot.rotx(-(PI / 3));
-		final = translate.inverse()*rot*translate;
-		ani1Frame1.leg[3] = final;
-		ani1Frame1.leg[2] = final;
-		ani1Frame1.legJoint[2] = final;
-		ani1Frame1.legJoint[3] = final;
+		// Leg Right 
+		{
+			float dist;
+			GsMat translate, rot, final;
+			GsVec vec;
+			dist = 0.30f;
+			translate.translation(0.0f, -dist, 0.0f);
+			rot.rotx(-(PI / 3));
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.leg[3] = final;
+			ani1Frame1.leg[2] = final;
+			ani1Frame1.legJoint[2] = final;
+			ani1Frame1.legJoint[3] = final;
+		}
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-PI / 2);
+			vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.arm[0] = final;
+			ani1Frame1.arm[1] = final;
+			ani1Frame1.armJoint[0] = final;
+			ani1Frame1.armJoint[1] = final;
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-PI / 2);
+			vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani1Frame1.arm[2] = final;
+			ani1Frame1.arm[3] = final;
+			ani1Frame1.armJoint[2] = final;
+			ani1Frame1.armJoint[3] = final;
+		}
 	}
-	// Arm Left
-	{
-		float aRadius = _radius / 2.5;
-		float aHeight = 0.05;
-		GsMat translate, rot, final;
-		GsVec vec;
-		rot.rotx(-PI / 2);
-		vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
-		cout << vec << endl;
-		translate.translation(-vec.x, -vec.y, -vec.z);
-		final = translate.inverse()*rot*translate;
-		ani1Frame1.arm[0] = final;
-		ani1Frame1.arm[1] = final;
-		ani1Frame1.armJoint[0] = final;
-		ani1Frame1.armJoint[1] = final;
-	}
-	// Arm Right
-	{
-		float aRadius = _radius / 2.5;
-		float aHeight = 0.05;
-		GsMat translate, rot, final;
-		GsVec vec;
-		rot.rotx(-PI / 2);
-		vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
-		cout << vec << endl;
-		translate.translation(-vec.x, -vec.y, -vec.z);
-		final = translate.inverse()*rot*translate;
-		ani1Frame1.arm[2] = final;
-		ani1Frame1.arm[3] = final;
-		ani1Frame1.armJoint[2] = final;
-		ani1Frame1.armJoint[3] = final;
-	}
-
 	//CurrentFrame.CopyFrom(ani1Frame1);
-	// 
+	ani1Frame2.CopyFrom(ani1Frame1);
 	// Frame 2 Affects both arm and one leg right 
-	// Leg
 	{
-		float alegRadius = _radius / 6; float alegHeight = _radius * 2;
-		float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+		// Leg Right
+		{
+			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
 
-		GsMat translate, rot, final;
-		GsVec vec;
-		vec = ani1Frame1.leg[3]*iniPosLegR2*(_leg.center() + GsVec(0, alegHeight / 2, 0));
-		translate.translation(-vec.x, -vec.y, -vec.z);
-		rot.roty(PI / 4);
-		final = translate;
-		//ani1Frame2.leg[3] = final;
-		CurrentFrame.leg[3] = final;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
+			cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.rotx(PI / 2);
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.leg[3] = final*ani1Frame1.leg[3];
+			//CurrentFrame.leg[3] = final*CurrentFrame.leg[3];
+		}
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.arm[1] * iniPosArmL2*(_arm.center() + GsVec(0, aHeight / 2, -aRadius));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.roty(-PI / 3);
+			//final = translate;
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.arm[1] = final*ani1Frame1.arm[1];
+			//CurrentFrame.arm[1] = final*ani1Frame1.arm[1];
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani1Frame1.arm[3] * iniPosArmR2*(_arm.center() + GsVec(0, -aHeight / 2, -aRadius));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.roty(PI / 3);
+			//final = translate;
+			final = translate.inverse()*rot*translate;
+			ani1Frame2.arm[3] = final*ani1Frame1.arm[3];
+			//CurrentFrame.arm[3] = final*ani1Frame1.arm[3];
+		}
 	}
+	CurrentFrame.CopyFrom(ani1Frame2);
+	ani1Frame3.CopyFrom(ani1Frame2);
 	// Frame 3 Twirl
+	{
+		// head
+		{
+		}
+		// body
+		{
+	
+		}
+		// Arm
+		{
+		}
+		// Leg 
+		{
+		}
+	}
+	//CurrentFrame.CopyFrom(ani1Frame3);
+	// Frame 4 Rotate Arm
 }
 
 void SoObject::initAnimation3() {
@@ -303,12 +354,6 @@ void SoObject::build()
 	temp1.translation(temp.x + armRadius*5, temp.y, temp.z);
 	iniPosArmR2 = temp1*temp2*temp1.inverse()*temp3*armRot;
 	// Leg
-	/*
-	iniPosLegL1 = ; iniPosLegL2 = ;
-	iniPosLegR1 = ; iniPosLegR2 = ;
-	iniPosLegLJ1 = ; iniPosLegLJ2 = ;
-	iniPosLegRJ1 = ; iniPosLegRJ2 = ;
-	*/
 	// Left Leg
 	temp1.rotx(PI / 2);
 	temp2.translation(_radius / 4, 0.2875f, 0.0f);
@@ -339,6 +384,16 @@ void SoObject::build()
 	// Drawing Right Leg 2
 	temp1.translation(-_radius / 4, 0.0625f, 0.0f);
 	iniPosLegR2 = temp1;
+
+
+	// Head 
+	temp1.translation(0.0f, 0.8f, 0.0f);
+	temp2.roty(M_PI / 2);
+	iniPosHead = temp1 * temp2;
+
+	// Body
+	temp1.translation(0.0f, 0.5f, 0.0f);
+	iniPosBody = temp1;
 
 	initAnimation1();
 	initAnimation3();
@@ -480,10 +535,7 @@ void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const fl
 
 void SoObject::drawHead(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
 {
-	GsMat temp1, temp2;
-	temp1.translation(0.0f, 0.8f, 0.0f);								// rigid translation matrix (to put the head in the correct place)
-	temp2.roty(M_PI / 2);												// rotation matrix (to align with the whole body)
-	_head.draw(ftransform*CurrentFrame.head*temp1*temp2, pr, l, fs);					// draw head
+	_head.draw(ftransform*CurrentFrame.head*iniPosHead, pr, l, fs);					// draw head
 }
 
 void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
@@ -550,14 +602,13 @@ void SoObject::drawLegs(const GsMat & pr, const GsLight & l, const float & fs, c
 	_jointLeg.draw(ftransform*CurrentFrame.legJoint[3]*iniPosLegRJ2, pr, l, fs);
 
 	// Drawing Right Leg 2
+
 	_leg.draw(ftransform*CurrentFrame.leg[3]*iniPosLegR2, pr, l, fs);
 }
 
 void SoObject::drawBody(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
 {
-	GsMat temp1, temp2;
-	temp1.translation(0.0f, 0.5f, 0.0f);
-	_body.draw(ftransform*CurrentFrame.body*temp1, pr, l, fs);				// draw body
+	_body.draw(ftransform*CurrentFrame.body*iniPosBody, pr, l, fs);				// draw body
 }
 
 

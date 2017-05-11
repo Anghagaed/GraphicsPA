@@ -61,6 +61,10 @@ void SoBody::init(float x, float y, float z, string imagePath)
 	I.init(0, 0); // free image from CPU
 }
 
+GsVec SoBody::center() {
+	return GsVec(x, y, z);
+}
+
 void SoBody::calculateParameters() {
 	int layers = _nfaces / 4;
 	double dQ = TWOPI / _nfaces;
