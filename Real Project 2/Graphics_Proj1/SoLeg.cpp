@@ -171,6 +171,18 @@ void SoLeg::build(float r, float l, int _nfaces)
 	_mtl.shininess = 8; // increase specular effect
 }
 
+GsVec SoLeg::center() {
+	return GsVec(x, y, z);
+}
+
+GsVec SoLeg::firstJointPts() {
+	return GsVec(0.0f, l / 2, 0.0f);
+}
+
+GsVec SoLeg::secondJointPts() {
+	return GsVec(0.0f, -l / 2, 0.0f);
+}
+
 void SoLeg::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs)
 {
 	float f[4];

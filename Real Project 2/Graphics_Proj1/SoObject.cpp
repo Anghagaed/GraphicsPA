@@ -13,14 +13,7 @@ int fac(int x)
 }
 
 FrameAnimation::FrameAnimation() {
-	for (int i = 0; i < 4; ++i) {
-		arm[i].identity();
-		armJoint[i].identity();
-		leg[i].identity();
-		legJoint[i].identity();
-	}
-	body.identity();
-	head.identity();
+	Identity();
 }
 
 void FrameAnimation::Identity() {
@@ -96,6 +89,58 @@ SoObject::SoObject()
 		P.push() = eval_bezier(i * 1.0f / numsegs, ctrlpnts);
 }
 
+void SoObject::initAnimation1() {
+	// Frame 1 Rotate Arm and Leg
+	// Leg
+	{
+		float dist;
+		GsMat translate, rot, final;
+		GsVec vec;
+		dist = 0.30f;
+		translate.translation(0.0f, -dist, 0.0f);
+		rot.rotx(-(PI / 3));
+		final = translate.inverse()*rot*translate;
+		ani1Frame1.leg[3] = final;
+		ani1Frame1.leg[2] = final;
+		ani1Frame1.legJoint[2] = final;
+		ani1Frame1.legJoint[3] = final;
+	}
+	// Arm Left
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 2);
+		vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani1Frame1.arm[0] = final;
+		ani1Frame1.arm[1] = final;
+		ani1Frame1.armJoint[0] = final;
+		ani1Frame1.armJoint[1] = final;
+	}
+	// Arm Right
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 2);
+		vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani1Frame1.arm[2] = final;
+		ani1Frame1.arm[3] = final;
+		ani1Frame1.armJoint[2] = final;
+		ani1Frame1.armJoint[3] = final;
+	}
+	// 
+	// Frame 2 Affects both arm and one leg right
+	// Frame 3 Twirl
+}
 
 void SoObject::init()
 {
@@ -112,6 +157,7 @@ void SoObject::init()
 	// arms
 	_armJoint.init(0.0f, 0.0f, 0.0f, "../pinktexture.jpg");
 	_arm.init(0.0f, 0.0f, 0.0f, "../metaltexture.jpg");
+
 }
 
 void SoObject::build()
@@ -221,6 +267,8 @@ void SoObject::build()
 	// Drawing Right Leg 2
 	temp1.translation(-_radius / 4, 0.0625f, 0.0f);
 	iniPosLegR2 = temp1;
+
+	initAnimation1();
 }
 
 
@@ -287,6 +335,29 @@ void SoObject::keyFrame1(bool &_animate)
 	}
 }
 
+// Return 0 if animation is done 1 if animation is still going on
+int SoObject::animationOne() {
+	if (frameCounter1 < 40) {
+		// Frame 1
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 < 80) {
+		// Frame 2
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 < 120) {
+		// Frame 3
+		frameCounter1++;
+		return 1;
+	}
+	else if (frameCounter1 == 120) {
+		frameCounter1 = 0;
+		return 0;
+	}
+
+}
 
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
@@ -316,30 +387,7 @@ void SoObject::drawHead(const GsMat & pr, const GsLight & l, const float & fs, c
 	GsMat temp1, temp2;
 	temp1.translation(0.0f, 0.8f, 0.0f);								// rigid translation matrix (to put the head in the correct place)
 	temp2.roty(M_PI / 2);												// rotation matrix (to align with the whole body)
-	_head.draw(ftransform * temp1 * temp2, pr, l, fs);					// draw head
-}
-// Return 0 if animation is done 1 if animation is still going on
-int SoObject::animationOne() {
-	if (frameCounter1 < 40) {
-		// Frame 1
-		frameCounter1++;
-		return 1;
-	}
-	else if (frameCounter1 < 80) {
-		// Frame 2
-		frameCounter1++;
-		return 1;
-	}
-	else if (frameCounter1 < 120) {
-		// Frame 3
-		frameCounter1++;
-		return 1;
-	}
-	else if (frameCounter1 == 120) {
-		frameCounter1 = 0;
-		return 0;
-	}
-	
+	_head.draw(ftransform*CurrentFrame.head*temp1*temp2, pr, l, fs);					// draw head
 }
 
 void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
@@ -353,60 +401,30 @@ void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, c
 
 	//temp2.rotz(M_PI / 4);																	// Z rotation for the left arm
 
-	if (animate == false)
-	{
 		// Left arm joint1
-		_armJoint.draw(ftransform*iniPosArmLJ1, pr, l, fs);		// draw joint (between body and left arm)
+	_armJoint.draw(ftransform*CurrentFrame.armJoint[0] * iniPosArmLJ1, pr, l, fs);		// draw joint (between body and left arm)
 
-		// Left arm1
-		_arm.draw(ftransform*iniPosArmL1, pr, l, fs);			// draw left arm1
+	// Left arm1
+	_arm.draw(ftransform*CurrentFrame.arm[0] * iniPosArmL1, pr, l, fs);			// draw left arm1
 
-		// Left arm joint2
-		_armJoint.draw(ftransform*iniPosArmLJ2, pr, l, fs);		// draw joint (between left arms)
+	// Left arm joint2
+	_armJoint.draw(ftransform*CurrentFrame.armJoint[1] * iniPosArmLJ2, pr, l, fs);		// draw joint (between left arms)
 
-		// Left arm2
-		_arm.draw(ftransform*iniPosArmL2, pr, l, fs);			// draw left arm2
+	// Left arm2
+	_arm.draw(ftransform*CurrentFrame.arm[1] * iniPosArmL2, pr, l, fs);			// draw left arm2
 
-		// Right arm
-		// Right arm joint1	
-		_armJoint.draw(ftransform*iniPosArmRJ1, pr, l, fs);		// draw joint (between body and right arm)
+	// Right arm
+	// Right arm joint1	
+	_armJoint.draw(ftransform*CurrentFrame.armJoint[2] * iniPosArmRJ1, pr, l, fs);		// draw joint (between body and right arm)
 
-		// Right arm1
-		_arm.draw(ftransform*iniPosArmR1, pr, l, fs);			// draw right arm1
+	// Right arm1
+	_arm.draw(ftransform*CurrentFrame.arm[2] * iniPosArmR1, pr, l, fs);			// draw right arm1
 
-		// Right arm joint2
-		_armJoint.draw(ftransform*iniPosArmRJ2, pr, l, fs);		// draw joint (between right arms)
+	// Right arm joint2
+	_armJoint.draw(ftransform*CurrentFrame.armJoint[3] * iniPosArmRJ2, pr, l, fs);		// draw joint (between right arms)
 
-		// Right arm2
-		_arm.draw(ftransform*iniPosArmR2, pr, l, fs);			// draw right arm2
-	}
-	else
-	{
-		// Left arm joint1
-		_armJoint.draw(ftransform*newPosArmLJ1, pr, l, fs);		// draw joint (between body and left arm)
-
-		// Left arm1
-		_arm.draw(ftransform*newPosArmL1, pr, l, fs);			// draw left arm1
-
-		// Left arm joint2
-		_armJoint.draw(ftransform*newPosArmLJ2, pr, l, fs);		// draw joint (between left arms)
-
-		// Left arm2
-		_arm.draw(ftransform*newPosArmL2, pr, l, fs);			// draw left arm2
-
-		// Right arm
-		// Right arm joint1	
-		_armJoint.draw(ftransform*newPosArmRJ1, pr, l, fs);		// draw joint (between body and right arm)
-
-		// Right arm1
-		_arm.draw(ftransform*newPosArmR1, pr, l, fs);			// draw right arm1
-
-		// Right arm joint2
-		_armJoint.draw(ftransform*newPosArmRJ2, pr, l, fs);		// draw joint (between right arms)
-
-		// Right arm2
-		_arm.draw(ftransform*newPosArmR2, pr, l, fs);			// draw right arm2
-	}
+	// Right arm2
+	_arm.draw(ftransform*CurrentFrame.arm[3] * iniPosArmR2, pr, l, fs);			// draw right arm2
 }
 
 void SoObject::drawLegs(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
@@ -414,36 +432,36 @@ void SoObject::drawLegs(const GsMat & pr, const GsLight & l, const float & fs, c
 	GsMat temp1, temp2;
 	// Drawing Left Leg
 	// _jointLegL1
-	_jointLeg.draw(ftransform*iniPosLegLJ1, pr, l, fs);
+	_jointLeg.draw(ftransform*CurrentFrame.legJoint[0]*iniPosLegLJ1, pr, l, fs);
 
 	// Drawing Left Leg 1
-	_leg.draw(ftransform*iniPosLegL1, pr, l, fs);
+	_leg.draw(ftransform*CurrentFrame.leg[0]*iniPosLegL1, pr, l, fs);
 
 	// _jointLegL2
-	_jointLeg.draw(ftransform*iniPosLegLJ2, pr, l, fs);
+	_jointLeg.draw(ftransform*CurrentFrame.legJoint[1]*iniPosLegLJ2, pr, l, fs);
 
 	// Drawing Left Leg 2
-	_leg.draw(ftransform * iniPosLegL2, pr, l, fs);
+	_leg.draw(ftransform *CurrentFrame.leg[1]*iniPosLegL2, pr, l, fs);
 
 	// Drawing Right Leg
 	// _jointLegR1
-	_jointLeg.draw(ftransform*iniPosLegRJ1, pr, l, fs);
+	_jointLeg.draw(ftransform*CurrentFrame.legJoint[2]*iniPosLegRJ1, pr, l, fs);
 
 	// Drawing Right Leg 1
-	_leg.draw(ftransform * iniPosLegR1, pr, l, fs);
+	_leg.draw(ftransform*CurrentFrame.leg[2]*iniPosLegR1, pr, l, fs);
 
 	// _jointLegR2
-	_jointLeg.draw(ftransform * iniPosLegRJ2, pr, l, fs);
+	_jointLeg.draw(ftransform*CurrentFrame.legJoint[3]*iniPosLegRJ2, pr, l, fs);
 
 	// Drawing Right Leg 2
-	_leg.draw(ftransform * iniPosLegR2, pr, l, fs);
+	_leg.draw(ftransform*CurrentFrame.leg[3]*iniPosLegR2, pr, l, fs);
 }
 
 void SoObject::drawBody(const GsMat & pr, const GsLight & l, const float & fs, const GsVec lcoord)
 {
 	GsMat temp1, temp2;
 	temp1.translation(0.0f, 0.5f, 0.0f);
-	_body.draw(ftransform * temp1, pr, l, fs);				// draw body
+	_body.draw(ftransform*CurrentFrame.body*temp1, pr, l, fs);				// draw body
 }
 
 

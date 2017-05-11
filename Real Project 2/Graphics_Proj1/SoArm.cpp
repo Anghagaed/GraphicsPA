@@ -172,6 +172,10 @@ void SoArm::build(float r, float l, int _nfaces)
 	_mtl.shininess = 8; // increase specular effect
 }
 
+GsVec SoArm::center() {
+	return GsVec(x, y, z);
+}
+
 GsVec SoArm::firstJointPts() {
 	return GsVec(0.0f, l / 2, 0.0f);
 }

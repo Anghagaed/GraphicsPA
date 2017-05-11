@@ -31,6 +31,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    keyframe = 0;
    initPrograms ();
    _fs = 0.10f;
+   stop = true;
 }
 
 //void AppWindow::printInfo()

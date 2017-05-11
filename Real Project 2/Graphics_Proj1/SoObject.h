@@ -140,6 +140,7 @@ private:
 	void drawArms(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawLegs(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
+	void initAnimation1();
 public:
 	SoObject();
 	void init();
