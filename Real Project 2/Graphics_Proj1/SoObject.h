@@ -128,6 +128,9 @@ private:
 	// Animation 1
 	FrameAnimation ani1Frame1, ani1Frame2, ani1Frame3;
 
+	// Animation 2
+	FrameAnimation ani2Frame1, ani2Frame2, ani2Frame3;
+
 	// Animation 3
 	FrameAnimation ani3Frame1, ani3Frame2, ani3Frame3;
 
@@ -145,6 +148,7 @@ private:
 	GsArray<GsVec> P;						// coordinates
 
 	int frameCounter1;
+	int frameCounter2;
 	int frameCounter3;
 	int frameCounter4;
 	double wholeArmRot = 0;
@@ -155,6 +159,7 @@ private:
 	void drawLegs(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void initAnimation1();
+	void initAnimation2();
 	void initAnimation3();
 	void initAnimation4();
 public:
@@ -167,6 +172,7 @@ public:
 	void keyFrame1(bool &_animate);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	int animationOne();
+	int animationTwo();
 	int animationThree();
 	int animationFour();
 };
