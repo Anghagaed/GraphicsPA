@@ -71,6 +71,7 @@ SoObject::SoObject()
 	// Frame Counter for animation
 	frameCounter1 = 0;
 	frameCounter3 = 0;
+	frameCounter4 = 0;
 
 	// Jump animation stuff
 	animateUp = false;
@@ -202,20 +203,7 @@ void SoObject::initAnimation1() {
 	ani1Frame3.CopyFrom(ani1Frame2);
 	// Frame 3 Twirl
 	{
-
-		// head
-		{
-		}
-		// body
-		{
-	
-		}
-		// Arm
-		{
-		}
-		// Leg 
-		{
-		}
+		// done in actual animation
 	}
 	//CurrentFrame.CopyFrom(ani1Frame3);
 	// Frame 4 Rotate Arm
@@ -316,6 +304,125 @@ void SoObject::initAnimation3() {
 	// pretty sure I can copy Hang's 360 degrees part
 	//CurrentFrame.CopyFrom(ani3Frame2);
 }
+
+void SoObject::initAnimation4()
+{
+	//GsMat recoveryRot1, recoveryRot2;
+	//recoveryRot2.rotx(PI / 2); recoveryRot1.rotx(-PI / 2);
+	{
+		// Frame1
+		// rotate body, head, leg and arms (x-axis)
+		// Frame 1 Rotate Arm and Leg
+		// Body
+		{
+			float radius = _radius;
+			float height = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-PI / 4);
+			vec = iniPosBody*_body.center();
+			translate.translation(-vec.x, -vec.y+0.2, -vec.z);
+			final = translate.inverse()*rot*translate;
+			//final = translate;
+			for (int i = 0; i < 4; ++i)
+			{
+				ani4Frame1.arm[i] = final;
+				ani4Frame1.armJoint[i] = final;
+			}
+			ani4Frame1.body = final;
+			ani4Frame1.head = final;
+		}
+		// Leg Right 
+		{
+			float dist;
+			GsMat translate, rot, final;
+			GsVec vec;
+			dist = 0.30f;
+			translate.translation(0.0f, -dist, 0.0f);
+			rot.rotx(-(2*PI / 3));
+			final = translate.inverse()*rot*translate;
+			ani4Frame1.leg[3] = final;
+			ani4Frame1.leg[2] = final;
+			ani4Frame1.legJoint[2] = final;
+			ani4Frame1.legJoint[3] = final;
+		}
+		ani4Frame2.CopyFrom(ani4Frame1);
+		// Frame2
+		// rotate arms (x-axis)
+		// Frame 1 Rotate Arm and Leg
+		// Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-2*PI / 3);
+			vec = ani4Frame1.arm[0]*iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[0] = final*ani4Frame1.arm[0];
+			ani4Frame2.arm[1] = final*ani4Frame1.arm[0];
+			ani4Frame2.armJoint[0] = final*ani4Frame1.armJoint[0];
+			ani4Frame2.armJoint[1] = final*ani4Frame1.armJoint[1];
+		}
+		// Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-2*PI / 3);
+			vec = ani4Frame1.arm[2] * iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[2] = final*ani4Frame1.arm[2];
+			ani4Frame2.arm[3] = final*ani4Frame1.arm[3];
+			ani4Frame2.armJoint[2] = final*ani4Frame1.armJoint[2];
+			ani4Frame2.armJoint[3] = final*ani4Frame1.armJoint[3];
+		}
+		// 2nd Arm Right
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-PI / 3);
+			vec = ani4Frame2.arm[3] * iniPosArmR2*(_armJoint.center() - GsVec(aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[3] = final*ani4Frame2.arm[3];
+		}
+		// 2nd Arm Left
+		{
+			float aRadius = _radius / 2.5;
+			float aHeight = 0.05;
+			GsMat translate, rot, final;
+			GsVec vec;
+			rot.rotx(-PI / 3);
+			vec = ani4Frame2.arm[1] * iniPosArmL2*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.arm[1] = final*ani4Frame2.arm[1];
+		}
+		// 2nd Leg Right 
+		{
+			float alegRadius = _radius / 6; float alegHeight = _radius * 2;
+			float alegJointRadius = 0.025f / 2; float alegJointHeight = _radius / 3;
+
+			GsMat translate, rot, final;
+			GsVec vec;
+			vec = ani4Frame2.leg[3] * iniPosLegR2*(_leg.center() + GsVec(0.0f, alegHeight / 2, 0.0f));
+			//cout << vec << endl;
+			translate.translation(-vec.x, -vec.y, -vec.z);
+			rot.rotx(PI / 2);
+			final = translate.inverse()*rot*translate;
+			ani4Frame2.leg[3] = final*ani4Frame2.leg[3];
+			//CurrentFrame.leg[3] = final*CurrentFrame.leg[3];
+		}
+		//CurrentFrame.CopyFrom(ani4Frame2);
+	}
+}
+
 
 void SoObject::init()
 {
@@ -475,6 +582,7 @@ void SoObject::build()
 
 	initAnimation1();
 	initAnimation3();
+	initAnimation4();
 }
 
 
@@ -577,7 +685,6 @@ int SoObject::animationOne() {
 
 int SoObject::animationThree()
 {
-	rotateby = frameCounter3 * 2 * PI / 50.0;
 	if (frameCounter3 < 5) {
 		// Frame 1
 		CurrentFrame.CopyFrom(ani3Frame1);
@@ -608,18 +715,85 @@ int SoObject::animationThree()
 		frameCounter3++;
 		return 1;
 	}
-	if (frameCounter3 < 50) {
+	else if (frameCounter3 < 55) {
 		// Frame 1
 		CurrentFrame.CopyFrom(ani3Frame1);
 		frameCounter3++;
 		return 1;
 	}
-	else if (frameCounter3 == 50) {
+	else if (frameCounter3 < 90)
+	{
+		// Set to default? Frame
+		rotateby = (frameCounter3-55) * PI / 45.0;
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 100) {
+		// Frame 3
+		rotateby = PI;
+		CurrentFrame.CopyFrom(ani3Frame3);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 110) {
+		// Frame 1
+		CurrentFrame.CopyFrom(ani3Frame1);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 120) {
+		// Frame 3
+		rotateby = 0;
+		CurrentFrame.CopyFrom(ani3Frame3);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 130) {
+		// Frame 1
+		CurrentFrame.CopyFrom(ani3Frame1);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 170) {
+		// Set to default? Frame
+		rotateby = PI + (frameCounter3 - 130) * PI / 40.0;
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 == 130) {
 		frameCounter3 = 0;
+		rotateby = 0;
 		return 0;
 	}
 }
 
+
+int SoObject::animationFour()
+{
+	if (frameCounter4 < 40) {
+		// Frame 1
+		CurrentFrame.CopyFrom(ani4Frame1);
+		frameCounter4++;
+		return 1;
+	}
+	if (frameCounter4 < 80) {
+		// Frame 2
+		CurrentFrame.CopyFrom(ani4Frame2);
+		frameCounter4++;
+		return 1;
+	}
+	if (frameCounter4 <= 120) {
+		// Frame 3
+		rotateby = (frameCounter4-80) * PI / 40.0;
+		frameCounter4++;
+		return 1;
+	}
+	else if (frameCounter4 > 120) {
+		frameCounter4 = 0;
+		rotateby = 0;
+		return 0;
+	}
+}
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
 	// Whole object translation

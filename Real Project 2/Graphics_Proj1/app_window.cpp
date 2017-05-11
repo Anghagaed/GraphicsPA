@@ -209,7 +209,7 @@ void AppWindow::glutIdle ()
 		//_object.jump(_jump);
 		//_object.move(_move);
 		//_object.turn(_rotate, _left);
-		if (!stop && !_object.animationOne())
+		if (!_object.animationFour())
 			stop = true;
 		redraw();
 	}
