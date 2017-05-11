@@ -623,14 +623,9 @@ int SoObject::animationThree()
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)
 {
 	// Whole object translation
-	forwardVec = GsVec(0, 0, -1);
-	if (true)
-		forwardVec = P[40] - forwardVec;
-	else
-		forwardVec = GsVec(0, 0, -1);
 	GsMat temp1, temp2;
-	temp1.translation(P[30]);									// rigid translation
-	temp2.roty(rotateby - atan(forwardVec.x / forwardVec.z));												// rotation matrix
+	temp1.translation(P[frame_num]);									// rigid translation
+	temp2.roty(rotateby);												// rotation matrix
 	translationMatrix = temp1 * temp2;
 
 	// Calculate the difference
