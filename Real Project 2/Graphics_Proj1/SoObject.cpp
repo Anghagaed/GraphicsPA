@@ -68,6 +68,10 @@ SoObject::SoObject()
 	_nfaces = 16;
 	_radius = 0.25f/4;
 
+	// Frame Counter for animation
+	frameCounter1 = 0;
+	frameCounter3 = 0;
+
 	// Jump animation stuff
 	animateUp = false;
 	animateDown = false;
@@ -167,6 +171,45 @@ void SoObject::initAnimation1() {
 		//ani1Frame2.leg[3] = final;
 		CurrentFrame.leg[3] = final;
 	}
+	// Frame 3 Twirl
+}
+
+void SoObject::initAnimation3() {
+	// Frame 1 Rotate Arm
+	// Arm Left
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 2);
+		vec = iniPosArmLJ1*(_armJoint.center() + GsVec(-aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame1.arm[0] = final;
+		ani3Frame1.arm[1] = final;
+		ani3Frame1.armJoint[0] = final;
+		ani3Frame1.armJoint[1] = final;
+	}
+	// Arm Right
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 2);
+		vec = iniPosArmRJ1*(_armJoint.center() + GsVec(aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame1.arm[2] = final;
+		ani3Frame1.arm[3] = final;
+		ani3Frame1.armJoint[2] = final;
+		ani3Frame1.armJoint[3] = final;
+	}
+	// 
+	// Frame 2 Affects both arm and one leg right
 	// Frame 3 Twirl
 }
 
@@ -298,6 +341,7 @@ void SoObject::build()
 	iniPosLegR2 = temp1;
 
 	initAnimation1();
+	initAnimation3();
 }
 
 
@@ -386,6 +430,29 @@ int SoObject::animationOne() {
 		return 0;
 	}
 
+}
+
+int SoObject::animationThree()
+{
+	if (frameCounter3 < 40) {
+		// Frame 1
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 80) {
+		// Frame 2
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 120) {
+		// Frame 3
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 == 120) {
+		frameCounter3 = 0;
+		return 0;
+	}
 }
 
 void SoObject::draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord)

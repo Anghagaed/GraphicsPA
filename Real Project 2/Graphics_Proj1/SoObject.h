@@ -123,7 +123,9 @@ private:
 
 	FrameAnimation ani1Frame1, ani1Frame2, ani1Frame3;
 
+	// Animation 3
 
+	FrameAnimation ani3Frame1, ani3Frame2, ani3Frame3;
 
 	FrameAnimation CurrentFrame;
 
@@ -136,6 +138,7 @@ private:
 	GsArray<GsVec> P;						// coordinates
 
 	int frameCounter1;
+	int frameCounter3;
 	double wholeArmRot = 0;
 
 private:
@@ -144,6 +147,7 @@ private:
 	void drawLegs(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void drawBody(const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	void initAnimation1();
+	void initAnimation3();
 public:
 	SoObject();
 	void init();
@@ -154,6 +158,7 @@ public:
 	void keyFrame1(bool &_animate);
 	void draw(const GsMat& tr, const GsMat& pr, const GsLight& l, const float& fs, const GsVec lcoord);
 	int animationOne();
+	int animationThree();
 };
 
 #endif // SO_OBJECT
