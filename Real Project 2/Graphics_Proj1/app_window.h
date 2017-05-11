@@ -22,7 +22,9 @@ class AppWindow : public GlutWindow
     SoAxis _axis;
 	SoObject _object;
 	SoTexturedFloor _floor;
-	SoModel _model;
+	SoModel _airplane;
+	SoModel _car;
+	SoModel _jukebox;
     // Scene data:
     bool  _viewaxis;
     GsLight _light;
@@ -49,7 +51,7 @@ class AppWindow : public GlutWindow
     void initPrograms ();
     GsVec2 windowToScene ( const GsVec2& v );
    /* void printInfo ();*/
-	void loadModel(int model);
+	void loadModel(int model, SoModel& loadMe);
    private : // functions derived from the base class
     virtual void glutMenu ( int m );
     virtual void glutKeyboard ( unsigned char key, int x, int y );

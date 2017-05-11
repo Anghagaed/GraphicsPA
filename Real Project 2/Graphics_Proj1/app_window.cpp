@@ -56,7 +56,12 @@ void AppWindow::initPrograms ()
    _axis.init ();
    _floor.init();
    _object.init();
-   _model.init();
+   _jukebox = SoModel(-0.9, 0.5, -0.9);
+   _airplane = SoModel(0.0, 1.0, 0.0);
+   _car = SoModel(0.9, 0.5, 0.9);
+   _airplane.init();
+   _car.init();
+   _jukebox.init();
    // set light:
    _lightCoord = GsVec(0.0f, 1.5f, -0.5f);
    _light.set ( GsVec(0,0,5), GsColor(90,90,90,255), GsColor::white, GsColor::white );
@@ -64,10 +69,14 @@ void AppWindow::initPrograms ()
    // Load demo model:
    _floor.build();
    _object.build();
-   loadModel(1);
+   loadModel(3, _airplane);
+   loadModel(1, _car);
+   loadModel(4, _jukebox);
+   _airplane.phong(true);	// always phong shading
+   _car.phong(true);		// always phong shading
  }
 
-void AppWindow::loadModel(int model)
+void AppWindow::loadModel(int model, SoModel& loadMe)
 {
 	float f;
 	GsString file;
@@ -76,13 +85,14 @@ void AppWindow::loadModel(int model)
 	case 1: f = 0.01f; file = "../models/porsche.obj"; break;
 	case 2: f = 0.20f; file = "../models/al.obj"; break;
 	case 3: f = 0.10f; file = "../models/f-16.obj"; break;
+	case 4: f = 0.10f; file = "../models/Jukebox.obj"; break;
 	default: return;
 	}
 	std::cout << "Loading " << file << "...\n";
 	if (!_gsm.load(file)) std::cout << "Error!\n";
 	printInfo(_gsm);
 	_gsm.scale(f); // to fit our camera space
-	_model.build(_gsm);
+	loadMe.build(_gsm);
 	redraw();
 }
 
@@ -124,30 +134,18 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 	case 's': std::cout << "Smoothing normals...\n";
 		_gsm.smooth(GS_TORAD(35));
 		printInfo(_gsm);
-		_model.build(_gsm);
+		_airplane.build(_gsm);
+		_car.build(_gsm);
+		_jukebox.build(_gsm);
 		redraw();
 		break;
 	case 'f': std::cout << "Flat normals...\n";
 		_gsm.flat();
 		printInfo(_gsm);
-		_model.build(_gsm);
+		_airplane.build(_gsm);
+		_car.build(_gsm);
+		_jukebox.build(_gsm);
 		redraw();
-		break;
-	case 'p': if (!_model.phong())
-	{
-		std::cout << "Switching to phong shader...\n";
-		_model.phong(true);
-	}
-			  redraw();
-			  break;
-	case 'g': if (_model.phong())
-	{
-		std::cout << "Switching to gouraud shader...\n";
-		_model.phong(false);
-	}
-			  redraw();
-			  break;
-	default: loadModel(int(key - '0'));
 		break;
 	}
  }
@@ -197,8 +195,10 @@ void AppWindow::glutIdle ()
 	// millisecond * 60 / 1000 = 1/60 second
 	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
-		_model.animate = true;
-		_model.move();
+		_airplane.animate = true;
+		_airplane.move();
+		_car.animate = true;
+		_car.move();
 		//if (_animate)
 		//	_object.keyFrame1(_animate);
 		//else
@@ -265,8 +265,10 @@ void AppWindow::glutDisplay ()
    _object.draw(stransf, sproj, _light, _fs, _lightCoord);
 
    // Everything else
-   //_floor.draw(stransf, sproj, _light, _fs);
-   _model.draw(stransf, sproj, _light);
+   _floor.draw(stransf, sproj, _light, _fs);
+   _airplane.draw(stransf, sproj, _light);
+   _car.draw(stransf, sproj, _light);
+   _jukebox.draw(stransf, sproj, _light);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)

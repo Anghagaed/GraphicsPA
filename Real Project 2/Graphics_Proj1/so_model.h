@@ -43,6 +43,7 @@ class SoModel : public GlObjects
 
    public :
 	SoModel ();
+	SoModel(double x, double y, double z);
     void phong ( bool b ) { _phong=b; }
     bool phong () const { return _phong; }
     void init ();

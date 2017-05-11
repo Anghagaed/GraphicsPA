@@ -27,24 +27,29 @@ static GsVec eval_bezier(float t, const GsArray<GsVec>& ctrlpnts)
 
 SoModel::SoModel()
  {
-   _numpoints = 0;
-   _phong = false;
-   frame_num = 0;
-   moveYby = 1.0f;
-   moveZby = 0.0f;
-   moveXby = 0.0f;
-   moveOffset = 0.025f;
-   forwardVec = GsVec(0,0,-1)*moveOffset;
-   // Create Bezier
-   numsegs = 60;
-   ctrlpnts.push() = GsVec(0.0f, moveYby, 0.0f);
-   ctrlpnts.push() = GsVec(-0.5f, moveYby, -0.5f);
-   ctrlpnts.push() = GsVec(0.0f, moveYby, -1.0f);
-   ctrlpnts.push() = GsVec(1.0f, moveYby, -1.0f);
-   ctrlpnts.push() = GsVec(0.0f, moveYby, 0.0f);
-   for (int i = 0; i <= numsegs; ++i)
-	   coord.push() = eval_bezier(i * 1.0f / numsegs, ctrlpnts);
  }
+
+SoModel::SoModel(double x, double y, double z)
+{
+	_numpoints = 0;
+	_phong = false;
+	frame_num = 0;
+	//moveYby = 0.0f;
+	//moveZby = 0.0f;
+	//moveXby = 0.0f;
+	moveOffset = 0.025f;
+	forwardVec = GsVec(0, 0, -1)*moveOffset;
+	
+	// Create Bezier
+	numsegs = 60;
+	ctrlpnts.push() = GsVec(x, y, z);
+	ctrlpnts.push() = GsVec(x-0.5, y, z-0.5);
+	ctrlpnts.push() = GsVec(x, y, z-1);
+	ctrlpnts.push() = GsVec(x+1, y, x-1);
+	ctrlpnts.push() = GsVec(x, y, z);
+	for (int i = 0; i <= numsegs; ++i)
+		coord.push() = eval_bezier(i * 1.0f / numsegs, ctrlpnts);
+}
 
 
 void SoModel::init ()
@@ -163,7 +168,7 @@ void SoModel::draw ( const GsMat& tr, const GsMat& pr, const GsLight& l )
    if ( sh<0.001f ) sh=64;
 
    GsMat move;
-   move.translation(moveXby, moveYby, moveZby);
+   move.translation(coord[frame_num]);
    GsMat finalM = tr * move;
 
    if ( _phong )
@@ -203,8 +208,8 @@ void SoModel::move()
 	if (animate == true)
 	{
 		//std::cout << frame_num << "\n";
-		moveXby = coord[frame_num].x;
-		moveZby = coord[frame_num].z;
+		//moveXby = coord[frame_num].x;
+		//moveZby = coord[frame_num].z;
 		frame_num++;
 	}
 }

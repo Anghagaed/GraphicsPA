@@ -38,7 +38,7 @@ void SoTexturedFloor::init()
 
 	GsImage I;
 	gsuint id;
-	if (!I.load("../pic2.png"))
+	if (!I.load("../disco.jpg"))
 	{
 		std::cout << "COULD NOT LOAD IMAGE!\n"; exit(1);
 	}
