@@ -259,9 +259,66 @@ void SoObject::initAnimation3() {
 		ani3Frame1.armJoint[2] = final;
 		ani3Frame1.armJoint[3] = final;
 	}
-	// 
-	// Frame 2 Affects both arm and one leg right
-	// Frame 3 Twirl
+	//
+	ani3Frame2.CopyFrom(ani3Frame1);
+	// Frame 2 Affects both arm
+	// 2nd Arm Left
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 3);
+		vec =  ani3Frame1.arm[1]*iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame2.arm[1] = final*ani3Frame1.arm[1];
+	}
+	// 2nd Arm Right
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 8);
+		vec = ani3Frame1.arm[3]*iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame2.arm[3] = final*ani3Frame1.arm[3];	
+	}
+	// Frame 3 Affects both arm
+	ani3Frame3.CopyFrom(ani3Frame1);
+	// 2nd Arm Left
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 8);
+		vec = ani3Frame1.arm[1] * iniPosArmL2 * (_arm.center() + GsVec(-aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame3.arm[1] = final*ani3Frame1.arm[1];
+	}
+	// 2nd Arm Right
+	{
+		float aRadius = _radius / 2.5;
+		float aHeight = 0.05;
+		GsMat translate, rot, final;
+		GsVec vec;
+		rot.rotx(-PI / 3);
+		vec = ani3Frame1.arm[3] * iniPosArmR2 * (_arm.center() - GsVec(aRadius, aHeight / 2, 0));
+		cout << vec << endl;
+		translate.translation(-vec.x, -vec.y, -vec.z);
+		final = translate.inverse()*rot*translate;
+		ani3Frame3.arm[3] = final*ani3Frame1.arm[3];
+	}
+	// Frame 3 Twirl 180 degrees
+	// pretty sure I can copy Hang's 360 degrees part
+	//CurrentFrame.CopyFrom(ani3Frame2);
 }
 
 void SoObject::init()
@@ -489,22 +546,44 @@ int SoObject::animationOne() {
 
 int SoObject::animationThree()
 {
-	if (frameCounter3 < 40) {
+	rotateby = frameCounter3 * 2 * PI / 50.0;
+	if (frameCounter3 < 5) {
 		// Frame 1
+		CurrentFrame.CopyFrom(ani3Frame1);
 		frameCounter3++;
 		return 1;
 	}
-	else if (frameCounter3 < 80) {
+	else if (frameCounter3 < 15) {
 		// Frame 2
+		CurrentFrame.CopyFrom(ani3Frame2);
 		frameCounter3++;
 		return 1;
 	}
-	else if (frameCounter3 < 120) {
+	else if (frameCounter3 < 25) {
 		// Frame 3
+		CurrentFrame.CopyFrom(ani3Frame3);
 		frameCounter3++;
 		return 1;
 	}
-	else if (frameCounter3 == 120) {
+	else if (frameCounter3 < 35) {
+		// Frame 2
+		CurrentFrame.CopyFrom(ani3Frame2);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 < 45) {
+		// Frame 3
+		CurrentFrame.CopyFrom(ani3Frame3);
+		frameCounter3++;
+		return 1;
+	}
+	if (frameCounter3 < 50) {
+		// Frame 1
+		CurrentFrame.CopyFrom(ani3Frame1);
+		frameCounter3++;
+		return 1;
+	}
+	else if (frameCounter3 == 50) {
 		frameCounter3 = 0;
 		return 0;
 	}
@@ -556,6 +635,7 @@ void SoObject::drawArms(const GsMat & pr, const GsLight & l, const float & fs, c
 	_arm.draw(ftransform*CurrentFrame.arm[0] * iniPosArmL1, pr, l, fs);			// draw left arm1
 
 	// Left arm joint2
+	
 	_armJoint.draw(ftransform*CurrentFrame.armJoint[1] * iniPosArmLJ2, pr, l, fs);		// draw joint (between left arms)
 
 	// Left arm2

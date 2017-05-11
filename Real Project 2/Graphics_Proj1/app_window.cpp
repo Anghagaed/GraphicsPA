@@ -31,7 +31,7 @@ AppWindow::AppWindow ( const char* label, int x, int y, int w, int h )
    keyframe = 0;
    initPrograms ();
    _fs = 0.10f;
-   stop = true;
+   //stop = true;
 }
 
 //void AppWindow::printInfo()
@@ -57,9 +57,9 @@ void AppWindow::initPrograms ()
    _axis.init ();
    _floor.init();
    _object.init();
-   _jukebox = SoModel(-0.9, 0.5, -0.9);
+   _jukebox = SoModel(-0.9, 0.009, -0.9);
    _airplane = SoModel(0.0, 1.0, 0.0);
-   _car = SoModel(0.9, 0.5, 0.9);
+   _car = SoModel(0.9, 0.09, 0.9);
    _airplane.init();
    _car.init();
    _jukebox.init();
@@ -83,10 +83,10 @@ void AppWindow::loadModel(int model, SoModel& loadMe)
 	GsString file;
 	switch (model)
 	{
-	case 1: f = 0.01f; file = "../models/porsche.obj"; break;
+	case 1: f = 0.005f; file = "../models/porsche.obj"; break;
 	case 2: f = 0.20f; file = "../models/al.obj"; break;
-	case 3: f = 0.10f; file = "../models/f-16.obj"; break;
-	case 4: f = 0.10f; file = "../models/Jukebox.obj"; break;
+	case 3: f = 0.05f; file = "../models/f-16.obj"; break;
+	case 4: f = 0.05f; file = "../models/Jukebox.obj"; break;
 	default: return;
 	}
 	std::cout << "Loading " << file << "...\n";
@@ -148,6 +148,7 @@ void AppWindow::glutKeyboard ( unsigned char key, int x, int y )
 		_jukebox.build(_gsm);
 		redraw();
 		break;
+	case 'g': std::cout << "Animate...\n"; stop = false; break;
 	}
  }
 
@@ -196,17 +197,19 @@ void AppWindow::glutIdle ()
 	// millisecond * 60 / 1000 = 1/60 second
 	if (glutGet(GLUT_ELAPSED_TIME) * 60 % (1000) == 0 && !stop)
 	{
-		_airplane.animate = true;
-		_airplane.move();
-		_car.animate = true;
-		_car.move();
+		//_airplane.animate = true;
+		//_airplane.move();
+		//_car.animate = true;
+		//_car.move();
 		//if (_animate)
 		//	_object.keyFrame1(_animate);
 		//else
 		//	keyframe = 0;
 		//_object.jump(_jump);
-		_object.move(_move);
+		//_object.move(_move);
 		//_object.turn(_rotate, _left);
+		if (!_object.animationThree())
+			stop = true;
 		redraw();
 	}
  }
@@ -266,10 +269,10 @@ void AppWindow::glutDisplay ()
    _object.draw(stransf, sproj, _light, _fs, _lightCoord);
 
    // Everything else
-   _floor.draw(stransf, sproj, _light, _fs);
-   _airplane.draw(stransf, sproj, _light);
-   _car.draw(stransf, sproj, _light);
-   _jukebox.draw(stransf, sproj, _light);
+  // _floor.draw(stransf, sproj, _light, _fs);
+  // _airplane.draw(stransf, sproj, _light);
+  // _car.draw(stransf, sproj, _light);
+   //_jukebox.draw(stransf, sproj, _light);
 
    // Swap buffers and draw:
    glFlush();         // flush the pipeline (usually not necessary)
