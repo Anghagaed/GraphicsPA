@@ -24,6 +24,21 @@ using namespace std;
 #define NEGTWOPI -2 * M_PI
 */
 
+// [0-1] : Left [2-3] : Right
+struct FrameAnimation {
+	GsMat arm[4];
+	GsMat armJoint[4];
+
+	GsMat leg[4];
+	GsMat legJoint[4];
+
+	GsMat body;
+	GsMat head;
+
+	FrameAnimation();
+	void Identity();
+};
+
 // Basically... This is the main object for this project!!
 // Guess what? It jumps up and down with a press of a button!
 // WOAH!! THAT IS SO COOL!!!
@@ -100,6 +115,10 @@ private:
 	GsMat newPosLegR1, newPosLegR2;
 	GsMat newPosLegLJ1, newPosLegLJ2;
 	GsMat newPosLegRJ1, newPosLegRJ2;
+
+	// Animation 1
+
+	FrameAnimation ani1Frame1, ani1Frame2, ani1Frame3;
 
 	int frame;
 	bool animate;

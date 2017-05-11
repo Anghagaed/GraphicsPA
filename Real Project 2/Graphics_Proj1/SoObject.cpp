@@ -12,6 +12,28 @@ int fac(int x)
 	return factorial;
 }
 
+FrameAnimation::FrameAnimation() {
+	for (int i = 0; i < 4; ++i) {
+		arm[i].identity();
+		armJoint[i].identity();
+		leg[i].identity();
+		legJoint[i].identity();
+	}
+	body.identity();
+	head.identity();
+}
+
+void FrameAnimation::Identity() {
+	for (int i = 0; i < 4; ++i) {
+		arm[i].identity();
+		armJoint[i].identity();
+		leg[i].identity();
+		legJoint[i].identity();
+	}
+	body.identity();
+	head.identity();
+}
+
 GsVec eval_bezier(float t, const GsArray<GsVec>& ctrlpnts)
 {
 	int n = ctrlpnts.size() - 1;					// summation's n
